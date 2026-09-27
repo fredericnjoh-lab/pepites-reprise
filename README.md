@@ -31,9 +31,9 @@ Le workflow `.github/workflows/pages.yml` copie `index.html` et `cockpit/index.h
 
 Activation, une fois, par un administrateur du dépôt : [Réglages → Pages](https://github.com/fredericnjoh-lab/pepites-reprise/settings/pages), source **GitHub Actions**. Le jeton d'intégration ne peut pas changer ce réglage. Relancer ensuite le workflow [Pages](https://github.com/fredericnjoh-lab/pepites-reprise/actions/workflows/pages.yml).
 
-Adresse : https://fredericnjoh-lab.github.io/pepites-reprise/
+Adresse, dépôt public : https://fredericnjoh-lab.github.io/pepites-reprise/
 
-Dépôt privé : la page n'est visible que pour les comptes qui ont accès au dépôt, sauf si le plan GitHub autorise une Page publique. Le cockpit ouvert depuis cette adresse affiche l'interface. Les cibles se chargent dans claude.ai, via le connecteur Supabase. Aucune clé n'est embarquée dans les pages.
+Le cockpit ouvert depuis cette adresse affiche l'interface. Les cibles se chargent dans claude.ai, via le connecteur Supabase. Aucune clé n'est embarquée dans les pages.
 
 ## Infra
 
