@@ -27,11 +27,13 @@ brand/                                 # identité Filon : tokens, logos, règle
 
 ## Site
 
-Publication statique : GitHub Actions copie `index.html` et `cockpit/index.html` vers GitHub Pages à chaque push sur `main`.
+Le workflow `.github/workflows/pages.yml` copie `index.html` et `cockpit/index.html` et les publie sur GitHub Pages à chaque push sur `main`.
 
-Adresse prévue : https://fredericnjoh-lab.github.io/pepites-reprise/
+Activation, une fois, par un administrateur du dépôt : [Réglages → Pages](https://github.com/fredericnjoh-lab/pepites-reprise/settings/pages), source **GitHub Actions**. Le jeton d'intégration ne peut pas changer ce réglage. Relancer ensuite le workflow [Pages](https://github.com/fredericnjoh-lab/pepites-reprise/actions/workflows/pages.yml).
 
-Le cockpit ouvert depuis cette adresse affiche l’interface. Les cibles se chargent dans claude.ai, via le connecteur Supabase. Aucune clé n’est embarquée dans les pages.
+Adresse : https://fredericnjoh-lab.github.io/pepites-reprise/
+
+Dépôt privé : la page n'est visible que pour les comptes qui ont accès au dépôt, sauf si le plan GitHub autorise une Page publique. Le cockpit ouvert depuis cette adresse affiche l'interface. Les cibles se chargent dans claude.ai, via le connecteur Supabase. Aucune clé n'est embarquée dans les pages.
 
 ## Infra
 

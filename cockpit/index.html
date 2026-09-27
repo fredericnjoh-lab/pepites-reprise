@@ -1,3 +1,8 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Filon</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -71,6 +76,7 @@ header.top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-
 .brand p{margin:0;padding-left:var(--space-4);border-left:1px solid var(--line);color:var(--ink-muted);font-size:12px;line-height:16px;max-width:380px}
 .live{display:flex;align-items:center;gap:var(--space-2)}
 .live i{width:6px;height:6px;border-radius:50%;background:var(--cession);box-shadow:0 0 0 0 var(--cession);animation:pulse 2.4s ease-out infinite}
+.live.off i{background:var(--ink-muted);box-shadow:none;animation:none}
 @keyframes pulse{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--cession) 60%,transparent)}70%,100%{box-shadow:0 0 0 8px transparent}}
 
 /* ---------- Bento : scène radar ---------- */
@@ -960,7 +966,8 @@ drawRings();
 if (!RM) $("#sweep").classList.add("run");
 (async ()=>{
   try{ [mcp, sample] = await Promise.all([window.claude.use("mcp"), window.claude.use("sample")]); }catch{}
-  if(!mcp){ status("Cette page lit ta base Supabase via le connecteur Claude. Ouvre-la depuis claude.ai, connecté à ton compte, pour voir les cibles.", true); $("#fresh").textContent = "Hors ligne"; return; }
+  if(!mcp){ status("Cette page lit la base Supabase via le connecteur Claude. L’ouvrir depuis claude.ai, connecté au compte, pour voir les cibles.", true); $("#fresh").textContent = "Hors ligne"; $("#fresh").closest(".live").classList.add("off"); return; }
   load();
 })();
 </script>
+</html>
