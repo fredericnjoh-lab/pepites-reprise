@@ -72,25 +72,73 @@ header.top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-
 .btn.primary:hover{box-shadow:var(--glow-gold);color:var(--on-gold)}
 .note{margin:var(--space-4) 0 0;max-width:52ch;color:var(--ink-muted);font-size:13px}
 
-.radar-wrap{position:relative;aspect-ratio:1;width:min(100%,440px);margin-inline:auto}
-.radar{width:100%;height:100%;overflow:visible}
-.ring{fill:none;stroke:var(--line);stroke-width:.35}
-.ring.outer{stroke:var(--line-strong);stroke-width:.45}
-.axis{stroke:var(--line);stroke-width:.25;stroke-dasharray:.8 1.4}
-.dept{font:500 2.4px var(--font-mono);fill:var(--ink-muted);text-anchor:middle}
-.beam{fill:url(#beamGrad)}
-.edge{stroke:var(--gold-fill);stroke-width:.4;filter:drop-shadow(0 0 .8px var(--bloom))}
-.sweep{transform-origin:50px 50px;transform-box:view-box;animation:sweep 1.6s cubic-bezier(.45,.05,.3,1) 1 both}
+.stage{position:relative;height:520px;perspective:880px;perspective-origin:50% 42%}
+.scene{
+  position:absolute;left:50%;top:54%;width:340px;height:340px;margin:-170px 0 0 -170px;
+  transform-style:preserve-3d;
+  transform:rotateX(58deg) rotateZ(-18deg);
+  transition:transform var(--ui);
+}
+.floor{
+  position:absolute;inset:-80px;border-radius:50%;
+  background-image:radial-gradient(var(--grid-dot) 1.1px, transparent 1.4px);
+  background-size:18px 18px;
+  transform:translateZ(-18px);
+  -webkit-mask-image:radial-gradient(circle, #000 42%, transparent 72%);
+  mask-image:radial-gradient(circle, #000 42%, transparent 72%);
+}
+.disc{position:absolute;inset:0;transform-style:preserve-3d}
+.hoop{
+  position:absolute;border:1px solid var(--line);border-radius:50%;
+  transform:translateZ(var(--z));
+}
+.hoop.outer{border-color:var(--line-strong)}
+.axis{
+  position:absolute;left:50%;top:0;width:1px;height:100%;background:var(--line);
+  transform:translateX(-50%) translateZ(2px);
+}
+.axis.z{transform:translateX(-50%) translateZ(2px) rotate(90deg)}
+.hub{
+  position:absolute;left:50%;top:50%;width:8px;height:8px;margin:-4px;
+  border-radius:50%;background:var(--ink);transform:translateZ(40px);
+}
+.mast{
+  position:absolute;left:50%;top:50%;width:1px;height:40px;margin-left:-0.5px;
+  background:var(--line-strong);transform-origin:center bottom;transform:translateY(-40px) translateZ(20px) rotateX(-90deg);
+}
+.sweep-slot{position:absolute;inset:0;transform:translateZ(10px);transform-style:preserve-3d}
+.sweep{
+  position:absolute;inset:0;border-radius:50%;
+  background:conic-gradient(from 0deg, transparent 0 292deg, color-mix(in srgb, var(--gold-fill) 42%, transparent) 360deg);
+  animation:sweep 1.6s cubic-bezier(.45,.05,.3,1) 1 both;
+}
+.sweep i{
+  position:absolute;left:50%;top:0;width:1px;height:50%;
+  background:var(--gold-fill);transform:translateX(-50%);
+  filter:drop-shadow(0 0 6px var(--bloom));
+}
 @keyframes sweep{from{transform:rotate(0)}to{transform:rotate(360deg)}}
-.core{fill:var(--ink)}
-.dot{fill:var(--ink-muted);opacity:.55}
-.dot.hot{fill:var(--gold-fill);opacity:1;filter:drop-shadow(0 0 1.2px var(--bloom))}
+.blip,.gem{
+  position:absolute;left:50%;top:50%;border-radius:50%;
+  transform:rotate(var(--a)) translateY(calc(var(--d) * -1)) translateZ(var(--z, 8px));
+}
+.blip{width:5px;height:5px;margin:-2.5px;background:var(--ink-muted);opacity:.7}
+.gem{
+  width:14px;height:14px;margin:-7px;
+  background:radial-gradient(circle at 32% 30%, #fff 0 1px, var(--gold-fill) 46%, #6a4808);
+  filter:drop-shadow(0 0 10px var(--bloom));
+}
+.mark{
+  position:absolute;left:50%;top:50%;
+  font:500 12px/1 var(--font-mono);color:var(--ink-muted);letter-spacing:.04em;
+  transform:rotate(var(--a)) translateY(-186px) rotate(calc(var(--a) * -1)) translateZ(4px);
+}
 
 .bento{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:var(--space-3)}
 .tile{position:relative;overflow:hidden;background:var(--glass);border:1px solid var(--line);border-radius:14px;padding:var(--space-6);
   -webkit-backdrop-filter:blur(16px) saturate(140%);backdrop-filter:blur(16px) saturate(140%);
   box-shadow:inset 0 1px 0 var(--glass-edge)}
-.tile::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .3s;
+.tile::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity var(--ui);
   background:radial-gradient(420px circle at var(--mx,50%) var(--my,50%), var(--ambient), transparent 45%)}
 .tile:hover::before{opacity:1}
 .tile > *{position:relative}
@@ -118,6 +166,11 @@ footer.site strong{color:var(--ink);font-weight:500}
 
 @media (max-width:860px){
   .hero{grid-template-columns:1fr;padding-block:var(--space-8)}
+  .hero .copy{order:2}
+  .stage{height:380px;order:1;overflow:hidden}
+  .floor{inset:-20px}
+  .scene{width:250px;height:250px;margin:-125px 0 0 -125px}
+  .mark{transform:rotate(var(--a)) translateY(-142px) rotate(calc(var(--a) * -1)) translateZ(4px)}
   .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
   .step,.wide,.side{grid-column:span 12}
 }
@@ -129,6 +182,7 @@ footer.site strong{color:var(--ink);font-weight:500}
   *,*::before,*::after{animation:none!important;transition:none!important}
   html{scroll-behavior:auto}
   .tile::before{display:none}
+  .scene{transform:rotateX(58deg) rotateZ(-18deg)}
 }
 </style>
 </head>
@@ -149,7 +203,7 @@ footer.site strong{color:var(--ink);font-weight:500}
   </header>
 
   <section class="hero">
-    <div>
+    <div class="copy">
       <p class="label">Île-de-France · 8 départements</p>
       <h1>Le radar des PME <em>à reprendre.</em></h1>
       <p class="lead">Filon lit les procédures collectives et les cessions de fonds du BODACC, puis les fiches Sirene et RNE. Chaque cible reçoit un Score Pépite sur 100 et une valorisation indicative.</p>
@@ -158,39 +212,35 @@ footer.site strong{color:var(--ink);font-weight:500}
       </div>
       <p class="note">Depuis ce site, le cockpit affiche l’interface. Les cibles se chargent dans claude.ai, via le connecteur Supabase du projet pepites-reprise.</p>
     </div>
-    <div class="radar-wrap">
-      <svg class="radar" viewBox="0 0 100 100" role="img" aria-label="Radar des huit départements d’Île-de-France">
-        <defs>
-          <linearGradient id="beamGrad" x1="0" y1="1" x2="1" y2="0">
-            <stop offset="0" style="stop-color:var(--gold-fill);stop-opacity:0"/>
-            <stop offset="1" style="stop-color:var(--gold-fill);stop-opacity:var(--beam)"/>
-          </linearGradient>
-        </defs>
-        <circle class="ring outer" cx="50" cy="50" r="46"/>
-        <circle class="ring" cx="50" cy="50" r="32"/>
-        <circle class="ring" cx="50" cy="50" r="18"/>
-        <line class="axis" x1="50" y1="4" x2="50" y2="96"/>
-        <line class="axis" x1="4" y1="50" x2="96" y2="50"/>
-        <g class="sweep">
-          <path class="beam" d="M50 50 L50 4 A46 46 0 0 1 96 50 Z"/>
-          <line class="edge" x1="50" y1="50" x2="50" y2="4"/>
-        </g>
-        <circle class="core" cx="50" cy="50" r="1.8"/>
-        <circle class="dot" cx="38" cy="28" r="1.3"/>
-        <circle class="dot" cx="62" cy="24" r="1.2"/>
-        <circle class="dot" cx="72" cy="40" r="1.2"/>
-        <circle class="dot" cx="30" cy="58" r="1.3"/>
-        <circle class="dot" cx="58" cy="70" r="1.2"/>
-        <circle class="dot hot" cx="68" cy="62" r="2.2"/>
-        <text class="dept" x="50" y="8">93</text>
-        <text class="dept" x="86" y="28">92</text>
-        <text class="dept" x="90" y="54">75</text>
-        <text class="dept" x="78" y="84">94</text>
-        <text class="dept" x="50" y="96">91</text>
-        <text class="dept" x="18" y="82">77</text>
-        <text class="dept" x="10" y="54">78</text>
-        <text class="dept" x="16" y="28">95</text>
-      </svg>
+    <div class="stage" id="stage">
+      <div class="scene" id="scene" role="img" aria-label="Radar en volume des huit départements d’Île-de-France">
+        <div class="floor"></div>
+        <div class="disc">
+          <div class="hoop outer" style="inset:0;--z:0px"></div>
+          <div class="hoop" style="inset:42px;--z:14px"></div>
+          <div class="hoop" style="inset:84px;--z:28px"></div>
+          <div class="hoop" style="inset:126px;--z:40px"></div>
+          <div class="axis"></div>
+          <div class="axis z"></div>
+          <div class="mast"></div>
+          <div class="hub"></div>
+          <div class="sweep-slot"><div class="sweep"><i></i></div></div>
+          <span class="blip" style="--a:18deg;--d:150px"></span>
+          <span class="blip" style="--a:70deg;--d:96px;--z:20px"></span>
+          <span class="blip" style="--a:128deg;--d:60px;--z:34px"></span>
+          <span class="blip" style="--a:210deg;--d:128px;--z:8px"></span>
+          <span class="blip" style="--a:250deg;--d:78px;--z:24px"></span>
+          <span class="gem" style="--a:38deg;--d:118px;--z:46px"></span>
+          <span class="mark" style="--a:0deg">93</span>
+          <span class="mark" style="--a:45deg">92</span>
+          <span class="mark" style="--a:90deg">75</span>
+          <span class="mark" style="--a:135deg">94</span>
+          <span class="mark" style="--a:180deg">91</span>
+          <span class="mark" style="--a:225deg">77</span>
+          <span class="mark" style="--a:270deg">78</span>
+          <span class="mark" style="--a:315deg">95</span>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -245,12 +295,26 @@ footer.site strong{color:var(--ink);font-weight:500}
   </footer>
 </div>
 <script>
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 document.querySelectorAll(".tile").forEach(t => {
   t.addEventListener("pointermove", e => {
+    if (reduce) return;
     const r = t.getBoundingClientRect();
     t.style.setProperty("--mx", (e.clientX - r.left) + "px");
     t.style.setProperty("--my", (e.clientY - r.top) + "px");
   });
+});
+const stage = document.getElementById("stage");
+const scene = document.getElementById("scene");
+stage.addEventListener("pointermove", e => {
+  if (reduce) return;
+  const r = stage.getBoundingClientRect();
+  const x = (e.clientX - r.left) / r.width - 0.5;
+  const y = (e.clientY - r.top) / r.height - 0.5;
+  scene.style.transform = "rotateX(" + (58 - y * 12) + "deg) rotateZ(" + (-18 + x * 16) + "deg)";
+});
+stage.addEventListener("pointerleave", () => {
+  scene.style.transform = "";
 });
 </script>
 </body>
