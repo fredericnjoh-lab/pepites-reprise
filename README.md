@@ -17,11 +17,20 @@ supabase/
     20260927184500_bodacc_ventes.sql   # cessions de fonds dans listings + cron 4 h 05
     20260927200000_multisecteur.sql    # scoring IT et récurrence, multiples par secteur, cédants par famille
   functions/ingest/index.ts            # Edge Function : BODACC (procédures et cessions), enrichissement, cédants 60+ par secteur
-cockpit/index.html                     # cockpit privé (artifact Claude, lit la base via le connecteur Supabase)
+index.html                             # page d'accueil Filon
+cockpit/index.html                     # cockpit (interface ; données via le connecteur Supabase dans claude.ai)
 docs/spec-et-business-model.md         # spec fonctionnelle, roadmap, modèle de revenus
 brand/                                 # identité Filon : tokens, logos, règles, composants de référence
 .cursor/rules/                         # contexte projet et marque pour l'agent Cursor
 ```
+
+## Site
+
+Publication statique : GitHub Actions copie `index.html` et `cockpit/index.html` vers GitHub Pages à chaque push sur `main`.
+
+Adresse prévue : https://fredericnjoh-lab.github.io/pepites-reprise/
+
+Le cockpit ouvert depuis cette adresse affiche l’interface. Les cibles se chargent dans claude.ai, via le connecteur Supabase. Aucune clé n’est embarquée dans les pages.
 
 ## Infra
 

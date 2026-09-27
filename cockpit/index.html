@@ -65,6 +65,7 @@ button,select,input,textarea{font:inherit;color:inherit}
 /* ---------- En-tête ---------- */
 header.top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--space-4);padding-block:var(--space-6) var(--space-4);border-bottom:1px solid var(--line)}
 .brand{display:flex;align-items:center;gap:var(--space-4)}
+.brand a{display:flex;color:inherit;text-decoration:none}
 .brand svg{display:block;height:26px;width:auto}
 .brand .wm{stroke:var(--ink)} .brand .gem{fill:var(--gold-fill)}
 .brand p{margin:0;padding-left:var(--space-4);border-left:1px solid var(--line);color:var(--ink-muted);font-size:12px;line-height:16px;max-width:380px}
@@ -286,6 +287,7 @@ dialog.fiche::backdrop{background:var(--scrim);backdrop-filter:blur(2px)}
 <div class="wrap">
   <header class="top">
     <div class="brand">
+      <a href="../index.html" aria-label="Filon, accueil">
       <svg viewBox="-4 -4 168 40" role="img" aria-label="Filon">
         <g class="wm" fill="none" stroke-width="4.5" stroke-linecap="square" stroke-miterlimit="1.5">
           <path d="M2 30 V2 H26 M2 16 H21"/><path d="M40 2 V30"/><path d="M54 2 V30 H78"/>
@@ -293,6 +295,7 @@ dialog.fiche::backdrop{background:var(--scrim);backdrop-filter:blur(2px)}
         </g>
         <circle class="gem" cx="106" cy="16" r="4.5"/>
       </svg>
+      </a>
       <p>Le radar des PME à reprendre · IT, services, industrie, négoce · Île-de-France</p>
     </div>
     <span class="label mono" id="clock"></span>
