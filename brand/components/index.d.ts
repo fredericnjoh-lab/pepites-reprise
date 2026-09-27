@@ -8,7 +8,7 @@ export function ScoreDial(props: ScoreDialProps): JSX.Element;
 export interface SignalChipProps { kind: "cession" | "decote" | "valeur"; className?: string; children: React.ReactNode }
 export function SignalChip(props: SignalChipProps): JSX.Element;
 
-export interface ProcedureTagProps { type: "liquidation" | "redressement" | "sauvegarde" | "plan_cession" | "cedant" | "veille"; className?: string; children?: React.ReactNode }
+export interface ProcedureTagProps { type: "liquidation" | "redressement" | "sauvegarde" | "plan_cession" | "vente" | "cedant" | "veille"; className?: string; children?: React.ReactNode }
 export function ProcedureTag(props: ProcedureTagProps): JSX.Element;
 
 export interface RadarPoint { /** 0-1 */ x: number; /** 0-1 */ y: number; /** 0-100 */ score: number; label?: string }

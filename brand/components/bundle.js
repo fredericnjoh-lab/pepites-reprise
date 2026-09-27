@@ -60,7 +60,7 @@
   /* ProcedureTag — situation juridique de la cible. */
   var PROC = {
     liquidation: "Liquidation", redressement: "Redressement", sauvegarde: "Sauvegarde",
-    plan_cession: "Plan de cession", cedant: "Cédant potentiel", veille: "Veille"
+    plan_cession: "Plan de cession", vente: "Cession publiée", cedant: "Cédant potentiel", veille: "Veille"
   };
   function ProcedureTag(props) {
     var t = PROC[props.type] ? props.type : "veille";

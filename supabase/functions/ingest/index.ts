@@ -1,4 +1,4 @@
-// PÉPITES — connecteurs d'ingestion (BODACC, API Recherche d'entreprises)
+// PÉPITES — connecteurs d'ingestion (BODACC procédures et cessions, API Recherche d'entreprises)
 // Auth : en-tête x-ingest-secret comparé à private.app_secrets (lu via service role).
 import { createClient } from "npm:@supabase/supabase-js@2";
 
@@ -81,6 +81,136 @@ async function ingestBodacc(p: any) {
   return { bodacc_events: n, next_offset: offset, total: undefined };
 }
 
+function asObj(v: unknown): any {
+  if (v == null) return null;
+  if (typeof v === "object") return v;
+  if (typeof v !== "string" || !v) return null;
+  try { return JSON.parse(v); } catch { return null; }
+}
+
+function asList(v: unknown, key: string): any[] {
+  const o = asObj(v);
+  if (!o) return [];
+  const inner = o[key] ?? o;
+  return Array.isArray(inner) ? inner : [inner];
+}
+
+function siren9(v: unknown): string | null {
+  const digits = String(v ?? "").replace(/\D/g, "");
+  return digits.length >= 9 ? digits.slice(0, 9) : null;
+}
+
+function registreSirens(reg: unknown): string[] {
+  const arr = Array.isArray(reg) ? reg : reg ? [reg] : [];
+  return [...new Set(arr.map(siren9).filter((s): s is string => !!s))];
+}
+
+function personneSiren(p: any): string | null {
+  return siren9(p?.numeroImmatriculation?.numeroIdentification ?? p?.numeroIdentification);
+}
+
+function personneNom(p: any): string | null {
+  const nom = p?.denomination || [p?.prenom ?? p?.prenoms, p?.nom].filter(Boolean).join(" ");
+  return nom ? String(nom).slice(0, 200) : null;
+}
+
+// « prix stipulé de 450000,00 euros », « 155000.00 euros », « 1.450.000,00 euros »
+function parsePrixFonds(text: string): number | null {
+  const m = String(text ?? "").match(/prix[^0-9]{0,40}([0-9][0-9\s\u00a0.,]*)/i);
+  if (!m) return null;
+  let s = m[1].trim().replace(/[\s\u00a0]/g, "").replace(/[.,]+$/, "");
+  if (/,\d{1,2}$/.test(s)) s = s.replace(/\./g, "").replace(/,\d{1,2}$/, "");
+  else if (/\.\d{1,2}$/.test(s)) s = s.replace(/,/g, "").replace(/\.\d{1,2}$/, "");
+  else s = s.replace(/[.,]/g, "");
+  if (!/^\d+$/.test(s)) return null;
+  const n = Number(s);
+  if (!Number.isFinite(n) || n <= 0 || n > 1_000_000_000) return null;
+  return n;
+}
+
+function bodaccRecordsUrl(where: string, offset: number): string {
+  const url = new URL(BODACC_API);
+  url.searchParams.set("where", where);
+  url.searchParams.set("order_by", "dateparution desc");
+  url.searchParams.set("limit", "100");
+  url.searchParams.set("offset", String(offset));
+  return url.toString();
+}
+
+// ---- 1b. BODACC ventes et cessions de fonds (prix publié) ----
+async function ingestVentes(p: any) {
+  const depts: string[] = (p.departements ?? IDF).filter((d: string) => /^\d{2,3}$/.test(String(d)));
+  if (!depts.length) throw new Error("departements invalides");
+  const since = String(p.date_debut ?? new Date(Date.now() - 90 * 864e5).toISOString().slice(0, 10));
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(since)) throw new Error("date_debut invalide");
+  const where = `familleavis="vente" AND (${depts.map((d) => `numerodepartement="${d}"`).join(" OR ")}) AND dateparution>=date'${since}'`;
+  let offset = Number(p.offset ?? 0) || 0, n = 0, avecPrix = 0, seen = 0;
+  const max = p.max ?? 500;
+  while (seen < max) {
+    const data = await getJson(bodaccRecordsUrl(where, offset));
+    const rows = data.results ?? [];
+    if (!rows.length) break;
+    const comps = new Map<string, any>();
+    const listings = new Map<string, any>();
+    for (const r of rows) {
+      if (!r.id) continue;
+      const buyers = asList(r.listepersonnes, "personne");
+      const sellers = [...asList(r.listeprecedentproprietaire, "personne"), ...asList(r.listeprecedentexploitant, "personne")];
+      const buyer = buyers.map(personneSiren).find(Boolean) ?? null;
+      const seller = sellers.map(personneSiren).find(Boolean) ?? null;
+      const sirens = [...new Set([buyer, seller, ...registreSirens(r.registre)].filter((s): s is string => !!s))];
+      const etabs = asList(r.listeetablissements, "etablissement");
+      const acte = asObj(r.acte) ?? {};
+      const textes = etabs.map((e) => e?.origineFonds).filter(Boolean);
+      const prix = textes.map(parsePrixFonds).find((x) => x != null) ?? null;
+      const activite = etabs.map((e) => e?.activite).filter(Boolean).join(" · ").slice(0, 500) || null;
+      const commune = etabs.map((e) => e?.adresse?.ville).find(Boolean) || (r.ville ? String(r.ville).split(",")[0].trim() : null);
+      const nature = acte?.vente?.categorieVente ? String(acte.vente.categorieVente).slice(0, 200) : r.familleavis_lib ?? null;
+      const buyerNom = buyers.map(personneNom).find(Boolean);
+      const sellerNom = sellers.map(personneNom).find(Boolean);
+      for (const siren of sirens) {
+        const nom = siren === buyer ? buyerNom : siren === seller ? sellerNom : null;
+        comps.set(siren, {
+          siren,
+          nom: nom ?? (sirens.length === 1 ? String(r.commercant ?? "").slice(0, 200) || null : null),
+          departement: r.numerodepartement, commune, code_postal: r.cp ? String(r.cp).slice(0, 5) : null,
+          source: "bodacc_vente",
+        });
+      }
+      const titre = [r.commercant, nature].filter(Boolean).join(" — ").slice(0, 300);
+      listings.set(r.id, {
+        external_id: r.id,
+        siren: buyer,
+        siren_cedant: seller && seller !== buyer ? seller : null,
+        sirens,
+        source: "bodacc_vente",
+        titre: titre || null,
+        prix_demande: prix,
+        url: typeof r.url_complete === "string" && r.url_complete.startsWith("https://") ? r.url_complete : null,
+        date_parution: /^\d{4}-\d{2}-\d{2}$/.test(r.dateparution ?? "") ? r.dateparution : null,
+        departement: r.numerodepartement ?? null,
+        commune: commune ? String(commune).slice(0, 120) : null,
+        activite,
+        nature,
+        raw: r,
+      });
+      if (prix != null) avecPrix++;
+    }
+    const listingRows = [...listings.values()];
+    if (comps.size) {
+      const { error } = await sb.from("companies").upsert([...comps.values()], { onConflict: "siren", ignoreDuplicates: true });
+      if (error) throw error;
+    }
+    if (listingRows.length) {
+      const { error } = await sb.from("listings").upsert(listingRows, { onConflict: "external_id" });
+      if (error) throw error;
+    }
+    n += listingRows.length; seen += rows.length; offset += rows.length;
+    if (rows.length < 100) break;
+  }
+  return { ventes: n, ventes_avec_prix: avecPrix, next_offset: offset };
+}
+
 // ---- 2. Enrichissement Sirene/RNE via API Recherche d'entreprises ----
 async function enrich(p: any) {
   const { data: todo } = await sb.from("companies").select("siren").is("enriched_at", null).limit(p.batch ?? 60);
@@ -121,11 +251,12 @@ Deno.serve(async (req) => {
   try {
     const out: any = {};
     if (mode === "bodacc" || mode === "all") Object.assign(out, await ingestBodacc(p));
+    if (mode === "ventes") Object.assign(out, await ingestVentes(p));
     if (mode === "cedants" || mode === "all") Object.assign(out, await cedants(p));
     if (mode === "enrich" || mode === "all") Object.assign(out, await enrich(p));
     const { data: scored, error: se } = await sb.rpc("compute_scores");
     out.scored = se ? "erreur: " + se.message : scored;
-    await sb.from("sources_log").update({ statut: "ok", nb_items: out.bodacc_events ?? out.cedants ?? out.enriched ?? 0, message: JSON.stringify(out), finished_at: new Date().toISOString() }).eq("id", log!.id);
+    await sb.from("sources_log").update({ statut: "ok", nb_items: out.ventes ?? out.bodacc_events ?? out.cedants ?? out.enriched ?? 0, message: JSON.stringify(out), finished_at: new Date().toISOString() }).eq("id", log!.id);
     return Response.json(out);
   } catch (err) {
     await sb.from("sources_log").update({ statut: "error", message: String((err as any)?.message ?? err), finished_at: new Date().toISOString() }).eq("id", log!.id);

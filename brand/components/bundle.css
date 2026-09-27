@@ -43,7 +43,7 @@ body { background: var(--void); color: var(--ink); font-family: var(--font-sans)
   padding: 5px 7px; border-radius: var(--radius-xs); border: 1px solid currentColor;
 }
 .fl-tag--liquidation, .fl-tag--redressement { color: var(--decote); }
-.fl-tag--sauvegarde, .fl-tag--plan_cession { color: var(--gold); }
+.fl-tag--sauvegarde, .fl-tag--plan_cession, .fl-tag--vente { color: var(--gold); }
 .fl-tag--cedant { color: var(--cession); }
 .fl-tag--veille { color: var(--ink-muted); }
 

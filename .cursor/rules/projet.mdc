@@ -8,7 +8,7 @@ alwaysApply: true
 - But : repérer des PME d'Île-de-France rachetables à bas prix (procédures collectives BODACC, dirigeants de 60 ans et plus), les scorer et suivre les dossiers. Deux usages : rachat en propre et intermédiation (success fee via Fredjopartners).
 - Langue : code et identifiants en français (tables `companies`, `officers`, `financials`, `legal_events`, `signals`, `scores`, `valuations`, `deals`, `buyers`, `matches`, `alerts`, `sources_log`, `opposition_rgpd`). Commentaires et textes UI en français.
 - Backend : Supabase (Postgres 17, pg_cron, pg_net), projet `lwfcgzhndwpffeebpjpy`, région Paris.
-- Ingestion : Edge Function Deno `supabase/functions/ingest`, modes `bodacc`, `enrich`, `cedants`, `all`. Appelée par `private.run_ingest(payload)` depuis pg_cron. Recalcule `compute_scores()` à la fin de chaque run.
+- Ingestion : Edge Function Deno `supabase/functions/ingest`, modes `bodacc`, `ventes`, `enrich`, `cedants`, `all`. Appelée par `private.run_ingest(payload)` depuis pg_cron. Recalcule `compute_scores()` à la fin de chaque run. Le mode `ventes` charge les cessions de fonds (famille BODACC `vente`) dans `listings`, avec le prix quand l'annonce le publie.
 - Sources publiques : API BODACC (opendatasoft, dataset `annonces-commerciales`) et `recherche-entreprises.api.gouv.fr`. Respecter les limites de débit (pauses déjà en place, retry sur 429).
 - Cockpit actuel : `cockpit/index.html`, page unique sans build, lit la base via le connecteur Supabase de Claude (`window.claude.use("mcp")`). Ne pas y ajouter de clé Supabase.
 - V2 prévue : Next.js sur Vercel + Supabase Auth pour l'espace repreneurs (voir `docs/spec-et-business-model.md`).

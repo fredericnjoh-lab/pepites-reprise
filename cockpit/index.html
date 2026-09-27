@@ -215,7 +215,7 @@ td .fig{font:400 13px/18px var(--font-mono);font-variant-numeric:tabular-nums;wh
 .chip.valeur{color:var(--gold);background:var(--gold-soft)}
 .tag{display:inline-block;font:500 10px/1 var(--font-sans);letter-spacing:.12em;text-transform:uppercase;padding:5px 7px;border-radius:var(--radius-xs);border:1px solid currentColor;white-space:nowrap}
 .tag.liquidation,.tag.redressement{color:var(--decote)}
-.tag.sauvegarde,.tag.plan_cession{color:var(--gold)}
+.tag.sauvegarde,.tag.plan_cession,.tag.vente{color:var(--gold)}
 .tag.cedant{color:var(--cession)}
 .tag.veille{color:var(--ink-muted)}
 .tag.stage{color:var(--ink);border-color:var(--line-strong)}
@@ -373,6 +373,7 @@ dialog.fiche::backdrop{background:var(--scrim);backdrop-filter:blur(2px)}
             <button data-v="all" aria-pressed="true">Toutes</button>
             <button data-v="proc" aria-pressed="false">Procédure</button>
             <button data-v="ced" aria-pressed="false">Cédant</button>
+            <button data-v="vente" aria-pressed="false">Cession</button>
           </div></div>
         <div class="f"><label class="label" for="dep">Département</label>
           <select id="dep"><option value="">Toute l'Île-de-France</option>
@@ -420,9 +421,10 @@ dialog.fiche::backdrop{background:var(--scrim);backdrop-filter:blur(2px)}
       <div>
         <h2>Sources</h2>
         <div class="note">
-          <p><b>Chaque nuit</b> à 6 h : procédures collectives BODACC des 3 derniers jours en Île-de-France, puis enrichissement Sirene et RNE. <b>Chaque lundi</b> : recherche de cédants (dirigeant de 60 ans et plus, 3 à 99 salariés, BTP et maintenance).</p>
+          <p><b>Chaque nuit</b> à 6 h : procédures collectives BODACC des 3 derniers jours en Île-de-France, cessions de fonds des 7 derniers jours juste après, puis enrichissement Sirene et RNE. <b>Chaque lundi</b> : recherche de cédants (dirigeant de 60 ans et plus, 3 à 99 salariés, BTP et maintenance).</p>
           <div style="display:flex;gap:var(--space-2);flex-wrap:wrap">
             <button class="btn" id="runBodacc">Lancer BODACC maintenant</button>
+            <button class="btn" id="runVentes">Lancer les cessions</button>
             <button class="btn" id="runEnrich">Enrichir les fiches</button>
             <button class="btn" id="runCed">Chercher des cédants</button>
           </div>
@@ -468,6 +470,10 @@ const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt
 const sq = s => "'" + String(s ?? "").replace(/'/g, "''") + "'";
 const fmtE = n => n == null ? "–" : Math.abs(n) >= 1e6 ? (n/1e6).toLocaleString("fr-FR",{maximumFractionDigits:1}) + " M€" : Math.abs(n) >= 1e3 ? Math.round(n/1e3).toLocaleString("fr-FR") + " k€" : Math.round(n) + " €";
 const fmtD = d => d ? new Date(d).toLocaleDateString("fr-FR") : "–";
+function safeUrl(u){
+  try { const url = new URL(u); return url.protocol === "https:" ? url.href : ""; }
+  catch { return ""; }
+}
 const SVGNS = "http://www.w3.org/2000/svg";
 
 function status(msg, err){ const el=$("#status"); if(!msg){el.hidden=true;return;} el.hidden=false; el.textContent=msg; el.classList.toggle("err",!!err); }
@@ -508,9 +514,18 @@ const LIST_SQL = `select c.siren, c.nom, c.naf, c.departement, c.commune, c.tran
  s.score::float8 score, s.p_cession::float8 p_cession, s.decote::float8 decote, s.qualite::float8 qualite, s.potentiel::float8 potentiel,
  v.fourchette_bas::float8 vb, v.fourchette_haut::float8 vh,
  (select json_agg(json_build_object('c',g.categorie,'l',g.libelle,'k',g.code)) from signals g where g.siren=c.siren) sig,
- d.stage
+ d.stage,
+ lv.vente_date, lv.vente_prix, lv.vente_role, lv.vente_nature
 from scores s join companies c using(siren) join v_company_facts f using(siren)
 left join valuations v using(siren) left join deals d using(siren)
+left join lateral (
+  select l.date_parution vente_date, l.prix_demande::float8 vente_prix, l.nature vente_nature,
+         case when l.siren_cedant = c.siren then 'cedant' when l.siren = c.siren then 'acquereur' else 'mention' end vente_role
+  from listings l
+  where l.siren = c.siren or l.siren_cedant = c.siren or l.sirens @> array[c.siren]
+  order by l.date_parution desc nulls last
+  limit 1
+) lv on true
 where c.enriched_at is not null and c.nom is not null and c.departement in ('75','77','78','91','92','93','94','95') order by s.score desc limit 1500`;
 const DEALS_SQL = `select d.*, c.nom, c.commune, s.score::float8 score from deals d join companies c using(siren) left join scores s using(siren) order by d.updated_at desc`;
 
@@ -625,7 +640,7 @@ function filtered(){
   let r = ALL.filter(x =>
     x.score >= smin &&
     (!dep || x.departement === dep) &&
-    (typeF === "all" || (typeF === "proc" ? !!PROC_L[x.procedure] : x.source === "sirene_cedant" || (x.age >= 60 && !PROC_L[x.procedure]))) &&
+    (typeF === "all" || (typeF === "proc" ? !!PROC_L[x.procedure] : typeF === "vente" ? !!x.vente_role : x.source === "sirene_cedant" || (x.age >= 60 && !PROC_L[x.procedure]))) &&
     (!camin || (camin === 1 ? x.ca != null : x.ca >= camin)) &&
     (!amin || x.age >= amin) &&
     (!frag || (x.sig||[]).some(s=>s.k==="secteur_fragmente")) &&
@@ -634,10 +649,18 @@ function filtered(){
   r.sort((a,b)=> (key(a)>key(b)?1:key(a)<key(b)?-1:0)*sortDir);
   return r;
 }
+function venteLabel(role, nature){
+  if (/fusion/i.test(nature || "")) return "Fusion publiée";
+  if (role === "cedant") return "Fonds cédé";
+  if (role === "acquereur") return "Fonds acquis";
+  return "Cession publiée";
+}
 function situationTag(x){
-  if (PROC_L[x.procedure]) return `<span class="tag ${x.procedure}">${PROC_L[x.procedure]}</span>`;
-  if (x.age >= 60) return `<span class="tag cedant">Cédant potentiel</span>`;
-  return `<span class="tag veille">Veille</span>`;
+  const base = PROC_L[x.procedure]
+    ? `<span class="tag ${x.procedure}">${PROC_L[x.procedure]}</span>`
+    : x.age >= 60 ? `<span class="tag cedant">Cédant potentiel</span>` : `<span class="tag veille">Veille</span>`;
+  if (!x.vente_role) return base;
+  return `${base}<span class="tag vente" style="margin-left:4px">${venteLabel(x.vente_role, x.vente_nature)}</span>`;
 }
 function render(){
   const r = filtered(), shown = r.slice(0, 250);
@@ -645,7 +668,7 @@ function render(){
     <tr class="row" data-siren="${esc(x.siren)}" tabindex="0">
       <td>${dial(x.score,40,HOT)}</td>
       <td><div class="nm">${esc(x.nom)}</div><div class="sub">${esc(x.commune||"")} (${esc(x.departement||"?")}) · <span class="mono">${esc(x.naf||"")}</span> ${esc(NAF[x.naf]||"")}${x.te && x.te!=="NN" ? " · "+esc(EFF[x.te]||x.te)+" sal." : ""}</div></td>
-      <td>${situationTag(x)}${PROC_L[x.procedure]?`<div class="sub mono" style="margin-top:4px">${fmtD(x.date_procedure)}</div>`:""}${x.stage?`<div style="margin-top:4px"><span class="tag stage">${STAGE_L[x.stage]}</span></div>`:""}</td>
+      <td>${situationTag(x)}${PROC_L[x.procedure]?`<div class="sub mono" style="margin-top:4px">${fmtD(x.date_procedure)}</div>`:""}${x.vente_prix!=null?`<div class="sub mono" style="margin-top:4px">${fmtE(x.vente_prix)}</div>`:""}${x.stage?`<div style="margin-top:4px"><span class="tag stage">${STAGE_L[x.stage]}</span></div>`:""}</td>
       <td class="num"><span class="fig">${fmtE(x.ca)}</span>${x.annee_fin?`<div class="sub mono">${x.annee_fin}</div>`:""}</td>
       <td class="num"><span class="fig">${x.age ? x.age+" ans" : "–"}</span></td>
       <td class="num"><span class="fig">${x.vh ? fmtE(x.vb)+" – "+fmtE(x.vh) : "–"}</span></td>
@@ -674,7 +697,13 @@ async function openFiche(siren){
       'v',(select row_to_json(v) from valuations v where siren='${siren}'),
       's',(select row_to_json(s) from scores s where siren='${siren}'),
       'g',(select json_agg(g) from signals g where siren='${siren}'),
-      'd',(select row_to_json(d) from deals d where siren='${siren}')) as j`);
+      'd',(select row_to_json(d) from deals d where siren='${siren}'),
+      'l',(select coalesce(json_agg(json_build_object(
+            'date', date_parution, 'titre', titre, 'prix', prix_demande::float8, 'url', url,
+            'nature', nature, 'activite', activite, 'commune', commune, 'departement', departement,
+            'acquereur', siren, 'cedant', siren_cedant
+          ) order by date_parution desc nulls last), '[]'::json)
+          from listings where siren = '${siren}' or siren_cedant = '${siren}' or sirens @> array['${siren}'])) as j`);
     current.detail = row.j; drawFiche();
   }catch(e){ $("#f-body").innerHTML = `<p class="status err">${esc(explain(e))}</p>`; }
 }
@@ -700,6 +729,11 @@ function drawFiche(){
   </div></div>
   <div class="sec"><h3 class="label">Dirigeants</h3>${(d.o||[]).length?`<table class="mini"><tbody>${d.o.map(o=>`<tr style="border-bottom:1px solid var(--line)"><td>${esc(o.prenoms)} ${esc(o.nom)}</td><td class="sub">${esc(o.qualite)}</td><td class="mono" style="text-align:right">${o.annee_naissance?(new Date().getFullYear()-o.annee_naissance)+" ans":"–"}</td></tr>`).join("")}</tbody></table>`:'<p class="sub">Non renseignés (entreprise individuelle ou fiche non enrichie).</p>'}</div>
   <div class="sec"><h3 class="label">Finances publiées</h3>${(d.f||[]).length?`<table class="mini"><thead><tr><th class="label">Exercice</th><th class="label" style="text-align:right">CA</th><th class="label" style="text-align:right">Résultat net</th><th class="label" style="text-align:right">Marge</th></tr></thead><tbody>${d.f.map(f=>`<tr style="border-top:1px solid var(--line)"><td class="mono">${f.annee}</td><td class="mono" style="text-align:right">${fmtE(+f.ca)}</td><td class="mono" style="text-align:right">${fmtE(+f.resultat_net)}</td><td class="mono" style="text-align:right">${+f.ca?(f.resultat_net/f.ca*100).toFixed(1).replace(".",",")+" %":"–"}</td></tr>`).join("")}</tbody></table>`:'<p class="sub">Comptes non publiés ou confidentiels. À demander au cédant ou à l\'administrateur judiciaire.</p>'}</div>
+  ${(d.l||[]).length?`<div class="sec"><h3 class="label">Cessions de fonds</h3>${d.l.map(item=>{
+    const href = safeUrl(item.url);
+    const role = item.cedant===current.x.siren ? "cedant" : item.acquereur===current.x.siren ? "acquereur" : "mention";
+    return `<div class="ev"><div><span class="tag vente">${esc(venteLabel(role, item.nature))}</span>${item.prix!=null?` <span class="mono">${fmtE(item.prix)}</span>`:""} <span class="mono">${fmtD(item.date)}</span></div><div class="sub">${esc(item.nature||"")}${item.commune?` · ${esc(item.commune)} (${esc(item.departement||"")})`:""}</div>${item.activite?`<div class="sub">${esc(String(item.activite).slice(0,280))}</div>`:""}${href?`<a href="${esc(href)}" target="_blank" rel="noopener">Voir l'annonce</a>`:""}</div>`;
+  }).join("")}<p class="sub">Prix publié au BODACC pour une transaction déjà réalisée. Estimation indicative, ne constitue pas un conseil en investissement.</p></div>`:""}
   <div class="sec"><h3 class="label">Valorisation indicative</h3>${v?`<div class="val">
     <div class="main"><span class="label">Fourchette</span><b>${fmtE(+v.fourchette_bas)} – ${fmtE(+v.fourchette_haut)}</b></div>
     <div><span class="label">Rendement · 4 à 7 × RN</span><b>${v.methode_rendement_haut?fmtE(+v.methode_rendement_bas)+" – "+fmtE(+v.methode_rendement_haut):"n.a."}</b></div>
@@ -818,6 +852,7 @@ async function run(payload, label){
   catch(e){ $("#runMsg").textContent = explain(e); }
 }
 $("#runBodacc").onclick = ()=>run({mode:"bodacc", max:500}, "BODACC");
+$("#runVentes").onclick = ()=>run({mode:"ventes", max:800}, "Cessions");
 $("#runEnrich").onclick = ()=>run({mode:"enrich", batch:200}, "Enrichissement");
 $("#runCed").onclick = ()=>run({mode:"cedants", pages:8}, "Cédants");
 
