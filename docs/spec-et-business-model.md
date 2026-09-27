@@ -58,7 +58,7 @@ Le MVP couvre 5 des 7 livrables du cahier des charges. Il manque les alertes ema
 | Livrable | Statut | Détail |
 | --- | --- | --- |
 | Schéma Supabase + RLS | Livré | 16 tables, projet `pepites-reprise`, région Paris |
-| Connecteurs d'ingestion | Livré | BODACC (procédures IDF), API Recherche d'entreprises (Sirene + RNE), cédants 60+ |
+| Connecteurs d'ingestion | Livré | BODACC (procédures IDF et cessions de fonds), API Recherche d'entreprises (Sirene + RNE), cédants 60+ |
 | Moteur de scoring | Livré | Fonction SQL, poids en table de config, réglables dans l'app |
 | UI MVP | Livré | Cibles, fiche, pipeline, réglages, message IA |
 | Jeu de test IDF | Livré | Pilote BTP et maintenance ; \~2 800 sociétés en base, enrichissement en cours |

@@ -87,6 +87,7 @@ tr.row:last-child td{border-bottom:0}
 .pill.redressement{background:var(--amber-soft);color:var(--amber)}
 .pill.sauvegarde,.pill.plan_cession{background:var(--gold-soft);color:var(--gold)}
 .pill.cedant{background:var(--green-soft);color:var(--green)}
+.pill.vente{background:var(--gold-soft);color:var(--gold)}
 .more{padding:12px;text-align:center;color:var(--muted);font-size:12px}
 
 /* Fiche */
@@ -142,7 +143,7 @@ dialog.fiche::backdrop{background:rgba(10,16,13,.35)}
   <header class="top">
     <div class="brand">
       <h1>Pépites <span>Reprise</span></h1>
-      <p>Cibles de reprise en Île-de-France · BODACC, Sirene et RNE · pilote BTP et maintenance</p>
+      <p>Cibles de reprise en Île-de-France · BODACC (procédures et cessions), Sirene et RNE · pilote BTP et maintenance</p>
     </div>
     <div class="kpis" id="kpis">
       <div class="kpi"><b id="k-total">–</b><small>Cibles scorées</small></div>
@@ -172,6 +173,7 @@ dialog.fiche::backdrop{background:rgba(10,16,13,.35)}
             <button data-v="all" aria-pressed="true">Toutes</button>
             <button data-v="proc" aria-pressed="false">Procédure</button>
             <button data-v="ced" aria-pressed="false">Cédant</button>
+            <button data-v="vente" aria-pressed="false">Cession</button>
           </div></div>
         <div class="f"><label for="dep">Département</label>
           <select id="dep"><option value="">Toute l'IDF</option>
@@ -219,9 +221,10 @@ dialog.fiche::backdrop{background:rgba(10,16,13,.35)}
       <div>
         <h2 style="font-size:22px;margin-bottom:10px">Ingestion</h2>
         <div class="note">
-          <p style="margin-top:0"><b>Automatique chaque nuit</b> : procédures collectives BODACC des 3 derniers jours (IDF) à 6 h, puis enrichissement Sirene/RNE. <b>Chaque lundi</b> : recherche des cédants (dirigeant 60 ans et +, 3 à 99 salariés, BTP et maintenance).</p>
+          <p style="margin-top:0"><b>Automatique chaque nuit</b> : procédures collectives BODACC des 3 derniers jours (IDF) à 6 h, cessions de fonds des 7 derniers jours juste après, puis enrichissement Sirene/RNE. <b>Chaque lundi</b> : recherche des cédants (dirigeant 60 ans et +, 3 à 99 salariés, BTP et maintenance).</p>
           <div style="display:flex;gap:8px;flex-wrap:wrap">
             <button class="btn" id="runBodacc">Lancer BODACC maintenant</button>
+            <button class="btn" id="runVentes">Lancer les cessions</button>
             <button class="btn" id="runEnrich">Enrichir les fiches</button>
             <button class="btn" id="runCed">Chercher des cédants</button>
           </div>
@@ -263,6 +266,16 @@ const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt
 const sq = s => "'" + String(s ?? "").replace(/'/g, "''") + "'";
 const fmtE = n => n == null ? "–" : Math.abs(n) >= 1e6 ? (n/1e6).toLocaleString("fr-FR",{maximumFractionDigits:1}) + " M€" : Math.abs(n) >= 1e3 ? Math.round(n/1e3).toLocaleString("fr-FR") + " k€" : Math.round(n) + " €";
 const fmtD = d => d ? new Date(d).toLocaleDateString("fr-FR") : "–";
+function safeUrl(u){
+  try { const url = new URL(u); return url.protocol === "https:" ? url.href : ""; }
+  catch { return ""; }
+}
+function venteLabel(role, nature){
+  if (/fusion/i.test(nature || "")) return "Fusion publiée";
+  if (role === "cedant") return "Fonds cédé";
+  if (role === "acquereur") return "Fonds acquis";
+  return "Cession publiée";
+}
 
 function status(msg, err){ const el=$("#status"); if(!msg){el.hidden=true;return;} el.hidden=false; el.textContent=msg; el.classList.toggle("err",!!err); }
 
@@ -300,9 +313,18 @@ const LIST_SQL = `select c.siren, c.nom, c.naf, c.departement, c.commune, c.tran
  s.score::float8 score, s.p_cession::float8 p_cession, s.decote::float8 decote, s.qualite::float8 qualite, s.potentiel::float8 potentiel,
  v.fourchette_bas::float8 vb, v.fourchette_haut::float8 vh,
  (select json_agg(json_build_object('c',g.categorie,'l',g.libelle,'k',g.code)) from signals g where g.siren=c.siren) sig,
- d.stage
+ d.stage,
+ lv.vente_date, lv.vente_prix, lv.vente_role, lv.vente_nature
 from scores s join companies c using(siren) join v_company_facts f using(siren)
 left join valuations v using(siren) left join deals d using(siren)
+left join lateral (
+  select l.date_parution vente_date, l.prix_demande::float8 vente_prix, l.nature vente_nature,
+         case when l.siren_cedant = c.siren then 'cedant' when l.siren = c.siren then 'acquereur' else 'mention' end vente_role
+  from listings l
+  where l.siren = c.siren or l.siren_cedant = c.siren or l.sirens @> array[c.siren]
+  order by l.date_parution desc nulls last
+  limit 1
+) lv on true
 where c.enriched_at is not null and c.nom is not null and c.departement in ('75','77','78','91','92','93','94','95') order by s.score desc limit 1500`;
 
 async function load(){
@@ -331,7 +353,7 @@ function filtered(){
   let r = ALL.filter(x =>
     x.score >= smin &&
     (!dep || x.departement === dep) &&
-    (typeF === "all" || (typeF === "proc" ? !!PROC_L[x.procedure] : x.source === "sirene_cedant" || (x.age >= 60 && !PROC_L[x.procedure]))) &&
+    (typeF === "all" || (typeF === "proc" ? !!PROC_L[x.procedure] : typeF === "vente" ? !!x.vente_role : x.source === "sirene_cedant" || (x.age >= 60 && !PROC_L[x.procedure]))) &&
     (!camin || (camin === 1 ? x.ca != null : x.ca >= camin)) &&
     (!amin || x.age >= amin) &&
     (!frag || (x.sig||[]).some(s=>s.k==="secteur_fragmente")) &&
@@ -342,9 +364,12 @@ function filtered(){
 }
 
 function situation(x){
-  if (PROC_L[x.procedure]) return `<span class="pill ${x.procedure}">${PROC_L[x.procedure]}</span><div class="sub">${fmtD(x.date_procedure)}</div>`;
-  if (x.age >= 60) return `<span class="pill cedant">Cédant potentiel</span>`;
-  return `<span class="sub">Veille</span>`;
+  let html;
+  if (PROC_L[x.procedure]) html = `<span class="pill ${x.procedure}">${PROC_L[x.procedure]}</span><div class="sub">${fmtD(x.date_procedure)}</div>`;
+  else if (x.age >= 60) html = `<span class="pill cedant">Cédant potentiel</span>`;
+  else html = `<span class="sub">Veille</span>`;
+  if (x.vente_role) html += `<div style="margin-top:4px"><span class="pill vente">${venteLabel(x.vente_role, x.vente_nature)}</span><div class="sub">${x.vente_prix!=null?fmtE(x.vente_prix)+" · ":""}${fmtD(x.vente_date)}</div></div>`;
+  return html;
 }
 
 function render(){
@@ -382,7 +407,13 @@ async function openFiche(siren){
       'v',(select row_to_json(v) from valuations v where siren='${siren}'),
       's',(select row_to_json(s) from scores s where siren='${siren}'),
       'g',(select json_agg(g) from signals g where siren='${siren}'),
-      'd',(select row_to_json(d) from deals d where siren='${siren}')) as j`);
+      'd',(select row_to_json(d) from deals d where siren='${siren}'),
+      'l',(select coalesce(json_agg(json_build_object(
+            'date', date_parution, 'titre', titre, 'prix', prix_demande::float8, 'url', url,
+            'nature', nature, 'activite', activite, 'commune', commune, 'departement', departement,
+            'acquereur', siren, 'cedant', siren_cedant
+          ) order by date_parution desc nulls last), '[]'::json)
+          from listings where siren = '${siren}' or siren_cedant = '${siren}' or sirens @> array['${siren}'])) as j`);
     current.detail = row.j; drawFiche();
   }catch(e){ $("#f-body").innerHTML = `<p class="status err">${esc(explain(e))}</p>`; }
 }
@@ -408,6 +439,11 @@ function drawFiche(){
   </div></div>
   <div class="sec"><h3>Dirigeants</h3>${(d.o||[]).length?`<table class="mini"><tbody>${d.o.map(o=>`<tr><td>${esc(o.prenoms)} ${esc(o.nom)}</td><td class="sub">${esc(o.qualite)}</td><td class="num mono">${o.annee_naissance?(new Date().getFullYear()-o.annee_naissance)+" ans":"–"}</td></tr>`).join("")}</tbody></table>`:'<p class="sub">Non renseignés (entreprise individuelle ou fiche non enrichie).</p>'}</div>
   <div class="sec"><h3>Finances publiées</h3>${(d.f||[]).length?`<table class="mini"><thead><tr><th>Exercice</th><th class="num">CA</th><th class="num">Résultat net</th><th class="num">Marge</th></tr></thead><tbody>${d.f.map(f=>`<tr><td class="mono">${f.annee}</td><td class="num mono">${fmtE(f.ca)}</td><td class="num mono">${fmtE(f.resultat_net)}</td><td class="num mono">${f.ca?(f.resultat_net/f.ca*100).toFixed(1)+" %":"–"}</td></tr>`).join("")}</tbody></table>`:'<p class="sub">Comptes non publiés ou confidentiels. À demander au cédant ou à l\'administrateur judiciaire.</p>'}</div>
+  ${(d.l||[]).length?`<div class="sec"><h3>Cessions de fonds publiées</h3>${d.l.map(v=>{
+    const href = safeUrl(v.url);
+    const role = v.cedant===x.siren && v.acquereur===x.siren ? "acquéreur et cédant" : v.cedant===x.siren ? "cédant" : v.acquereur===x.siren ? "acquéreur" : "mentionné";
+    return `<div class="ev"><div><b>${fmtD(v.date)}</b> · ${esc(role)}${v.prix!=null?` · ${fmtE(v.prix)}`:""}</div><div class="sub">${esc(v.nature||"")}${v.commune?` · ${esc(v.commune)} (${esc(v.departement||"")})`:""}</div>${v.activite?`<div class="sub">${esc(String(v.activite).slice(0,280))}</div>`:""}${href?`<a href="${esc(href)}" target="_blank" rel="noopener">Voir l'annonce BODACC</a>`:""}</div>`;
+  }).join("")}<p class="disclaimer">Prix de cession publiés au BODACC. Ils décrivent une transaction déjà réalisée et ne constituent pas un conseil en investissement.</p></div>`:""}
   <div class="sec"><h3>Valorisation indicative</h3>${v?`<div class="val">
     <div><small>Fourchette retenue</small><b>${fmtE(v.fourchette_bas)} – ${fmtE(v.fourchette_haut)}</b></div>
     <div><small>Rendement (4 à 7 × résultat)</small><b>${v.methode_rendement_haut?fmtE(v.methode_rendement_bas)+" – "+fmtE(v.methode_rendement_haut):"n.a."}</b></div>
@@ -526,6 +562,7 @@ async function run(payload, label){
   catch(e){ $("#runMsg").textContent = explain(e); }
 }
 $("#runBodacc").onclick = ()=>run({mode:"bodacc", max:500}, "BODACC");
+$("#runVentes").onclick = ()=>run({mode:"ventes", max:800}, "Cessions BODACC");
 $("#runEnrich").onclick = ()=>run({mode:"enrich", batch:200}, "Enrichissement");
 $("#runCed").onclick = ()=>run({mode:"cedants", pages:8}, "Cédants");
 
