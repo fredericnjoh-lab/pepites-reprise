@@ -67,7 +67,7 @@ header.top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-
 .brand{display:flex;align-items:center;gap:var(--space-4)}
 .brand svg{display:block;height:26px;width:auto}
 .brand .wm{stroke:var(--ink)} .brand .gem{fill:var(--gold-fill)}
-.brand p{margin:0;padding-left:var(--space-4);border-left:1px solid var(--line);color:var(--ink-muted);font-size:12px;line-height:16px;max-width:260px}
+.brand p{margin:0;padding-left:var(--space-4);border-left:1px solid var(--line);color:var(--ink-muted);font-size:12px;line-height:16px;max-width:380px}
 .live{display:flex;align-items:center;gap:var(--space-2)}
 .live i{width:6px;height:6px;border-radius:50%;background:var(--cession);box-shadow:0 0 0 0 var(--cession);animation:pulse 2.4s ease-out infinite}
 @keyframes pulse{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--cession) 60%,transparent)}70%,100%{box-shadow:0 0 0 8px transparent}}
@@ -293,7 +293,7 @@ dialog.fiche::backdrop{background:var(--scrim);backdrop-filter:blur(2px)}
         </g>
         <circle class="gem" cx="106" cy="16" r="4.5"/>
       </svg>
-      <p>Le radar des entreprises à reprendre · Île-de-France · BTP et maintenance</p>
+      <p>Le radar des PME à reprendre · IT, services, industrie, négoce · Île-de-France</p>
     </div>
     <span class="label mono" id="clock"></span>
   </header>
@@ -341,7 +341,7 @@ dialog.fiche::backdrop{background:var(--scrim);backdrop-filter:blur(2px)}
     </div>
 
     <div class="tile t-dept">
-      <div class="tile-head"><h2 class="label" style="margin:0">Pépites par département</h2><span class="sub mono">score ≥ 70</span></div>
+      <div class="tile-head"><h2 class="label" style="margin:0">Pépites par secteur</h2><span class="sub mono">score ≥ 70</span></div>
       <div class="bars" id="deptBars"></div>
     </div>
     <div class="tile t-flux">
@@ -383,7 +383,7 @@ dialog.fiche::backdrop{background:var(--scrim);backdrop-filter:blur(2px)}
         <div class="f"><label class="label" for="agemin">Âge du dirigeant</label>
           <select id="agemin"><option value="0">Indifférent</option><option value="55">55 ans et plus</option><option value="60">60 ans et plus</option><option value="65">65 ans et plus</option></select></div>
         <div class="f"><label class="label" for="btp">Secteur</label>
-          <select id="btp"><option value="">Tous</option><option value="frag">Fragmentés (BTP, maintenance)</option></select></div>
+          <select id="btp"><option value="">Tous les secteurs</option><option value="it">IT et numérique</option><option value="services">Services B2B</option><option value="industrie">Industrie et maintenance</option><option value="negoce">Négoce B2B</option><option value="transport">Transport et logistique</option><option value="btp">BTP</option><option value="commerce">Commerce, hôtellerie, restauration</option><option value="autres">Autres</option><option value="frag">Tous les secteurs fragmentés (build-up)</option><option value="rec">Revenus récurrents</option></select></div>
       </aside>
       <div>
         <div class="tablewrap">
@@ -420,7 +420,7 @@ dialog.fiche::backdrop{background:var(--scrim);backdrop-filter:blur(2px)}
       <div>
         <h2>Sources</h2>
         <div class="note">
-          <p><b>Chaque nuit</b> à 6 h : procédures collectives BODACC des 3 derniers jours en Île-de-France, puis enrichissement Sirene et RNE. <b>Chaque lundi</b> : recherche de cédants (dirigeant de 60 ans et plus, 3 à 99 salariés, BTP et maintenance).</p>
+          <p><b>Chaque nuit</b> à 6 h : procédures collectives BODACC des 3 derniers jours en Île-de-France, puis enrichissement Sirene et RNE. <b>Chaque lundi</b> : recherche de cédants (dirigeant de 60 ans et plus, 3 à 99 salariés) dans six familles : IT et numérique, services B2B, industrie et maintenance, négoce, transport, BTP.</p>
           <div style="display:flex;gap:var(--space-2);flex-wrap:wrap">
             <button class="btn" id="runBodacc">Lancer BODACC maintenant</button>
             <button class="btn" id="runEnrich">Enrichir les fiches</button>
@@ -456,7 +456,21 @@ const HOT = 70;
 const STAGES = [["detectee","Détectée"],["contactee","Contactée"],["nda","NDA"],["data_room","Data room"],["loi","LOI"],["closing","Closing"],["perdu","Perdu"]];
 const STAGE_L = Object.fromEntries(STAGES);
 const EFF = {"00":"0 salarié","01":"1-2","02":"3-5","03":"6-9","11":"10-19","12":"20-49","21":"50-99","22":"100-199","31":"200-249","32":"250-499","41":"500-999","NN":"n.c."};
-const NAF = {"43.21A":"Électricité","43.22A":"Plomberie","43.22B":"Chauffage, clim","43.29A":"Isolation","43.32A":"Menuiserie","43.34Z":"Peinture, vitrerie","43.91B":"Couverture","33.12Z":"Maintenance machines","33.14Z":"Maintenance électrique","33.20C":"Installation industrielle","41.20A":"Construction maisons","41.20B":"Construction bâtiments","43.99C":"Maçonnerie","43.31Z":"Plâtrerie","56.10A":"Restauration","56.10C":"Restauration rapide","47.11B":"Supérette","68.20B":"Location immobilière","70.22Z":"Conseil"};
+const NAF = {"43.21A":"Électricité","43.22A":"Plomberie","43.22B":"Chauffage, clim","43.29A":"Isolation","43.32A":"Menuiserie","43.34Z":"Peinture, vitrerie","43.91B":"Couverture","33.12Z":"Maintenance machines","33.14Z":"Maintenance électrique","33.20C":"Installation industrielle","41.20A":"Construction maisons","41.20B":"Construction bâtiments","43.99C":"Maçonnerie","43.31Z":"Plâtrerie","56.10A":"Restauration","56.10C":"Restauration rapide","47.11B":"Supérette","68.20B":"Location immobilière","70.22Z":"Conseil","62.01Z":"Programmation","62.02A":"Conseil en SI","62.02B":"TMA","62.03Z":"Infogérance","62.09Z":"Services IT","63.11Z":"Hébergement, data","63.12Z":"Portails web","58.29A":"Logiciel système","58.29B":"Logiciel outil","58.29C":"Logiciel applicatif","61.10Z":"Télécoms filaires","61.20Z":"Télécoms mobiles","61.90Z":"Télécoms","95.11Z":"Réparation informatique","46.51Z":"Négoce informatique","46.52Z":"Négoce électronique","71.12B":"Ingénierie","73.11Z":"Agence de pub","73.20Z":"Études de marché","74.10Z":"Design","78.10Z":"Recrutement","81.21Z":"Nettoyage","80.10Z":"Sécurité privée","82.11Z":"Services administratifs","85.59A":"Formation pro","33.13Z":"Maintenance électronique","25.62B":"Mécanique","25.11Z":"Structures métalliques","28.29B":"Machines","22.29A":"Plasturgie","18.12Z":"Imprimerie","26.51B":"Instrumentation","46.69B":"Négoce équipements","46.73A":"Négoce matériaux","46.90Z":"Négoce non spécialisé","46.44Z":"Négoce vaisselle, entretien","46.18Z":"Intermédiaires spécialisés","46.66Z":"Négoce matériel de bureau","49.41A":"Transport de fret","49.41B":"Transport de proximité","52.29A":"Commission de transport","52.10B":"Entreposage","53.20Z":"Courrier, livraison","69.20Z":"Expertise comptable"};
+const SECT_L = {it:"IT et numérique",services:"Services B2B",industrie:"Industrie",negoce:"Négoce B2B",transport:"Transport",btp:"BTP",commerce:"Commerce, CHR",autres:"Autres"};
+/* Famille de secteur à partir du code NAF (rév. 2). */
+function secteur(naf){
+  if (!naf) return "autres";
+  const d = parseInt(naf.slice(0,2), 10), c = naf.slice(0,5);
+  if (d === 62 || d === 63 || d === 61 || c === "58.29" || c === "58.21" || c === "95.11" || c === "95.12" || c === "46.51" || c === "46.52") return "it";
+  if (d >= 41 && d <= 43) return "btp";
+  if ((d >= 10 && d <= 33)) return "industrie";
+  if (d === 46) return "negoce";
+  if (d >= 49 && d <= 53) return "transport";
+  if (d === 47 || d === 45 || d === 55 || d === 56) return "commerce";
+  if ((d >= 69 && d <= 82) || c === "85.59" || d === 58 || d === 59 || d === 60) return "services";
+  return "autres";
+}
 const PROC_L = {liquidation:"Liquidation",redressement:"Redressement",sauvegarde:"Sauvegarde",plan_cession:"Plan de cession"};
 /* Cadre géographique du radar : Paris au centre, l'Île-de-France dans le cercle. */
 const GEO = {lon0:2.3488, lat0:48.8534, kmPerLon:73.2, kmPerLat:111.2, radiusKm:80};
@@ -628,7 +642,7 @@ function filtered(){
     (typeF === "all" || (typeF === "proc" ? !!PROC_L[x.procedure] : x.source === "sirene_cedant" || (x.age >= 60 && !PROC_L[x.procedure]))) &&
     (!camin || (camin === 1 ? x.ca != null : x.ca >= camin)) &&
     (!amin || x.age >= amin) &&
-    (!frag || (x.sig||[]).some(s=>s.k==="secteur_fragmente")) &&
+    (!frag || (frag === "frag" ? (x.sig||[]).some(s=>s.k==="secteur_fragmente") : frag === "rec" ? (x.sig||[]).some(s=>s.k==="recurrence") : secteur(x.naf) === frag)) &&
     (!q || [x.nom,x.siren,x.commune,x.naf].join(" ").toLowerCase().includes(q)));
   const key = {score:x=>x.score, nom:x=>(x.nom||"").toLowerCase(), ca:x=>x.ca??-1, age:x=>x.age??-1, val:x=>x.vh??-1}[sortK];
   r.sort((a,b)=> (key(a)>key(b)?1:key(a)<key(b)?-1:0)*sortDir);
@@ -877,11 +891,12 @@ $("#callouts").addEventListener("click", e => { const c = e.target.closest(".cal
 
 /* ---------- Tuiles secondaires ---------- */
 function deptBars(){
-  const D = ["75","77","78","91","92","93","94","95"];
-  const c = D.map(d => ({d, n: ALL.filter(r => r.departement === d && r.score >= HOT).length}));
+  const keys = Object.keys(SECT_L);
+  const c = keys.map(k => ({k, n: ALL.filter(r => secteur(r.naf) === k && r.score >= HOT).length})).filter(x => x.n > 0 || ["it","services","industrie"].includes(x.k));
   const max = Math.max(1, ...c.map(x => x.n)), best = Math.max(...c.map(x => x.n));
-  $("#deptBars").innerHTML = c.sort((a,b) => b.n - a.n).map((x,i) => `<div class="bar${x.n===best&&best>0?" top":""}"><span class="mono">${x.d}</span><span class="tr"><i style="width:${x.n/max*100}%;animation-delay:${i*60}ms"></i></span><span class="mono" style="text-align:right">${x.n}</span></div>`).join("");
+  $("#deptBars").innerHTML = c.sort((a,b) => b.n - a.n).slice(0,7).map((x,i) => `<button class="bar${x.n===best&&best>0?" top":""}" data-sect="${x.k}" style="background:none;border:0;padding:0;text-align:left;cursor:pointer;grid-template-columns:118px 1fr 40px"><span>${SECT_L[x.k]}</span><span class="tr"><i style="width:${x.n/max*100}%;animation-delay:${i*60}ms"></i></span><span class="mono" style="text-align:right">${x.n}</span></button>`).join("");
 }
+$("#deptBars").addEventListener("click", e => { const b = e.target.closest("[data-sect]"); if (!b) return; $("#btp").value = b.dataset.sect; render(); document.getElementById("tab-cibles").scrollIntoView({behavior: RM ? "auto" : "smooth"}); });
 function flux(){
   const f = ALL.filter(r => PROC_L[r.procedure] && r.date_procedure).sort((a,b) => (b.date_procedure > a.date_procedure ? 1 : -1)).slice(0,6);
   $("#flux").innerHTML = f.map(x => `<div class="fx" data-siren="${esc(x.siren)}"><span class="mono">${new Date(x.date_procedure).toLocaleDateString("fr-FR",{day:"2-digit",month:"2-digit"})}</span><span class="nm">${esc(x.nom)}</span><span><span class="tag ${x.procedure}">${PROC_L[x.procedure]}</span> <span class="sub mono">score ${Math.round(x.score)}</span></span></div>`).join("") || `<p class="sub">Aucun jugement récent.</p>`;

@@ -98,8 +98,19 @@ async function enrich(p: any) {
 }
 
 // ---- 3. Cédants potentiels : dirigeants 60+ dans un secteur cible ----
+// Familles de secteurs ciblées (codes NAF rév. 2). Filon est multisecteur : l'IT d'abord, puis les métiers
+// de services et d'industrie où les PME à transmettre sont nombreuses et les rachats en build-up fréquents.
+const SECTEURS: Record<string, string> = {
+  it: "62.01Z,62.02A,62.02B,62.03Z,62.09Z,63.11Z,63.12Z,58.29A,58.29B,58.29C,61.10Z,61.20Z,61.90Z,95.11Z,46.51Z",
+  services: "70.22Z,71.12B,73.11Z,73.20Z,74.10Z,78.10Z,81.21Z,80.10Z,82.11Z,85.59A",
+  industrie: "33.12Z,33.13Z,33.14Z,33.20C,25.62B,25.11Z,28.29B,22.29A,18.12Z,26.51B",
+  negoce: "46.69B,46.73A,46.90Z,46.44Z,46.18Z,46.52Z,46.66Z",
+  transport: "49.41A,49.41B,52.29A,52.10B,53.20Z",
+  btp: "43.21A,43.22A,43.22B,43.29A,43.32A,43.34Z,43.91B,43.99C,41.20B",
+};
+
 async function cedants(p: any) {
-  const naf = p.naf ?? "43.21A,43.22A,43.22B,43.29A,43.32A,43.34Z,43.91B,33.12Z,33.14Z,33.20C";
+  const naf = p.naf ?? SECTEURS[p.secteur ?? "it"] ?? SECTEURS.it;
   const born = p.ne_avant ?? `${new Date().getFullYear() - 60}-12-31`;
   let n = 0;
   for (let page = p.page_debut ?? 1; page < (p.page_debut ?? 1) + (p.pages ?? 8); page++) {
@@ -109,7 +120,7 @@ async function cedants(p: any) {
     if (page >= (d.total_pages ?? 0)) break;
     await sleep(200);
   }
-  return { cedants: n };
+  return { cedants: n, secteur: p.naf ? "naf" : (p.secteur ?? "it") };
 }
 
 Deno.serve(async (req) => {

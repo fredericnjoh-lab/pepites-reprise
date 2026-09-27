@@ -1,8 +1,8 @@
 # Filon
 
-> Le radar des entreprises à reprendre. Nom de code technique : `pepites-reprise`.
+> Le radar des PME à reprendre. Nom de code technique : `pepites-reprise`.
 
-Détection de PME rachetables à bas prix en Île-de-France (pilote BTP et maintenance), pour un rachat en propre ou une intermédiation.
+Détection de PME rachetables à bas prix en Île-de-France, pour un rachat en propre ou une intermédiation. Ciblage multisecteur : IT et numérique en priorité, puis services B2B, industrie et maintenance, négoce, transport et BTP. Les procédures collectives BODACC couvrent tous les secteurs.
 
 Les données viennent du BODACC (procédures collectives), de Sirene et du RNE (via l'API Recherche d'entreprises). Chaque cible reçoit un **Score Pépite** sur 100 et une valorisation indicative.
 
@@ -14,6 +14,7 @@ supabase/
     20260926234103_schema.sql          # tables, deal flow, RLS
     20260926234202_scoring.sql         # vue v_company_facts, compute_scores()
     20260926234227_ingestion_cron.sql  # secret, run_ingest(), tâches pg_cron
+    20260927200000_multisecteur.sql    # scoring IT et récurrence, multiples par secteur, cédants par famille
   functions/ingest/index.ts            # Edge Function : BODACC, enrichissement, cédants 60+
 cockpit/index.html                     # cockpit privé (artifact Claude, lit la base via le connecteur Supabase)
 docs/spec-et-business-model.md         # spec fonctionnelle, roadmap, modèle de revenus
@@ -27,7 +28,7 @@ brand/                                 # identité Filon : tokens, logos, règle
 | --- | --- |
 | Projet Supabase | `pepites-reprise` (ref `lwfcgzhndwpffeebpjpy`, région eu-west-3 Paris) |
 | Edge Function | `ingest`, `verify_jwt = false`, protégée par l'en-tête `x-ingest-secret` |
-| Planification | pg_cron : BODACC chaque jour 4 h UTC, enrichissement 4 h 10 et 4 h 20, cédants le lundi 5 h UTC, rattrapage toutes les 2 min |
+| Planification | pg_cron : BODACC chaque jour 4 h UTC, enrichissement 4 h 10 et 4 h 20, cédants le lundi de 5 h à 5 h 50 UTC (une famille de secteurs toutes les 10 min) |
 
 ## Démarrer
 
@@ -44,7 +45,7 @@ Déclencher une ingestion à la main (SQL, depuis l'éditeur Supabase) :
 ```sql
 select private.run_ingest('{"mode":"bodacc","max":500}'::jsonb);
 select private.run_ingest('{"mode":"enrich","batch":200}'::jsonb);
-select private.run_ingest('{"mode":"cedants","pages":8}'::jsonb);
+select private.run_ingest('{"mode":"cedants","secteur":"it","pages":12}'::jsonb);  -- it | services | industrie | negoce | transport | btp
 select public.compute_scores();
 ```
 

@@ -1,4 +1,4 @@
-Filon repère les entreprises françaises à reprendre avant tout le monde : procédures collectives, dirigeants de 60 ans et plus, pépites sous-évaluées. La marque est un radar. Un noir profond, des filets fins, et un seul éclat d'or pour ce qui mérite l'attention. Tout le reste se tait.
+Filon repère les PME françaises à reprendre avant tout le monde, dans tous les secteurs avec une priorité IT et numérique : procédures collectives, dirigeants de 60 ans et plus, pépites sous-évaluées. La marque est un radar. Un noir profond, des filets fins, et un seul éclat d'or pour ce qui mérite l'attention. Tout le reste se tait.
 
 ## Principes
 
@@ -14,7 +14,7 @@ Filon repère les entreprises françaises à reprendre avant tout le monde : pro
 - Des faits chiffrés, jamais d'adjectifs : « Dirigeant de 77 ans · CA 11,7 M€ · marge 5,1 % », pas « Excellente opportunité ».
 - Phrases courtes, pas de points d'exclamation, pas d'emoji, pas de jargon anglais quand le français existe (« cible », « cédant », « repreneur », « décote »).
 - Les valorisations sont toujours qualifiées d'indicatives.
-- Signature : « Trouver le filon. » Accroche : « Le radar des entreprises à reprendre. »
+- Signature : « Trouver le filon. » Accroche : « Le radar des PME à reprendre. » Sous-titre : « IT, services, industrie, négoce · Île-de-France ». Ne jamais réduire Filon à un seul secteur.
 
 ## Couleur
 

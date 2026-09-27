@@ -5,7 +5,7 @@ alwaysApply: true
 
 # Marque Filon — direction « Radar »
 
-- Nom produit : **Filon**. Accroche : « Le radar des entreprises à reprendre. » Signature : « Trouver le filon. » Le nom de code technique reste `pepites-reprise` (dépôt, projet Supabase, tables).
+- Nom produit : **Filon**. Accroche : « Le radar des PME à reprendre. » (sous-titre du cockpit : « IT, services, industrie, négoce · Île-de-France ») Signature : « Trouver le filon. » Le nom de code technique reste `pepites-reprise` (dépôt, projet Supabase, tables).
 - Référence complète : `brand/README.md` (règles d'usage), `brand/tokens.json` (thèmes Nuit/Jour, typo, espacements, rayons, ombres), `brand/logos/` (symbole radar et logotype FILON, versions sur fond sombre et clair), `brand/components/` (implémentation de référence : Radar, ScoreDial, SignalChip, ProcedureTag, Button).
 - Thème Nuit par défaut (fond `#07090A`), Jour en option. Un seul accent : l'or (`#E8B84A` en Nuit ; `#8A5F00` pour du texte et `#C8901E` pour un aplat en Jour). Vert d'eau = signal de cession, corail = décote / procédure, toujours accompagnés d'un mot.
 - Typo : Michroma (logotype et un seul titre par écran), Geist (interface), Geist Mono (tous les chiffres, en tabulaires). Chargées depuis Google Fonts.
@@ -15,3 +15,5 @@ alwaysApply: true
 - Un seul moment animé : le balayage du radar à l'ouverture (1,6 s, une fois). Tout le reste en 160 ms sans rebond. Respecter `prefers-reduced-motion`.
 - Ton : faits chiffrés, pas d'adjectifs ni d'emoji, pas de point d'exclamation. Valorisations toujours « indicatives ».
 - V2 Next.js : porter `brand/tokens.json` en variables CSS + thème Tailwind, réécrire `brand/components/` en composants React/TSX, reprendre la mise en page de `cockpit/index.html`.
+
+- Filon est multisecteur : ne jamais présenter le produit comme limité au BTP. Familles : IT et numérique (prioritaire), services B2B, industrie et maintenance, négoce B2B, transport et logistique, BTP. Mapping NAF → famille : fonction `secteur()` du cockpit et presets `SECTEURS` de l'Edge Function `ingest`.
