@@ -142,7 +142,7 @@ header.top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-
 .kpi{background:var(--surface-1);padding:var(--space-4);display:grid;gap:6px}
 .kpi b{font:500 34px/1 var(--font-mono);font-variant-numeric:tabular-nums;letter-spacing:-.03em}
 .kpi.gold b{color:var(--gold);text-shadow:0 0 18px var(--bloom)}
-.t5{display:grid;grid-template-columns:44px 1fr auto;gap:var(--space-3);align-items:center;padding:10px 0;border-bottom:1px solid var(--line);cursor:pointer;background:none;border-left:0;border-right:0;border-top:0;text-align:left;width:100%}
+.t5{display:grid;grid-template-columns:44px 1fr auto;gap:var(--space-3);align-items:center;padding:10px 0;border-bottom:1px solid var(--line);cursor:pointer;background:none;border-left:0;border-right:0;border-top:0;text-align:left;width:100%;color:inherit;text-decoration:none}
 .t5:last-child{border-bottom:0}
 .t5:hover .nm{color:var(--gold)}
 .t5 .nm{font-weight:600;transition:color var(--ui)}
@@ -221,7 +221,8 @@ td .fig{font:400 13px/18px var(--font-mono);font-variant-numeric:tabular-nums;wh
 .chip.decote{color:var(--decote);background:var(--decote-soft)}
 .chip.valeur{color:var(--gold);background:var(--gold-soft)}
 .tag{display:inline-block;font:500 10px/1 var(--font-sans);letter-spacing:.12em;text-transform:uppercase;padding:5px 7px;border-radius:var(--radius-xs);border:1px solid currentColor;white-space:nowrap}
-.tag.liquidation,.tag.redressement{color:var(--decote)}
+.tag.liquidation,.tag.redressement,.tag.decote{color:var(--decote)}
+.tag.pub-cession{color:var(--cession)}
 .tag.sauvegarde,.tag.plan_cession,.tag.vente{color:var(--gold)}
 .tag.cedant{color:var(--cession)}
 .tag.veille{color:var(--ink-muted)}
@@ -460,6 +461,7 @@ dialog.fiche::backdrop{background:var(--scrim);backdrop-filter:blur(2px)}
   <div class="fb" id="f-body"></div>
 </dialog>
 
+<script src="../annonces.js"></script>
 <script>
 const PROJECT = "lwfcgzhndwpffeebpjpy";
 const SERVER = "Supabase";
@@ -962,11 +964,44 @@ document.querySelectorAll(".tile").forEach(t => t.addEventListener("pointermove"
 function clock(){ $("#clock").textContent = new Date().toLocaleString("fr-FR",{weekday:"short",day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"}).toUpperCase(); }
 clock(); setInterval(clock, 30000);
 
+const PUB_TAG = {Liquidation:"liquidation", Redressement:"redressement", Sauvegarde:"sauvegarde", "Procédure":"decote", Cession:"pub-cession"};
+async function loadBodaccPublic(){
+  status("Chargement des annonces BODACC…");
+  $("#fresh").textContent = "Chargement…";
+  $("#fresh").closest(".live").classList.add("off");
+  try{
+    const rows = await filonAnnonces();
+    const proc = rows.filter(x => x.kind !== "cession").length;
+    $("#k-total").textContent = String(rows.length);
+    $("#k-proc").textContent = String(proc);
+    const head = document.querySelector(".t-top .sub");
+    if (head) head.textContent = "annonces BODACC";
+    $("#top5").innerHTML = rows.slice(0,5).map(x => {
+      const tag = PUB_TAG[x.label] || "decote";
+      const href = x.url ? ` href="${esc(x.url)}" target="_blank" rel="noopener noreferrer"` : "";
+      return `<a class="t5"${href}><span class="mono">${esc(x.dept)}</span><span><span class="nm">${esc(x.nom)}</span><br><span class="sub">${esc(x.commune)} · <span class="mono">${fmtD(x.date)}</span></span></span><span class="tag ${tag}">${esc(x.label)}</span></a>`;
+    }).join("") || `<p class="sub">Aucune annonce BODACC sur les 21 derniers jours.</p>`;
+    $("#flux").innerHTML = rows.slice(0,8).map(x => {
+      const href = x.url ? ` href="${esc(x.url)}" target="_blank" rel="noopener noreferrer"` : "";
+      return `<a class="fx"${href}><span class="mono">${fmtD(x.date)}</span><span class="nm">${esc(x.nom)}</span></a>`;
+    }).join("");
+    $("#rows").innerHTML = rows.slice(0,80).map(x => {
+      const tag = PUB_TAG[x.label] || "decote";
+      return `<tr><td class="num mono">–</td><td><div class="nm">${esc(x.nom)}</div><div class="sub">${esc(x.commune)} (${esc(x.dept)})</div></td><td><span class="tag ${tag}">${esc(x.label)}</span><div class="sub mono" style="margin-top:4px">${fmtD(x.date)}</div></td><td class="num">–</td><td class="num">–</td><td class="num">–</td><td class="sub">Annonce publique. Le Score Pépite se charge via le connecteur Supabase.</td></tr>`;
+    }).join("") || `<tr><td colspan="7" class="more sub">Aucune annonce BODACC sur les 21 derniers jours.</td></tr>`;
+    $("#count").textContent = rows.length + " annonce" + (rows.length > 1 ? "s" : "");
+    $("#fresh").textContent = rows.length + " annonces · BODACC";
+    status(rows.length ? null : "Aucune annonce BODACC sur les 21 derniers jours.", !rows.length);
+  }catch(e){
+    status("Les annonces BODACC ne répondent pas.", true);
+    $("#fresh").textContent = "Hors ligne";
+  }
+}
 drawRings();
 if (!RM) $("#sweep").classList.add("run");
 (async ()=>{
   try{ [mcp, sample] = await Promise.all([window.claude.use("mcp"), window.claude.use("sample")]); }catch{}
-  if(!mcp){ status("Cette page lit la base Supabase via le connecteur Claude. L’ouvrir depuis claude.ai, connecté au compte, pour voir les cibles.", true); $("#fresh").textContent = "Hors ligne"; $("#fresh").closest(".live").classList.add("off"); return; }
+  if(!mcp){ loadBodaccPublic(); return; }
   load();
 })();
 </script>

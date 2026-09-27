@@ -19,6 +19,7 @@ supabase/
     20260927203000_durcissement.sql    # RLS lecture réservée à filon_admin, index, droits run_ingest
   functions/ingest/index.ts            # Edge Function : BODACC (procédures et cessions), enrichissement, cédants 60+ par secteur
 index.html                             # page d'accueil Filon, radar en volume
+annonces.js                            # sociétés publiées au BODACC, chargées dans l'accueil et le cockpit
 cockpit/index.html                     # cockpit (interface ; données via le connecteur Supabase dans claude.ai)
 docs/spec-et-business-model.md         # spec fonctionnelle, roadmap, modèle de revenus
 brand/                                 # identité Filon : tokens, logos, règles, composants de référence

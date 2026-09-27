@@ -26,6 +26,7 @@ jobs:
         run: |
           mkdir -p _site/cockpit
           cp index.html _site/index.html
+          cp annonces.js _site/annonces.js
           cp cockpit/index.html _site/cockpit/index.html
           touch _site/.nojekyll
       - uses: actions/upload-pages-artifact@v3

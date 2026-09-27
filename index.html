@@ -133,6 +133,27 @@ header.top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-
   font:500 12px/1 var(--font-mono);color:var(--ink-muted);letter-spacing:.04em;
   transform:rotate(var(--a)) translateY(-186px) rotate(calc(var(--a) * -1)) translateZ(4px);
 }
+.calls{position:absolute;inset:0;pointer-events:none}
+.call{
+  position:absolute;display:flex;align-items:center;gap:8px;max-width:240px;
+  padding:6px 10px 6px 6px;border-radius:999px;text-decoration:none;
+  background:var(--glass);border:1px solid var(--line-strong);
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);font-size:12px;pointer-events:auto;
+}
+.call b{font:500 12px/1 var(--font-mono);background:var(--gold-fill);color:var(--on-gold);border-radius:999px;padding:5px 7px}
+.call span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500}
+.call.c1{left:0;top:12%}
+.call.c2{right:0;top:42%}
+.call.c3{left:6%;bottom:10%}
+.feed{grid-column:span 12}
+.feed-head{display:flex;justify-content:space-between;align-items:baseline;gap:var(--space-3);margin-bottom:var(--space-2)}
+.annonce{display:grid;grid-template-columns:88px minmax(0,1fr) auto;gap:12px;align-items:baseline;padding:10px 0;border-bottom:1px solid var(--line);text-decoration:none;color:inherit}
+.annonce:last-child{border-bottom:0}
+.annonce .who{display:grid;min-width:0}
+.annonce .nm{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.annonce:hover .nm{color:var(--gold)}
+.tag.procedure{color:var(--decote);border-color:color-mix(in srgb, var(--decote) 55%, var(--line))}
+.tag.cession{color:var(--cession);border-color:color-mix(in srgb, var(--cession) 55%, var(--line))}
 
 .bento{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:var(--space-3)}
 .tile{position:relative;overflow:hidden;background:var(--glass);border:1px solid var(--line);border-radius:14px;padding:var(--space-6);
@@ -210,7 +231,7 @@ footer.site strong{color:var(--ink);font-weight:500}
       <div class="actions">
         <a class="btn primary" href="cockpit/">Ouvrir le cockpit</a>
       </div>
-      <p class="note">Depuis ce site, le cockpit affiche l’interface. Les cibles se chargent dans claude.ai, via le connecteur Supabase du projet pepites-reprise.</p>
+      <p class="note" id="loaded">Chargement des annonces BODACC…</p>
     </div>
     <div class="stage" id="stage">
       <div class="scene" id="scene" role="img" aria-label="Radar en volume des huit départements d’Île-de-France">
@@ -225,12 +246,8 @@ footer.site strong{color:var(--ink);font-weight:500}
           <div class="mast"></div>
           <div class="hub"></div>
           <div class="sweep-slot"><div class="sweep"><i></i></div></div>
-          <span class="blip" style="--a:18deg;--d:150px"></span>
-          <span class="blip" style="--a:70deg;--d:96px;--z:20px"></span>
-          <span class="blip" style="--a:128deg;--d:60px;--z:34px"></span>
-          <span class="blip" style="--a:210deg;--d:128px;--z:8px"></span>
-          <span class="blip" style="--a:250deg;--d:78px;--z:24px"></span>
           <span class="gem" style="--a:38deg;--d:118px;--z:46px"></span>
+          <span id="blips"></span>
           <span class="mark" style="--a:0deg">93</span>
           <span class="mark" style="--a:45deg">92</span>
           <span class="mark" style="--a:90deg">75</span>
@@ -241,10 +258,18 @@ footer.site strong{color:var(--ink);font-weight:500}
           <span class="mark" style="--a:315deg">95</span>
         </div>
       </div>
+      <div class="calls" id="calls"></div>
     </div>
   </section>
 
   <section class="bento" aria-label="Repères">
+    <article class="tile feed">
+      <div class="feed-head">
+        <h2 class="sec">Sociétés</h2>
+        <span class="label" id="feed-meta">Chargement…</span>
+      </div>
+      <div id="feed-rows"><p class="note">Chargement des annonces publiées au BODACC.</p></div>
+    </article>
     <div class="kpis">
       <div class="kpi gold"><b>100</b><span>Score Pépite, plafond</span></div>
       <div class="kpi"><b>30</b><span>Poids cession, en %. Puis décote 25, qualité 25, potentiel 20</span></div>
@@ -294,6 +319,7 @@ footer.site strong{color:var(--ink);font-weight:500}
     <span>Valorisations indicatives. Pas un conseil en investissement.</span>
   </footer>
 </div>
+<script src="annonces.js"></script>
 <script>
 const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 document.querySelectorAll(".tile").forEach(t => {
@@ -315,6 +341,79 @@ stage.addEventListener("pointermove", e => {
 });
 stage.addEventListener("pointerleave", () => {
   scene.style.transform = "";
+});
+
+const ANGLES = {93:0, 92:45, 75:90, 94:135, 91:180, 77:225, 78:270, 95:315};
+function fmtDate(d){
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(d || "");
+  return m ? m[3] + "/" + m[2] + "/" + m[1] : "";
+}
+function place(rows){
+  const disc = document.getElementById("blips");
+  const used = {};
+  rows.slice(0, 12).forEach(function (x) {
+    const n = used[x.dept] || 0;
+    used[x.dept] = n + 1;
+    const el = document.createElement("span");
+    el.className = "blip";
+    const a = (ANGLES[x.dept] ?? 0) + n * 11 - 8;
+    const dist = 62 + (n % 4) * 26;
+    el.style.setProperty("--a", a + "deg");
+    el.style.setProperty("--d", dist + "px");
+    el.style.setProperty("--z", (8 + (n % 3) * 12) + "px");
+    el.title = x.nom;
+    disc.appendChild(el);
+  });
+  const calls = document.getElementById("calls");
+  rows.slice(0, 3).forEach(function (x, i) {
+    const el = document.createElement(x.url ? "a" : "div");
+    el.className = "call c" + (i + 1);
+    if (x.url) { el.href = x.url; el.target = "_blank"; el.rel = "noopener noreferrer"; }
+    const b = document.createElement("b");
+    b.textContent = x.dept;
+    const s = document.createElement("span");
+    s.textContent = x.nom;
+    el.title = x.label;
+    el.setAttribute("aria-label", x.nom + ", " + x.label);
+    el.appendChild(b);
+    el.appendChild(s);
+    calls.appendChild(el);
+  });
+  const box = document.getElementById("feed-rows");
+  box.replaceChildren();
+  rows.slice(0, 12).forEach(function (x) {
+    const el = document.createElement(x.url ? "a" : "div");
+    el.className = "annonce";
+    if (x.url) { el.href = x.url; el.target = "_blank"; el.rel = "noopener noreferrer"; }
+    const date = document.createElement("span");
+    date.className = "mono";
+    date.textContent = fmtDate(x.date);
+    const mid = document.createElement("span");
+    mid.className = "who";
+    const nm = document.createElement("span");
+    nm.className = "nm";
+    nm.textContent = x.nom;
+    const sub = document.createElement("span");
+    sub.className = "note";
+    sub.textContent = [x.commune, x.dept].filter(Boolean).join(" · ");
+    mid.append(nm, sub);
+    const tag = document.createElement("span");
+    tag.className = "tag " + (x.kind === "cession" ? "cession" : "procedure");
+    tag.textContent = x.label;
+    el.append(date, mid, tag);
+    box.appendChild(el);
+  });
+}
+filonAnnonces().then(function (rows) {
+  place(rows);
+  const n = rows.length;
+  document.getElementById("loaded").textContent = n + " sociétés publiées au BODACC sur 21 jours. Le Score Pépite se charge dans le cockpit, via le connecteur Supabase.";
+  document.getElementById("feed-meta").textContent = n + " annonces";
+  if (!n) document.getElementById("feed-rows").textContent = "Aucune annonce sur les 21 derniers jours.";
+}).catch(function () {
+  document.getElementById("loaded").textContent = "Les annonces BODACC ne répondent pas.";
+  document.getElementById("feed-meta").textContent = "Hors ligne";
+  document.getElementById("feed-rows").textContent = "Les annonces BODACC ne répondent pas.";
 });
 </script>
 </body>
