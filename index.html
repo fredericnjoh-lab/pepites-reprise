@@ -74,7 +74,7 @@ header.top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-
 
 .stage{position:relative;height:520px;perspective:880px;perspective-origin:50% 42%}
 .scene{
-  position:absolute;left:50%;top:54%;width:340px;height:340px;margin:-170px 0 0 -170px;
+  position:absolute;left:50%;top:54%;width:340px;height:340px;margin:-170px 0 0 -170px;z-index:0;
   transform-style:preserve-3d;
   transform:rotateX(58deg) rotateZ(-18deg);
   transition:transform var(--ui);
@@ -122,7 +122,7 @@ header.top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-
   position:absolute;left:50%;top:50%;border-radius:50%;
   transform:rotate(var(--a)) translateY(calc(var(--d) * -1)) translateZ(var(--z, 8px));
 }
-.blip{width:5px;height:5px;margin:-2.5px;background:var(--ink-muted);opacity:.7}
+.blip{width:14px;height:14px;margin:-7px;background:var(--ink-muted);opacity:.85}
 .gem{
   width:14px;height:14px;margin:-7px;
   background:radial-gradient(circle at 32% 30%, #fff 0 1px, var(--gold-fill) 46%, #6a4808);
@@ -133,11 +133,12 @@ header.top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-
   font:500 12px/1 var(--font-mono);color:var(--ink-muted);letter-spacing:.04em;
   transform:rotate(var(--a)) translateY(-186px) rotate(calc(var(--a) * -1)) translateZ(4px);
 }
-.calls{position:absolute;inset:0;pointer-events:none}
+.calls{position:absolute;inset:0;z-index:2;pointer-events:none}
+.blip{cursor:pointer}
 .call{
-  position:absolute;display:flex;align-items:center;gap:8px;max-width:240px;
-  padding:6px 10px 6px 6px;border-radius:999px;text-decoration:none;
-  background:var(--glass);border:1px solid var(--line-strong);
+  position:absolute;display:flex;align-items:center;gap:8px;max-width:240px;width:auto;
+  padding:6px 10px 6px 6px;border-radius:999px;text-decoration:none;cursor:pointer;
+  background:var(--glass);border:1px solid var(--line-strong);font:inherit;color:inherit;text-align:left;
   -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);font-size:12px;pointer-events:auto;
 }
 .call b{font:500 12px/1 var(--font-mono);background:var(--gold-fill);color:var(--on-gold);border-radius:999px;padding:5px 7px}
@@ -147,7 +148,11 @@ header.top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-
 .call.c3{left:6%;bottom:10%}
 .feed{grid-column:span 12}
 .feed-head{display:flex;justify-content:space-between;align-items:baseline;gap:var(--space-3);margin-bottom:var(--space-2)}
-.annonce{display:grid;grid-template-columns:88px minmax(0,1fr) auto;gap:12px;align-items:baseline;padding:10px 0;border-bottom:1px solid var(--line);text-decoration:none;color:inherit}
+.annonce{display:grid;grid-template-columns:88px minmax(0,1fr) auto;gap:12px;align-items:baseline;padding:10px 0;border-bottom:1px solid var(--line);text-decoration:none;color:inherit;background:none;border-left:0;border-right:0;border-top:0;font:inherit;text-align:left;width:100%;cursor:pointer}
+dialog.fiche{border:1px solid var(--line);border-radius:14px;background:var(--surface-1);color:var(--ink);padding:var(--space-6);max-width:440px;width:calc(100% - 32px)}
+dialog.fiche::backdrop{background:#000000a6}
+dialog.fiche h2{margin:8px 0;font:600 20px/1.25 var(--font-sans)}
+dialog.fiche .actions{margin-top:var(--space-6)}
 .annonce:last-child{border-bottom:0}
 .annonce .who{display:grid;min-width:0}
 .annonce .nm{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -314,6 +319,16 @@ footer.site strong{color:var(--ink);font-weight:500}
     </article>
   </section>
 
+  <dialog class="fiche" id="fiche" aria-labelledby="fiche-nom">
+    <p class="label" id="fiche-kicker"></p>
+    <h2 id="fiche-nom"></h2>
+    <p class="note" id="fiche-meta"></p>
+    <div class="actions">
+      <a class="btn primary" id="fiche-url" href="">Voir l'annonce</a>
+      <button type="button" class="btn" id="fiche-close">Fermer</button>
+    </div>
+  </dialog>
+
   <footer class="site">
     <strong>Trouver le filon.</strong>
     <span>Valorisations indicatives. Pas un conseil en investissement.</span>
@@ -344,14 +359,30 @@ stage.addEventListener("pointerleave", () => {
 });
 
 const ANGLES = {93:0, 92:45, 75:90, 94:135, 91:180, 77:225, 78:270, 95:315};
+let ROWS = [];
+const fiche = document.getElementById("fiche");
+function showFiche(i){
+  const x = ROWS[i];
+  if (!x) return;
+  document.getElementById("fiche-kicker").textContent = "BODACC · " + fmtDate(x.date);
+  document.getElementById("fiche-nom").textContent = x.nom;
+  document.getElementById("fiche-meta").textContent = [x.commune, x.dept, x.label].filter(Boolean).join(" · ");
+  const link = document.getElementById("fiche-url");
+  if (/^https:/.test(x.url || "")) { link.href = x.url; link.hidden = false; }
+  else { link.hidden = true; link.removeAttribute("href"); }
+  if (!fiche.open) fiche.showModal();
+}
+document.getElementById("fiche-close").onclick = () => fiche.close();
+fiche.addEventListener("click", e => { if (e.target === fiche) fiche.close(); });
 function fmtDate(d){
   const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(d || "");
   return m ? m[3] + "/" + m[2] + "/" + m[1] : "";
 }
 function place(rows){
+  ROWS = rows;
   const disc = document.getElementById("blips");
   const used = {};
-  rows.slice(0, 12).forEach(function (x) {
+  rows.slice(0, 12).forEach(function (x, i) {
     const n = used[x.dept] || 0;
     used[x.dept] = n + 1;
     const el = document.createElement("span");
@@ -362,29 +393,34 @@ function place(rows){
     el.style.setProperty("--d", dist + "px");
     el.style.setProperty("--z", (8 + (n % 3) * 12) + "px");
     el.title = x.nom;
+    el.tabIndex = 0;
+    el.setAttribute("role", "button");
+    el.addEventListener("click", function () { showFiche(i); });
     disc.appendChild(el);
   });
   const calls = document.getElementById("calls");
   rows.slice(0, 3).forEach(function (x, i) {
-    const el = document.createElement(x.url ? "a" : "div");
+    const el = document.createElement("button");
+    el.type = "button";
     el.className = "call c" + (i + 1);
-    if (x.url) { el.href = x.url; el.target = "_blank"; el.rel = "noopener noreferrer"; }
     const b = document.createElement("b");
     b.textContent = x.dept;
     const s = document.createElement("span");
     s.textContent = x.nom;
     el.title = x.label;
     el.setAttribute("aria-label", x.nom + ", " + x.label);
+    el.addEventListener("click", function () { showFiche(i); });
     el.appendChild(b);
     el.appendChild(s);
     calls.appendChild(el);
   });
   const box = document.getElementById("feed-rows");
   box.replaceChildren();
-  rows.slice(0, 12).forEach(function (x) {
-    const el = document.createElement(x.url ? "a" : "div");
+  rows.slice(0, 12).forEach(function (x, i) {
+    const el = document.createElement("button");
+    el.type = "button";
     el.className = "annonce";
-    if (x.url) { el.href = x.url; el.target = "_blank"; el.rel = "noopener noreferrer"; }
+    el.addEventListener("click", function () { showFiche(i); });
     const date = document.createElement("span");
     date.className = "mono";
     date.textContent = fmtDate(x.date);

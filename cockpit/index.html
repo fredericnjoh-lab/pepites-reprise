@@ -155,6 +155,7 @@ header.top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-
 @keyframes grow{from{transform:scaleX(0)}}
 .flux{display:grid}
 .fx{display:grid;grid-template-columns:auto 1fr;gap:2px 12px;padding:9px 0;border-bottom:1px solid var(--line);cursor:pointer}
+button.fx,button.t5{font:inherit;color:inherit;background:none}
 .fx:last-child{border-bottom:0}
 .fx .mono{font-size:12px;color:var(--ink-muted);grid-row:span 2;padding-top:1px}
 .fx .nm{font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -656,7 +657,7 @@ function top5(){
     <span><span class="nm">${esc(x.nom)}</span><br><span class="sub">${esc(x.commune||"")} · ${esc(NAF[x.naf]||x.naf||"")}</span></span>
     <span>${situationTag(x)}</span></button>`).join("");
 }
-$("#top5").addEventListener("click", e => { const b = e.target.closest(".t5"); if (b) openFiche(b.dataset.siren); });
+$("#top5").addEventListener("click", e => { const b = e.target.closest(".t5"); if (!b) return; e.preventDefault(); openFrom(b); });
 
 /* ---------- Tableau des cibles ---------- */
 function filtered(){
@@ -891,8 +892,13 @@ document.querySelectorAll("nav.tabs [data-tab]").forEach(b=>b.onclick=()=>{
 $("#smin").addEventListener("input", e=>{ $("#smin-o").textContent = e.target.value; render(); });
 $("#typeSeg").addEventListener("click", e=>{ const b=e.target.closest("button"); if(!b) return; typeF=b.dataset.v; $("#typeSeg").querySelectorAll("button").forEach(z=>z.setAttribute("aria-pressed", z===b)); render(); });
 document.querySelectorAll("th[data-sort]").forEach(th=>th.onclick=()=>{ const k=th.dataset.sort; if(sortK===k) sortDir*=-1; else {sortK=k; sortDir = k==="nom"?1:-1;} render(); });
-$("#rows").addEventListener("click", e=>{ const tr=e.target.closest("tr.row"); if(tr) openFiche(tr.dataset.siren); });
-$("#rows").addEventListener("keydown", e=>{ if(e.key==="Enter"){ const tr=e.target.closest("tr.row"); if(tr) openFiche(tr.dataset.siren); }});
+function openFrom(el){
+  if (!el) return;
+  if (el.dataset.pub !== undefined && el.dataset.pub !== "") { openPublicFiche(+el.dataset.pub); return; }
+  openFiche(el.dataset.siren);
+}
+$("#rows").addEventListener("click", e=>{ const tr=e.target.closest("tr.row"); if(tr) openFrom(tr); });
+$("#rows").addEventListener("keydown", e=>{ if(e.key==="Enter"){ const tr=e.target.closest("tr.row"); if(tr) openFrom(tr); }});
 $("#f-close").onclick = ()=>$("#fiche").close();
 $("#fiche").addEventListener("click", e=>{ if(e.target.id==="fiche") $("#fiche").close(); });
 $("#refresh").onclick = ()=>{ if(mcp) load(); };
@@ -947,7 +953,7 @@ function flux(){
   const f = ALL.filter(r => PROC_L[r.procedure] && r.date_procedure).sort((a,b) => (b.date_procedure > a.date_procedure ? 1 : -1)).slice(0,6);
   $("#flux").innerHTML = f.map(x => `<div class="fx" data-siren="${esc(x.siren)}"><span class="mono">${new Date(x.date_procedure).toLocaleDateString("fr-FR",{day:"2-digit",month:"2-digit"})}</span><span class="nm">${esc(x.nom)}</span><span><span class="tag ${x.procedure}">${PROC_L[x.procedure]}</span> <span class="sub mono">score ${Math.round(x.score)}</span></span></div>`).join("") || `<p class="sub">Aucun jugement récent.</p>`;
 }
-$("#flux").addEventListener("click", e => { const f = e.target.closest(".fx"); if (f) openFiche(f.dataset.siren); });
+$("#flux").addEventListener("click", e => { const f = e.target.closest(".fx"); if (!f) return; e.preventDefault(); openFrom(f); });
 function funnel(){
   const act = STAGES.filter(([k]) => k !== "perdu");
   const c = act.map(([k,l]) => ({l, n: DEALS.filter(d => d.stage === k).length}));
@@ -965,29 +971,40 @@ function clock(){ $("#clock").textContent = new Date().toLocaleString("fr-FR",{w
 clock(); setInterval(clock, 30000);
 
 const PUB_TAG = {Liquidation:"liquidation", Redressement:"redressement", Sauvegarde:"sauvegarde", "Procédure":"decote", Cession:"pub-cession"};
+let PUB = [];
+function openPublicFiche(i){
+  const x = PUB[i];
+  if (!x) return;
+  $("#f-siren").textContent = "BODACC · " + fmtD(x.date);
+  $("#f-title").textContent = x.nom;
+  $("#f-sub").textContent = [x.commune, x.dept, x.label].filter(Boolean).join(" · ");
+  const href = /^https:/.test(x.url || "") ? x.url : "";
+  $("#f-body").innerHTML = `<p class="sub">Annonce publique. Le Score Pépite se charge via le connecteur Supabase.</p>` +
+    (href ? `<p><a class="btn primary" href="${esc(href)}" rel="noopener noreferrer">Voir l'annonce</a></p>` : "");
+  if (!$("#fiche").open) $("#fiche").showModal();
+}
 async function loadBodaccPublic(){
   status("Chargement des annonces BODACC…");
   $("#fresh").textContent = "Chargement…";
   $("#fresh").closest(".live").classList.add("off");
   try{
     const rows = await filonAnnonces();
+    PUB = rows;
     const proc = rows.filter(x => x.kind !== "cession").length;
     $("#k-total").textContent = String(rows.length);
     $("#k-proc").textContent = String(proc);
     const head = document.querySelector(".t-top .sub");
     if (head) head.textContent = "annonces BODACC";
-    $("#top5").innerHTML = rows.slice(0,5).map(x => {
+    $("#top5").innerHTML = rows.slice(0,5).map((x, i) => {
       const tag = PUB_TAG[x.label] || "decote";
-      const href = x.url ? ` href="${esc(x.url)}" target="_blank" rel="noopener noreferrer"` : "";
-      return `<a class="t5"${href}><span class="mono">${esc(x.dept)}</span><span><span class="nm">${esc(x.nom)}</span><br><span class="sub">${esc(x.commune)} · <span class="mono">${fmtD(x.date)}</span></span></span><span class="tag ${tag}">${esc(x.label)}</span></a>`;
+      return `<button type="button" class="t5" data-pub="${i}"><span class="mono">${esc(x.dept)}</span><span><span class="nm">${esc(x.nom)}</span><br><span class="sub">${esc(x.commune)} · <span class="mono">${fmtD(x.date)}</span></span></span><span class="tag ${tag}">${esc(x.label)}</span></button>`;
     }).join("") || `<p class="sub">Aucune annonce BODACC sur les 21 derniers jours.</p>`;
-    $("#flux").innerHTML = rows.slice(0,8).map(x => {
-      const href = x.url ? ` href="${esc(x.url)}" target="_blank" rel="noopener noreferrer"` : "";
-      return `<a class="fx"${href}><span class="mono">${fmtD(x.date)}</span><span class="nm">${esc(x.nom)}</span></a>`;
+    $("#flux").innerHTML = rows.slice(0,8).map((x, i) => {
+      return `<button type="button" class="fx" data-pub="${i}"><span class="mono">${fmtD(x.date)}</span><span class="nm">${esc(x.nom)}</span></button>`;
     }).join("");
-    $("#rows").innerHTML = rows.slice(0,80).map(x => {
+    $("#rows").innerHTML = rows.slice(0,80).map((x, i) => {
       const tag = PUB_TAG[x.label] || "decote";
-      return `<tr><td class="num mono">–</td><td><div class="nm">${esc(x.nom)}</div><div class="sub">${esc(x.commune)} (${esc(x.dept)})</div></td><td><span class="tag ${tag}">${esc(x.label)}</span><div class="sub mono" style="margin-top:4px">${fmtD(x.date)}</div></td><td class="num">–</td><td class="num">–</td><td class="num">–</td><td class="sub">Annonce publique. Le Score Pépite se charge via le connecteur Supabase.</td></tr>`;
+      return `<tr class="row" tabindex="0" data-pub="${i}"><td class="num mono">–</td><td><div class="nm">${esc(x.nom)}</div><div class="sub">${esc(x.commune)} (${esc(x.dept)})</div></td><td><span class="tag ${tag}">${esc(x.label)}</span><div class="sub mono" style="margin-top:4px">${fmtD(x.date)}</div></td><td class="num">–</td><td class="num">–</td><td class="num">–</td><td class="sub">Ouvrir la fiche</td></tr>`;
     }).join("") || `<tr><td colspan="7" class="more sub">Aucune annonce BODACC sur les 21 derniers jours.</td></tr>`;
     $("#count").textContent = rows.length + " annonce" + (rows.length > 1 ? "s" : "");
     $("#fresh").textContent = rows.length + " annonces · BODACC";
