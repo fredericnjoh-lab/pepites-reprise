@@ -12,3 +12,4 @@ alwaysApply: true
 - Sources publiques : API BODACC (opendatasoft, dataset `annonces-commerciales`) et `recherche-entreprises.api.gouv.fr`. Respecter les limites de débit (pauses déjà en place, retry sur 429).
 - Cockpit actuel : `cockpit/index.html`, page unique sans build, lit la base via le connecteur Supabase de Claude (`window.claude.use("mcp")`). Ne pas y ajouter de clé Supabase.
 - V2 prévue : Next.js sur Vercel + Supabase Auth pour l'espace repreneurs (voir `docs/spec-et-business-model.md`).
+- Accès aux données en V2 : lecture réservée aux comptes dont `app_metadata.role = 'filon_admin'` (fonction `public.is_filon_admin()`, à attribuer côté serveur, jamais via `user_metadata`). Le deal flow (`deals`, `buyers`, `alerts`, `matches`) reste filtré par `owner = (select auth.uid())`. `private.run_ingest` n'est appelable que par pg_cron / postgres.
