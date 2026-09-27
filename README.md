@@ -1,4 +1,6 @@
-# Pépites Reprise
+# Filon
+
+> Le radar des entreprises à reprendre. Nom de code technique : `pepites-reprise`.
 
 Détection de PME rachetables à bas prix en Île-de-France (pilote BTP et maintenance), pour un rachat en propre ou une intermédiation.
 
@@ -15,7 +17,8 @@ supabase/
   functions/ingest/index.ts            # Edge Function : BODACC, enrichissement, cédants 60+
 cockpit/index.html                     # cockpit privé (artifact Claude, lit la base via le connecteur Supabase)
 docs/spec-et-business-model.md         # spec fonctionnelle, roadmap, modèle de revenus
-.cursor/rules/                         # contexte projet pour l'agent Cursor
+brand/                                 # identité Filon : tokens, logos, règles, composants de référence
+.cursor/rules/                         # contexte projet et marque pour l'agent Cursor
 ```
 
 ## Infra
