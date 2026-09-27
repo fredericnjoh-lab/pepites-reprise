@@ -1,0 +1,16 @@
+---
+description: Règles pour les migrations SQL et l'Edge Function
+globs: supabase/**
+alwaysApply: false
+---
+
+# Supabase — règles
+
+- Toute évolution de schéma = une **nouvelle** migration horodatée dans `supabase/migrations/` (`YYYYMMDDHHMMSS_nom.sql`). Ne jamais modifier une migration déjà appliquée en prod.
+- RLS obligatoire sur chaque nouvelle table. Données de référence : lecture `authenticated`. Données métier par utilisateur : policy `owner = auth.uid()`.
+- Fonctions sensibles en `security definer` avec `set search_path` explicite ; révoquer `execute` à `anon` et `authenticated`, accorder à `service_role` si l'Edge Function l'appelle.
+- Aucun secret en clair : les secrets vivent dans `private.app_secrets` ou dans les secrets Supabase (`supabase secrets set`). Jamais de clé `service_role` dans le code client ni dans le dépôt.
+- Tout SIREN présent dans `opposition_rgpd` doit rester exclu (la vue `v_company_facts` le filtre déjà ; toute nouvelle vue doit faire de même).
+- Si tu changes la logique de scoring, garde les 4 axes (`p_cession`, `decote`, `qualite`, `potentiel`) sur 0-100 et les poids dans `scoring_config`.
+- Edge Function : Deno, imports `npm:`. Déploiement : `supabase functions deploy ingest --no-verify-jwt` (l'auth se fait par l'en-tête `x-ingest-secret`).
+- Valorisations : toujours présentées comme indicatives, jamais comme un conseil.

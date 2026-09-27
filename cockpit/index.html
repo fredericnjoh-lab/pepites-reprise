@@ -1,0 +1,555 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Pépites Reprise</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..100,500..800&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#f3f5f1; --surface:#ffffff; --surface2:#e9ede6; --ink:#15201b; --muted:#5d6b63; --line:#d9dfd5;
+  --gold:#a8771f; --gold-soft:#f3e6c8; --green:#2f6b4f; --green-soft:#dcebe2; --red:#a93b2b; --red-soft:#f5dcd6;
+  --amber:#9a6a00; --amber-soft:#f6ebc9; --focus:#a8771f;
+  --display:"Archivo","Arial Narrow",system-ui,sans-serif; --body:"Instrument Sans",system-ui,-apple-system,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  color-scheme:dark; --bg:#0f1513; --surface:#161f1b; --surface2:#1d2823; --ink:#e5ebe4; --muted:#93a198; --line:#2a3630;
+  --gold:#dcaa4f; --gold-soft:#3a2f18; --green:#6fbf94; --green-soft:#1b3328; --red:#e27a67; --red-soft:#3b1f1a;
+  --amber:#e0b54a; --amber-soft:#36301a;}}
+:root[data-theme="dark"]{
+  color-scheme:dark; --bg:#0f1513; --surface:#161f1b; --surface2:#1d2823; --ink:#e5ebe4; --muted:#93a198; --line:#2a3630;
+  --gold:#dcaa4f; --gold-soft:#3a2f18; --green:#6fbf94; --green-soft:#1b3328; --red:#e27a67; --red-soft:#3b1f1a;
+  --amber:#e0b54a; --amber-soft:#36301a;}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:14px/1.5 var(--body);padding-inline:16px;padding-block:0 40px}
+.wrap{max-width:1320px;margin:0 auto}
+h1,h2,h3{font-family:var(--display);font-stretch:80%;letter-spacing:.005em;text-wrap:balance;margin:0}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+button,select,input,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+
+header.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px;padding-block:22px 14px;border-bottom:1px solid var(--line)}
+.brand h1{font-size:34px;font-weight:800;line-height:1}
+.brand h1 span{color:var(--gold)}
+.brand p{margin:4px 0 0;color:var(--muted);font-size:13px}
+.kpis{display:flex;gap:22px;flex-wrap:wrap}
+.kpi b{display:block;font-family:var(--display);font-stretch:75%;font-size:26px;font-weight:700;line-height:1.1}
+.kpi small{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.06em}
+
+nav.tabs{display:flex;gap:4px;margin-block:14px;flex-wrap:wrap}
+nav.tabs button{background:none;border:1px solid transparent;padding:7px 14px;border-radius:6px;cursor:pointer;color:var(--muted);font-weight:600}
+nav.tabs button[aria-selected="true"]{background:var(--ink);color:var(--bg)}
+nav.tabs .sp{flex:1}
+.btn{border:1px solid var(--line);background:var(--surface);padding:7px 12px;border-radius:6px;cursor:pointer;font-weight:600}
+.btn:hover{border-color:var(--gold)}
+.btn.primary{background:var(--gold);border-color:var(--gold);color:#fff}
+:root[data-theme="dark"] .btn.primary{color:#1a1206}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn.primary{color:#1a1206}}
+.btn:disabled{opacity:.5;cursor:default}
+
+.status{padding:10px 14px;border-radius:8px;background:var(--amber-soft);color:var(--ink);margin-bottom:12px;border:1px solid var(--line)}
+.status.err{background:var(--red-soft)}
+
+/* Cibles */
+.layout{display:grid;grid-template-columns:230px 1fr;gap:20px;align-items:start}
+@media (max-width:860px){.layout{grid-template-columns:1fr}}
+aside.filters{display:grid;gap:14px;position:sticky;top:calc(env(safe-area-inset-top,0px) + 10px)}
+@media (max-width:860px){aside.filters{position:static;grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}}
+.f label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:4px;font-weight:600}
+.f input,.f select{width:100%;padding:7px 9px;border:1px solid var(--line);border-radius:6px;background:var(--surface)}
+.f output{float:right;font-family:var(--mono);font-size:12px;color:var(--ink)}
+.f input[type=range]{padding:0;accent-color:var(--gold)}
+.seg{display:flex;border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.seg button{flex:1;border:0;background:var(--surface);padding:6px 4px;cursor:pointer;font-size:12px;font-weight:600;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--gold-soft);color:var(--ink)}
+
+.tablewrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:10px}
+table{width:100%;border-collapse:collapse;min-width:820px}
+th{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);font-weight:600;white-space:nowrap;cursor:pointer;user-select:none}
+th.num,td.num{text-align:right}
+td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+tr.row{cursor:pointer}
+tr.row:hover td{background:var(--surface2)}
+tr.row:last-child td{border-bottom:0}
+.nm{font-weight:600}
+.sub{color:var(--muted);font-size:12px}
+.score{display:flex;align-items:center;gap:8px;min-width:110px}
+.score b{font-family:var(--display);font-stretch:75%;font-size:22px;width:30px;text-align:right}
+.bars{display:grid;grid-template-columns:repeat(4,14px);gap:2px;align-items:end;height:22px}
+.bars i{display:block;background:var(--gold);border-radius:1px;opacity:.85}
+.chips{display:flex;flex-wrap:wrap;gap:4px}
+.chip{font-size:11px;padding:2px 7px;border-radius:99px;white-space:nowrap;font-weight:500}
+.chip.cession{background:var(--green-soft);color:var(--green)}
+.chip.decote{background:var(--red-soft);color:var(--red)}
+.chip.valeur{background:var(--gold-soft);color:var(--gold)}
+.chip.stage{background:var(--ink);color:var(--bg)}
+.pill{font-size:11px;font-weight:600;padding:2px 8px;border-radius:4px;text-transform:uppercase;letter-spacing:.04em}
+.pill.liquidation{background:var(--red-soft);color:var(--red)}
+.pill.redressement{background:var(--amber-soft);color:var(--amber)}
+.pill.sauvegarde,.pill.plan_cession{background:var(--gold-soft);color:var(--gold)}
+.pill.cedant{background:var(--green-soft);color:var(--green)}
+.more{padding:12px;text-align:center;color:var(--muted);font-size:12px}
+
+/* Fiche */
+dialog.fiche{border:0;padding:0;margin:0 0 0 auto;height:100%;max-height:100%;width:min(640px,100%);background:var(--surface);color:var(--ink);box-shadow:-10px 0 40px rgba(0,0,0,.18)}
+dialog.fiche::backdrop{background:rgba(10,16,13,.35)}
+.fh{position:sticky;top:0;background:var(--surface);padding:18px 20px 12px;border-bottom:1px solid var(--line);display:flex;gap:12px;align-items:flex-start;justify-content:space-between;z-index:1}
+.fh h2{font-size:26px;font-weight:700;line-height:1.1}
+.fb{padding:16px 20px 40px;display:grid;gap:22px}
+.sec h3{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-family:var(--body);font-weight:600;margin-bottom:8px}
+.kv{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px 16px}
+.kv div small{display:block;color:var(--muted);font-size:11px}
+.kv div span{font-weight:600}
+.axes{display:grid;gap:6px}
+.axis{display:grid;grid-template-columns:170px 1fr 36px;gap:10px;align-items:center;font-size:13px}
+.track{height:8px;background:var(--surface2);border-radius:4px;overflow:hidden}
+.track i{display:block;height:100%;background:var(--gold)}
+.mini{width:100%;border-collapse:collapse;min-width:0}
+.mini td,.mini th{padding:6px 8px;font-size:13px;cursor:default}
+.val{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}
+.val div{border:1px solid var(--line);border-radius:8px;padding:10px}
+.val div small{color:var(--muted);font-size:11px;display:block}
+.val div b{font-family:var(--mono);font-size:15px}
+.disclaimer{font-size:12px;color:var(--muted)}
+.ev{border-left:2px solid var(--line);padding:2px 0 8px 12px}
+.ev a{color:var(--gold)}
+.deal{display:grid;gap:8px}
+.deal .row2{display:flex;gap:8px;flex-wrap:wrap}
+.deal select,.deal textarea{border:1px solid var(--line);border-radius:6px;background:var(--bg);padding:7px 9px}
+.deal textarea{width:100%;min-height:70px;resize:vertical}
+.ai{white-space:pre-wrap;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:12px;font-size:13px;min-height:44px}
+.x{background:none;border:1px solid var(--line);border-radius:6px;width:34px;height:34px;cursor:pointer;font-size:18px;flex:none}
+
+/* Pipeline */
+.board{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(210px,1fr);gap:12px;overflow-x:auto;padding-bottom:8px}
+.col{background:var(--surface2);border-radius:10px;padding:10px;display:grid;gap:8px;align-content:start;min-height:180px}
+.col h3{font-size:15px;font-weight:700;display:flex;justify-content:space-between}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px;display:grid;gap:6px}
+.card .nm{cursor:pointer}
+.card .mv{display:flex;gap:4px}
+.card .mv button{flex:1;border:1px solid var(--line);background:var(--bg);border-radius:4px;cursor:pointer;padding:2px}
+.empty{color:var(--muted);font-size:12px}
+
+/* Réglages */
+.settings{display:grid;gap:18px;max-width:640px}
+.w{display:grid;grid-template-columns:1fr 160px 48px;gap:12px;align-items:center}
+.w input{accent-color:var(--gold)}
+.note{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;font-size:13px;color:var(--muted)}
+.note b{color:var(--ink)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <h1>Pépites <span>Reprise</span></h1>
+      <p>Cibles de reprise en Île-de-France · BODACC, Sirene et RNE · pilote BTP et maintenance</p>
+    </div>
+    <div class="kpis" id="kpis">
+      <div class="kpi"><b id="k-total">–</b><small>Cibles scorées</small></div>
+      <div class="kpi"><b id="k-top">–</b><small>Score ≥ 60</small></div>
+      <div class="kpi"><b id="k-proc">–</b><small>En procédure</small></div>
+      <div class="kpi"><b id="k-ced">–</b><small>Dirigeant 60+</small></div>
+      <div class="kpi"><b id="k-deals">–</b><small>Dans le pipeline</small></div>
+    </div>
+  </header>
+
+  <nav class="tabs" role="tablist">
+    <button role="tab" aria-selected="true" data-tab="cibles">Cibles</button>
+    <button role="tab" aria-selected="false" data-tab="pipeline">Pipeline</button>
+    <button role="tab" aria-selected="false" data-tab="reglages">Scoring et sources</button>
+    <span class="sp"></span>
+    <button class="btn" id="refresh">Actualiser</button>
+  </nav>
+
+  <div id="status" class="status">Connexion à ta base Supabase… La première fois, Claude te demande d'autoriser le connecteur Supabase pour cette page.</div>
+
+  <section id="tab-cibles">
+    <div class="layout">
+      <aside class="filters">
+        <div class="f"><label for="q">Recherche</label><input id="q" type="search" placeholder="Nom, SIREN, ville, NAF"></div>
+        <div class="f"><label>Type de cible</label>
+          <div class="seg" id="typeSeg">
+            <button data-v="all" aria-pressed="true">Toutes</button>
+            <button data-v="proc" aria-pressed="false">Procédure</button>
+            <button data-v="ced" aria-pressed="false">Cédant</button>
+          </div></div>
+        <div class="f"><label for="dep">Département</label>
+          <select id="dep"><option value="">Toute l'IDF</option>
+            <option>75</option><option>77</option><option>78</option><option>91</option><option>92</option><option>93</option><option>94</option><option>95</option></select></div>
+        <div class="f"><label for="smin">Score minimum <output id="smin-o">40</output></label><input id="smin" type="range" min="0" max="100" step="5" value="40"></div>
+        <div class="f"><label for="camin">CA minimum</label>
+          <select id="camin"><option value="0">Indifférent</option><option value="1">Connu</option><option value="300000">300 k€</option><option value="1000000" >1 M€</option><option value="5000000">5 M€</option></select></div>
+        <div class="f"><label for="agemin">Âge du dirigeant</label>
+          <select id="agemin"><option value="0">Indifférent</option><option value="55">55 ans et +</option><option value="60">60 ans et +</option><option value="65">65 ans et +</option></select></div>
+        <div class="f"><label for="btp">Secteur</label>
+          <select id="btp"><option value="">Tous</option><option value="frag">Fragmentés (BTP, maintenance)</option></select></div>
+      </aside>
+      <div>
+        <div class="tablewrap">
+          <table>
+            <thead><tr>
+              <th data-sort="score">Score</th>
+              <th data-sort="nom">Entreprise</th>
+              <th>Situation</th>
+              <th class="num" data-sort="ca">CA</th>
+              <th class="num" data-sort="age">Dirigeant</th>
+              <th class="num" data-sort="val">Valeur indicative</th>
+              <th>Signaux</th>
+            </tr></thead>
+            <tbody id="rows"></tbody>
+          </table>
+          <div class="more" id="count"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="tab-pipeline" hidden>
+    <div class="board" id="board"></div>
+  </section>
+
+  <section id="tab-reglages" hidden>
+    <div class="settings">
+      <div>
+        <h2 style="font-size:22px;margin-bottom:10px">Pondérations du Score Pépite</h2>
+        <div id="weights" style="display:grid;gap:10px"></div>
+        <p class="sub" id="wsum"></p>
+        <button class="btn primary" id="saveW">Enregistrer et recalculer</button>
+      </div>
+      <div>
+        <h2 style="font-size:22px;margin-bottom:10px">Ingestion</h2>
+        <div class="note">
+          <p style="margin-top:0"><b>Automatique chaque nuit</b> : procédures collectives BODACC des 3 derniers jours (IDF) à 6 h, puis enrichissement Sirene/RNE. <b>Chaque lundi</b> : recherche des cédants (dirigeant 60 ans et +, 3 à 99 salariés, BTP et maintenance).</p>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn" id="runBodacc">Lancer BODACC maintenant</button>
+            <button class="btn" id="runEnrich">Enrichir les fiches</button>
+            <button class="btn" id="runCed">Chercher des cédants</button>
+          </div>
+          <p id="runMsg" class="sub"></p>
+        </div>
+        <table class="mini" style="margin-top:10px"><thead><tr><th>Exécution</th><th>Source</th><th>Statut</th><th>Détail</th></tr></thead><tbody id="logs"></tbody></table>
+      </div>
+      <div class="note">
+        <b>Conformité.</b> Les dirigeants sont des personnes physiques : base légale « intérêt légitime », information à la première prise de contact, droit d'opposition via la table <span class="mono">opposition_rgpd</span> (la fiche disparaît du scoring). Les valorisations sont indicatives et ne constituent pas un conseil en investissement. Avant toute intermédiation sur des fonds de commerce, vérifie avec un avocat l'application de la loi Hoguet.
+      </div>
+    </div>
+  </section>
+</div>
+
+<dialog class="fiche" id="fiche" aria-labelledby="f-title">
+  <div class="fh">
+    <div>
+      <div class="sub mono" id="f-siren"></div>
+      <h2 id="f-title"></h2>
+      <div class="sub" id="f-sub"></div>
+    </div>
+    <button class="x" id="f-close" aria-label="Fermer">×</button>
+  </div>
+  <div class="fb" id="f-body"></div>
+</dialog>
+
+<script>
+const PROJECT = "lwfcgzhndwpffeebpjpy";
+const SERVER = "Supabase";
+const STAGES = [["detectee","Détectée"],["contactee","Contactée"],["nda","NDA"],["data_room","Data room"],["loi","LOI"],["closing","Closing"],["perdu","Perdu"]];
+const STAGE_L = Object.fromEntries(STAGES);
+const EFF = {"00":"0 salarié","01":"1-2","02":"3-5","03":"6-9","11":"10-19","12":"20-49","21":"50-99","22":"100-199","31":"200-249","32":"250-499","41":"500-999","NN":"n.c."};
+const NAF = {"43.21A":"Électricité","43.22A":"Plomberie","43.22B":"Chauffage, clim","43.29A":"Isolation","43.32A":"Menuiserie","43.34Z":"Peinture, vitrerie","43.91B":"Couverture","33.12Z":"Maintenance machines","33.14Z":"Maintenance électrique","33.20C":"Installation industrielle","41.20A":"Construction maisons","41.20B":"Construction bâtiments","43.99C":"Maçonnerie","43.31Z":"Plâtrerie","56.10A":"Restauration","56.10C":"Restauration rapide","47.11B":"Supérette","68.20B":"Location immobilière","70.22Z":"Conseil"};
+const PROC_L = {liquidation:"Liquidation",redressement:"Redressement",sauvegarde:"Sauvegarde",plan_cession:"Plan de cession"};
+
+let mcp = null, sample = null, ALL = [], DEALS = [], typeF = "all", sortK = "score", sortDir = -1, current = null;
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const sq = s => "'" + String(s ?? "").replace(/'/g, "''") + "'";
+const fmtE = n => n == null ? "–" : Math.abs(n) >= 1e6 ? (n/1e6).toLocaleString("fr-FR",{maximumFractionDigits:1}) + " M€" : Math.abs(n) >= 1e3 ? Math.round(n/1e3).toLocaleString("fr-FR") + " k€" : Math.round(n) + " €";
+const fmtD = d => d ? new Date(d).toLocaleDateString("fr-FR") : "–";
+
+function status(msg, err){ const el=$("#status"); if(!msg){el.hidden=true;return;} el.hidden=false; el.textContent=msg; el.classList.toggle("err",!!err); }
+
+async function sql(query){
+  const res = await mcp.callTool(SERVER, "execute_sql", { project_id: PROJECT, query }, { cache: false });
+  let p = res.payload;
+  let text = typeof p === "string" ? p : (p && typeof p.result === "string") ? p.result : null;
+  if (text == null) { const t = (res.content||[]).find(b=>b.type==="text"); text = t ? t.text : "[]"; try{ const o=JSON.parse(text); if(o && typeof o.result==="string") text=o.result; }catch{} }
+  // Le résultat cite la balise d'ouverture une première fois dans la phrase d'avertissement :
+  // on part donc de la balise de fermeture et on remonte à la dernière ouverture du même id.
+  let body = text;
+  const close = text.lastIndexOf("</untrusted-data-");
+  if (close >= 0) {
+    const idm = text.slice(close).match(/^<\/untrusted-data-([^>]+)>/);
+    const openTag = "<untrusted-data-" + (idm ? idm[1] : "") + ">";
+    const open = text.lastIndexOf(openTag, close);
+    if (open >= 0) body = text.slice(open + openTag.length, close).trim();
+  }
+  try { return JSON.parse(body); } catch { throw { code:"tool_error", message: body.slice(0,300) }; }
+}
+
+function explain(e){
+  const c = e && e.code;
+  if (c === "server_not_connected" || c === "server_not_found") return "Le connecteur Supabase n'est pas ajouté à ton compte. Ajoute-le dans claude.ai, Paramètres → Connecteurs, puis recharge la page.";
+  if (c === "needs_reauth") return "La connexion Supabase a expiré. Reconnecte Supabase dans claude.ai, Paramètres → Connecteurs.";
+  if (c === "not_in_manifest" || c === "consent_required") return "L'accès Supabase n'est pas autorisé pour cette page. Recharge la page et accepte la demande d'autorisation.";
+  if (c === "selection_required") return "Plusieurs connecteurs Supabase existent : choisis celui à utiliser dans la fenêtre proposée par Claude.";
+  if (c === "server_unavailable") return "Supabase ne répond pas pour l'instant. Réessaie avec « Actualiser » dans un moment.";
+  if (c === "tool_error") return "Supabase a refusé la requête : " + (e.message || "");
+  return "Erreur de connexion à Supabase (" + (c || "inconnue") + "). " + (e && e.message ? e.message : "");
+}
+
+const LIST_SQL = `select c.siren, c.nom, c.naf, c.departement, c.commune, c.tranche_effectif te, c.source, c.date_creation,
+ f.age_dirigeant_max age, f.ca::float8 ca, f.resultat_net::float8 rn, f.annee_fin, f.procedure, f.date_procedure,
+ s.score::float8 score, s.p_cession::float8 p_cession, s.decote::float8 decote, s.qualite::float8 qualite, s.potentiel::float8 potentiel,
+ v.fourchette_bas::float8 vb, v.fourchette_haut::float8 vh,
+ (select json_agg(json_build_object('c',g.categorie,'l',g.libelle,'k',g.code)) from signals g where g.siren=c.siren) sig,
+ d.stage
+from scores s join companies c using(siren) join v_company_facts f using(siren)
+left join valuations v using(siren) left join deals d using(siren)
+where c.enriched_at is not null and c.nom is not null and c.departement in ('75','77','78','91','92','93','94','95') order by s.score desc limit 1500`;
+
+async function load(){
+  $("#refresh").disabled = true;
+  try{
+    status("Chargement des cibles…");
+    ALL = await sql(LIST_SQL);
+    DEALS = await sql(`select d.*, c.nom, c.commune, s.score::float8 score from deals d join companies c using(siren) left join scores s using(siren) order by d.updated_at desc`);
+    status(null);
+    kpis(); render(); board();
+  }catch(e){ status(explain(e), true); }
+  $("#refresh").disabled = false;
+}
+
+function kpis(){
+  $("#k-total").textContent = ALL.length.toLocaleString("fr-FR");
+  $("#k-top").textContent = ALL.filter(r=>r.score>=60).length;
+  $("#k-proc").textContent = ALL.filter(r=>PROC_L[r.procedure]).length;
+  $("#k-ced").textContent = ALL.filter(r=>r.age>=60).length;
+  $("#k-deals").textContent = DEALS.filter(d=>d.stage!=="perdu").length;
+}
+
+function filtered(){
+  const q = $("#q").value.trim().toLowerCase(), dep = $("#dep").value, smin = +$("#smin").value,
+        camin = +$("#camin").value, amin = +$("#agemin").value, frag = $("#btp").value;
+  let r = ALL.filter(x =>
+    x.score >= smin &&
+    (!dep || x.departement === dep) &&
+    (typeF === "all" || (typeF === "proc" ? !!PROC_L[x.procedure] : x.source === "sirene_cedant" || (x.age >= 60 && !PROC_L[x.procedure]))) &&
+    (!camin || (camin === 1 ? x.ca != null : x.ca >= camin)) &&
+    (!amin || x.age >= amin) &&
+    (!frag || (x.sig||[]).some(s=>s.k==="secteur_fragmente")) &&
+    (!q || [x.nom,x.siren,x.commune,x.naf].join(" ").toLowerCase().includes(q)));
+  const key = {score:x=>x.score, nom:x=>(x.nom||"").toLowerCase(), ca:x=>x.ca??-1, age:x=>x.age??-1, val:x=>x.vh??-1}[sortK];
+  r.sort((a,b)=> (key(a)>key(b)?1:key(a)<key(b)?-1:0)*sortDir);
+  return r;
+}
+
+function situation(x){
+  if (PROC_L[x.procedure]) return `<span class="pill ${x.procedure}">${PROC_L[x.procedure]}</span><div class="sub">${fmtD(x.date_procedure)}</div>`;
+  if (x.age >= 60) return `<span class="pill cedant">Cédant potentiel</span>`;
+  return `<span class="sub">Veille</span>`;
+}
+
+function render(){
+  const r = filtered(), shown = r.slice(0, 250);
+  $("#rows").innerHTML = shown.map(x => `
+    <tr class="row" data-siren="${esc(x.siren)}" tabindex="0">
+      <td><div class="score"><b>${Math.round(x.score)}</b><span class="bars" title="Cession ${Math.round(x.p_cession)} · Décote ${Math.round(x.decote)} · Qualité ${Math.round(x.qualite)} · Potentiel ${Math.round(x.potentiel)}">
+        ${[x.p_cession,x.decote,x.qualite,x.potentiel].map(v=>`<i style="height:${Math.max(2,v*0.22)}px"></i>`).join("")}</span></div></td>
+      <td><div class="nm">${esc(x.nom)}</div><div class="sub">${esc(x.commune||"")} (${esc(x.departement||"?")}) · <span class="mono">${esc(x.naf||"")}</span> ${esc(NAF[x.naf]||"")}${x.te && x.te!=="NN" ? " · "+esc(EFF[x.te]||x.te)+" sal." : ""}</div></td>
+      <td>${situation(x)}${x.stage?`<div style="margin-top:4px"><span class="chip stage">${STAGE_L[x.stage]}</span></div>`:""}</td>
+      <td class="num mono">${fmtE(x.ca)}${x.annee_fin?`<div class="sub">${x.annee_fin}</div>`:""}</td>
+      <td class="num mono">${x.age ? x.age+" ans" : "–"}</td>
+      <td class="num mono">${x.vh ? fmtE(x.vb)+" – "+fmtE(x.vh) : "–"}</td>
+      <td><div class="chips">${(x.sig||[]).slice(0,4).map(s=>`<span class="chip ${esc(s.c)}">${esc(s.l.length>34?s.l.slice(0,33)+"…":s.l)}</span>`).join("")}</div></td>
+    </tr>`).join("") || `<tr><td colspan="7" class="more">Aucune cible ne correspond à ces filtres.</td></tr>`;
+  $("#count").textContent = `${r.length} cible${r.length>1?"s":""}` + (r.length>250?" · 250 premières affichées":"");
+}
+
+/* ---------- Fiche ---------- */
+async function openFiche(siren){
+  if(!/^\d{9}$/.test(siren)) return;
+  const x = ALL.find(r=>r.siren===siren) || DEALS.find(d=>d.siren===siren) || {siren};
+  current = {x, detail:null};
+  $("#f-siren").textContent = "SIREN " + siren.replace(/(\d{3})(\d{3})(\d{3})/,"$1 $2 $3");
+  $("#f-title").textContent = x.nom || "";
+  $("#f-sub").textContent = [x.commune, x.naf && (x.naf + " " + (NAF[x.naf]||""))].filter(Boolean).join(" · ");
+  $("#f-body").innerHTML = `<p class="sub">Chargement de la fiche…</p>`;
+  $("#fiche").showModal();
+  try{
+    const [row] = await sql(`select json_build_object(
+      'c',(select row_to_json(c) from companies c where siren='${siren}'),
+      'o',(select json_agg(o order by o.annee_naissance) from officers o where siren='${siren}'),
+      'f',(select json_agg(f order by annee desc) from financials f where siren='${siren}'),
+      'e',(select json_agg(json_build_object('date',date_parution,'nature',nature,'tribunal',tribunal,'url',url,'complement',complement) order by date_parution desc) from legal_events where siren='${siren}'),
+      'v',(select row_to_json(v) from valuations v where siren='${siren}'),
+      's',(select row_to_json(s) from scores s where siren='${siren}'),
+      'g',(select json_agg(g) from signals g where siren='${siren}'),
+      'd',(select row_to_json(d) from deals d where siren='${siren}')) as j`);
+    current.detail = row.j; drawFiche();
+  }catch(e){ $("#f-body").innerHTML = `<p class="status err">${esc(explain(e))}</p>`; }
+}
+
+function drawFiche(){
+  const {x, detail:d} = current, c = d.c||{}, s = d.s||{}, v = d.v, deal = d.d;
+  const age = c.date_creation ? new Date().getFullYear() - +c.date_creation.slice(0,4) : null;
+  const axes = [["Probabilité de cession",s.p_cession],["Décote estimée",s.decote],["Qualité du business",s.qualite],["Potentiel de création de valeur",s.potentiel]];
+  const isProc = (d.e||[]).length > 0;
+  $("#f-body").innerHTML = `
+  <div class="sec">
+    <div class="score" style="margin-bottom:10px"><b style="font-size:40px;width:auto">${s.score!=null?Math.round(s.score):"–"}</b><span class="sub">Score Pépite sur 100</span></div>
+    <div class="axes">${axes.map(([l,val])=>`<div class="axis"><span>${l}</span><span class="track"><i style="width:${val||0}%"></i></span><span class="mono">${val!=null?Math.round(val):"–"}</span></div>`).join("")}</div>
+  </div>
+  <div class="sec"><h3>Signaux</h3><div class="chips">${(d.g||[]).map(g=>`<span class="chip ${esc(g.categorie)}">${esc(g.libelle)}</span>`).join("") || '<span class="sub">Aucun signal</span>'}</div></div>
+  <div class="sec"><h3>Identité</h3><div class="kv">
+    <div><small>Création</small><span>${fmtD(c.date_creation)}${age!=null?` (${age} ans)`:""}</span></div>
+    <div><small>Effectif</small><span>${esc(EFF[c.tranche_effectif]||"n.c.")}</span></div>
+    <div><small>Catégorie</small><span>${esc(c.categorie||"–")}</span></div>
+    <div><small>Établissements ouverts</small><span>${c.nb_etablissements??"–"}</span></div>
+    <div><small>RGE</small><span>${c.est_rge?"Oui":"Non"}</span></div>
+    <div><small>Siège</small><span>${esc(c.adresse||c.commune||"–")}</span></div>
+  </div></div>
+  <div class="sec"><h3>Dirigeants</h3>${(d.o||[]).length?`<table class="mini"><tbody>${d.o.map(o=>`<tr><td>${esc(o.prenoms)} ${esc(o.nom)}</td><td class="sub">${esc(o.qualite)}</td><td class="num mono">${o.annee_naissance?(new Date().getFullYear()-o.annee_naissance)+" ans":"–"}</td></tr>`).join("")}</tbody></table>`:'<p class="sub">Non renseignés (entreprise individuelle ou fiche non enrichie).</p>'}</div>
+  <div class="sec"><h3>Finances publiées</h3>${(d.f||[]).length?`<table class="mini"><thead><tr><th>Exercice</th><th class="num">CA</th><th class="num">Résultat net</th><th class="num">Marge</th></tr></thead><tbody>${d.f.map(f=>`<tr><td class="mono">${f.annee}</td><td class="num mono">${fmtE(f.ca)}</td><td class="num mono">${fmtE(f.resultat_net)}</td><td class="num mono">${f.ca?(f.resultat_net/f.ca*100).toFixed(1)+" %":"–"}</td></tr>`).join("")}</tbody></table>`:'<p class="sub">Comptes non publiés ou confidentiels. À demander au cédant ou à l\'administrateur judiciaire.</p>'}</div>
+  <div class="sec"><h3>Valorisation indicative</h3>${v?`<div class="val">
+    <div><small>Fourchette retenue</small><b>${fmtE(v.fourchette_bas)} – ${fmtE(v.fourchette_haut)}</b></div>
+    <div><small>Rendement (4 à 7 × résultat)</small><b>${v.methode_rendement_haut?fmtE(v.methode_rendement_bas)+" – "+fmtE(v.methode_rendement_haut):"n.a."}</b></div>
+    <div><small>Multiple de CA sectoriel</small><b>${v.methode_ca_haut?fmtE(v.methode_ca_bas)+" – "+fmtE(v.methode_ca_haut):"n.a."}</b></div>
+    <div><small>Actif net corrigé</small><b>À compléter</b></div></div>
+    <p class="disclaimer">${isProc?"Décote de procédure collective appliquée. ":""}Estimation indicative à partir des comptes publiés. Ne constitue pas un conseil en investissement.</p>`:'<p class="sub">Pas assez de données financières.</p>'}</div>
+  ${isProc?`<div class="sec"><h3>Historique BODACC</h3>${d.e.map(e=>`<div class="ev"><div><b>${fmtD(e.date)}</b> · ${esc(e.nature||"")}</div><div class="sub">${esc(e.tribunal||"")}</div>${e.complement?`<div class="sub">${esc(e.complement.slice(0,400))}</div>`:""}${e.url?`<a href="${esc(e.url)}" target="_blank" rel="noopener">Voir l'annonce</a>`:""}</div>`).join("")}</div>`:""}
+  <div class="sec deal"><h3>Deal flow</h3>
+    <div class="row2">
+      <select id="d-stage" aria-label="Étape">${STAGES.map(([k,l])=>`<option value="${k}" ${deal&&deal.stage===k?"selected":""}>${l}</option>`).join("")}</select>
+      <select id="d-mode" aria-label="Mode"><option value="rachat" ${deal&&deal.mode==="intermediation"?"":"selected"}>Rachat en propre</option><option value="intermediation" ${deal&&deal.mode==="intermediation"?"selected":""}>Intermédiation</option></select>
+      <button class="btn primary" id="d-save">${deal?"Mettre à jour":"Ajouter au pipeline"}</button>
+    </div>
+    <textarea id="d-notes" placeholder="Notes, prochaine action…">${esc(deal?deal.notes:"")}</textarea>
+    <span class="sub" id="d-msg"></span>
+  </div>
+  <div class="sec"><h3>Message d'approche</h3>
+    <p class="sub" style="margin-top:0">${isProc?"Rédigé pour l'administrateur ou le mandataire judiciaire (offre de reprise).":"Rédigé pour le dirigeant, sur un ton respectueux et sans pression."}</p>
+    <button class="btn" id="ai-go">Rédiger avec Claude</button>
+    <div class="ai" id="ai-out" hidden></div>
+  </div>`;
+  $("#d-save").onclick = saveDeal;
+  $("#ai-go").onclick = draft;
+  if(!sample) $("#ai-go").disabled = true;
+}
+
+async function saveDeal(){
+  const {x} = current, siren = x.siren, stage = $("#d-stage").value, mode = $("#d-mode").value, notes = $("#d-notes").value;
+  if(!STAGE_L[stage] || !["rachat","intermediation"].includes(mode)) return;
+  $("#d-save").disabled = true; $("#d-msg").textContent = "Enregistrement…";
+  try{
+    await sql(`insert into deals(siren,stage,mode,notes) values('${siren}','${stage}','${mode}',${sq(notes)})
+      on conflict (siren) do update set stage=excluded.stage, mode=excluded.mode, notes=excluded.notes, updated_at=now() returning id`);
+    $("#d-msg").textContent = "Enregistré dans le pipeline (" + STAGE_L[stage] + ").";
+    const r = ALL.find(a=>a.siren===siren); if(r) r.stage = stage;
+    DEALS = await sql(`select d.*, c.nom, c.commune, s.score::float8 score from deals d join companies c using(siren) left join scores s using(siren) order by d.updated_at desc`);
+    kpis(); render(); board();
+  }catch(e){ $("#d-msg").textContent = explain(e); }
+  $("#d-save").disabled = false;
+}
+
+async function draft(){
+  const {x, detail:d} = current, out = $("#ai-out");
+  out.hidden = false; out.textContent = "Rédaction en cours…"; $("#ai-go").disabled = true;
+  const isProc = (d.e||[]).length > 0;
+  const facts = {
+    entreprise: d.c?.nom, ville: d.c?.commune, activite: (d.c?.naf||"") + " " + (NAF[d.c?.naf]||""),
+    creation: d.c?.date_creation, effectif: EFF[d.c?.tranche_effectif],
+    dirigeant_principal: (d.o||[]).filter(o=>!/commissaire/i.test(o.qualite||"")).map(o=>`${o.prenoms} ${o.nom}, ${o.qualite}`)[0] || null,
+    procedure: isProc ? d.e[0] : null, finances: (d.f||[]).slice(0,2),
+    mode: $("#d-mode")?.value || "rachat"
+  };
+  const prompt = `Tu es un repreneur d'entreprises basé en Île-de-France (Fred, Fredjopartners). Rédige en français un premier message d'approche court (140 à 200 mots), avec un objet.
+${isProc ? "Destinataire : l'administrateur ou le mandataire judiciaire en charge de la procédure. Objectif : manifester un intérêt sérieux pour une offre de reprise (plan de cession), demander le dossier de présentation, la date limite de dépôt des offres et l'accès à la data room. Ton factuel et professionnel." : "Destinataire : le dirigeant. Objectif : ouvrir une conversation confidentielle sur la transmission de son entreprise, en valorisant ce qu'il a construit. Ton respectueux, sans pression, sans évoquer son âge ni de difficultés. Mentionne la confidentialité et propose un échange de 20 minutes. Termine par une ligne indiquant qu'il peut demander à ne plus être contacté."}
+N'invente aucun chiffre ni fait absent des données. Pas de placeholders entre crochets sauf [Téléphone].
+Données : ${JSON.stringify(facts)}`;
+  try{
+    const r = await sample(prompt, { onText: ({text}) => { out.textContent = text; }, modelTier: "default" });
+    out.textContent = r.text;
+  }catch(e){
+    out.textContent = e.code === "not_granted" ? "La rédaction par Claude n'est pas autorisée pour cette page." : e.code === "rate_limited" ? "Trop de demandes : réessaie dans une minute." : (e.text || "La rédaction a échoué : " + (e.message||e.code));
+  }
+  $("#ai-go").disabled = false;
+}
+
+/* ---------- Pipeline ---------- */
+function board(){
+  $("#board").innerHTML = STAGES.map(([k,l],i)=>{
+    const items = DEALS.filter(d=>d.stage===k);
+    return `<div class="col"><h3>${l}<span class="sub mono">${items.length}</span></h3>
+      ${items.map(d=>`<div class="card"><div class="nm" data-open="${esc(d.siren)}">${esc(d.nom)}</div>
+        <div class="sub">${esc(d.commune||"")} · score ${d.score!=null?Math.round(d.score):"–"} · ${d.mode==="intermediation"?"Intermédiation":"Rachat"}</div>
+        ${d.notes?`<div class="sub">${esc(d.notes.slice(0,120))}</div>`:""}
+        <div class="mv"><button data-mv="${esc(d.siren)}" data-to="${i-1}" ${i===0?"disabled":""} aria-label="Étape précédente">←</button><button data-mv="${esc(d.siren)}" data-to="${i+1}" ${i===STAGES.length-1?"disabled":""} aria-label="Étape suivante">→</button></div>
+      </div>`).join("") || `<div class="empty">Aucun dossier</div>`}</div>`;
+  }).join("");
+}
+$("#board").addEventListener("click", async e=>{
+  const o = e.target.closest("[data-open]"); if(o) return openFiche(o.dataset.open);
+  const b = e.target.closest("[data-mv]"); if(!b) return;
+  const siren = b.dataset.mv, st = STAGES[+b.dataset.to]; if(!st || !/^\d{9}$/.test(siren)) return;
+  b.disabled = true;
+  try{ await sql(`update deals set stage='${st[0]}', updated_at=now() where siren='${siren}' returning id`);
+    const d = DEALS.find(z=>z.siren===siren); d.stage = st[0]; const r = ALL.find(a=>a.siren===siren); if(r) r.stage = st[0];
+    board(); render(); kpis();
+  }catch(err){ status(explain(err), true); b.disabled = false; }
+});
+
+/* ---------- Réglages ---------- */
+let W = [];
+async function loadSettings(){
+  try{
+    W = await sql(`select key, weight::float w, label from scoring_config order by weight desc`);
+    drawW();
+    const logs = await sql(`select id, source, statut, to_char(started_at at time zone 'Europe/Paris','DD/MM HH24:MI') t, left(coalesce(message,''),120) m from sources_log order by id desc limit 8`);
+    $("#logs").innerHTML = logs.map(l=>`<tr><td class="mono">${esc(l.t)}</td><td>${esc(l.source)}</td><td>${esc(l.statut)}</td><td class="sub mono">${esc(l.m)}</td></tr>`).join("");
+  }catch(e){ status(explain(e), true); }
+}
+function drawW(){
+  $("#weights").innerHTML = W.map((w,i)=>`<div class="w"><label for="w${i}">${esc(w.label)}</label><input id="w${i}" type="range" min="0" max="60" step="5" value="${Math.round(w.w*100)}" data-i="${i}"><span class="mono">${Math.round(w.w*100)} %</span></div>`).join("");
+  sumW();
+}
+function sumW(){ const s = W.reduce((a,w)=>a+Math.round(w.w*100),0); $("#wsum").textContent = `Total ${s} % ` + (s===100?"":"· les poids seront normalisés à 100 %"); }
+$("#weights").addEventListener("input", e=>{ const i=e.target.dataset.i; if(i==null) return; W[i].w = e.target.value/100; e.target.nextElementSibling.textContent = e.target.value+" %"; sumW(); });
+$("#saveW").onclick = async ()=>{
+  const s = W.reduce((a,w)=>a+w.w,0) || 1; $("#saveW").disabled = true;
+  try{
+    await sql(W.map(w=>`update scoring_config set weight=${(w.w/s).toFixed(4)} where key=${sq(w.key)};`).join("\n") + "\nselect public.compute_scores() n;");
+    await loadSettings(); await load();
+  }catch(e){ status(explain(e), true); }
+  $("#saveW").disabled = false;
+};
+async function run(payload, label){
+  $("#runMsg").textContent = label + " : lancé. Les résultats arrivent en 1 à 2 minutes, puis clique sur « Actualiser ».";
+  try{ await sql(`select private.run_ingest('${JSON.stringify(payload)}'::jsonb) id`); setTimeout(loadSettings, 4000); }
+  catch(e){ $("#runMsg").textContent = explain(e); }
+}
+$("#runBodacc").onclick = ()=>run({mode:"bodacc", max:500}, "BODACC");
+$("#runEnrich").onclick = ()=>run({mode:"enrich", batch:200}, "Enrichissement");
+$("#runCed").onclick = ()=>run({mode:"cedants", pages:8}, "Cédants");
+
+/* ---------- UI wiring ---------- */
+document.querySelectorAll("nav.tabs [data-tab]").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll("nav.tabs [data-tab]").forEach(z=>z.setAttribute("aria-selected", z===b));
+  ["cibles","pipeline","reglages"].forEach(t=>$("#tab-"+t).hidden = t!==b.dataset.tab);
+  if(b.dataset.tab==="reglages" && mcp) loadSettings();
+});
+["#q","#dep","#camin","#agemin","#btp"].forEach(s=>$(s).addEventListener("input", render));
+$("#smin").addEventListener("input", e=>{ $("#smin-o").textContent = e.target.value; render(); });
+$("#typeSeg").addEventListener("click", e=>{ const b=e.target.closest("button"); if(!b) return; typeF=b.dataset.v; $("#typeSeg").querySelectorAll("button").forEach(z=>z.setAttribute("aria-pressed", z===b)); render(); });
+document.querySelectorAll("th[data-sort]").forEach(th=>th.onclick=()=>{ const k=th.dataset.sort; if(sortK===k) sortDir*=-1; else {sortK=k; sortDir = k==="nom"?1:-1;} render(); });
+$("#rows").addEventListener("click", e=>{ const tr=e.target.closest("tr.row"); if(tr) openFiche(tr.dataset.siren); });
+$("#rows").addEventListener("keydown", e=>{ if(e.key==="Enter"){ const tr=e.target.closest("tr.row"); if(tr) openFiche(tr.dataset.siren); }});
+$("#f-close").onclick = ()=>$("#fiche").close();
+$("#fiche").addEventListener("click", e=>{ if(e.target.id==="fiche") $("#fiche").close(); });
+$("#refresh").onclick = ()=>{ if(mcp) load(); };
+
+(async ()=>{
+  try{ [mcp, sample] = await Promise.all([window.claude.use("mcp"), window.claude.use("sample")]); }catch{}
+  if(!mcp){ status("Cette page lit ta base Supabase via le connecteur Claude. Ouvre-la depuis claude.ai, connecté à ton compte, pour voir les cibles.", true); return; }
+  load();
+})();
+</script>
+
+</body></html>
