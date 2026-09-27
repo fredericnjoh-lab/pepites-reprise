@@ -16,6 +16,7 @@ supabase/
     20260926234227_ingestion_cron.sql  # secret, run_ingest(), tâches pg_cron
     20260927184500_bodacc_ventes.sql   # cessions de fonds dans listings + cron 4 h 05
     20260927200000_multisecteur.sql    # scoring IT et récurrence, multiples par secteur, cédants par famille
+    20260927203000_durcissement.sql    # RLS lecture réservée à filon_admin, index, droits run_ingest
   functions/ingest/index.ts            # Edge Function : BODACC (procédures et cessions), enrichissement, cédants 60+ par secteur
 index.html                             # page d'accueil Filon
 cockpit/index.html                     # cockpit (interface ; données via le connecteur Supabase dans claude.ai)
