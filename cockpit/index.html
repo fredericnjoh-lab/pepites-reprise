@@ -784,19 +784,53 @@ function drawFiche(){
   $("#d-save").onclick = saveDeal;
   $("#ai-go").onclick = draft;
   if(!sample) $("#ai-go").disabled = true;
-  if(!mcp){ $("#d-save").disabled = true; $("#d-msg").textContent = "Le pipeline s'enregistre dans la base."; }
 }
 
+const PIPE_KEY = "filon-pipeline";
+function loadLocalDeals(){
+  try {
+    const raw = JSON.parse(localStorage.getItem(PIPE_KEY) || "[]");
+    if (!Array.isArray(raw)) return [];
+    return raw.filter(d => d && /^\d{9}$/.test(d.siren) && STAGE_L[d.stage] && ["rachat","intermediation"].includes(d.mode)).map(d => ({
+      siren: d.siren, stage: d.stage, mode: d.mode, notes: String(d.notes || "").slice(0, 4000),
+      nom: String(d.nom || "").slice(0, 160), commune: String(d.commune || "").slice(0, 80), score: typeof d.score === "number" ? d.score : null
+    }));
+  } catch (e) { return []; }
+}
+function saveLocalDeals(){
+  localStorage.setItem(PIPE_KEY, JSON.stringify(DEALS.map(d => ({
+    siren: d.siren, stage: d.stage, mode: d.mode, notes: d.notes || "", nom: d.nom || "", commune: d.commune || "", score: d.score ?? null
+  }))));
+}
+function rememberDeal(siren, stage, mode, notes){
+  const x = ALL.find(a => a.siren === siren) || {};
+  const prev = DEALS.find(d => d.siren === siren) || {};
+  const deal = {
+    siren, stage, mode, notes: String(notes || "").slice(0, 4000),
+    nom: x.nom || prev.nom || "", commune: x.commune || prev.commune || "", score: x.score ?? prev.score ?? null
+  };
+  DEALS = [deal, ...DEALS.filter(d => d.siren !== siren)];
+  saveLocalDeals();
+  if (x.siren) x.stage = stage;
+  return deal;
+}
 async function saveDeal(){
   const {x} = current, siren = x.siren, stage = $("#d-stage").value, mode = $("#d-mode").value, notes = $("#d-notes").value;
-  if(!STAGE_L[stage] || !["rachat","intermediation"].includes(mode)) return;
+  if(!/^\d{9}$/.test(siren || "") || !STAGE_L[stage] || !["rachat","intermediation"].includes(mode)) return;
   $("#d-save").disabled = true; $("#d-msg").textContent = "Enregistrement…";
   try{
-    await sql(`insert into deals(siren,stage,mode,notes) values('${siren}','${stage}','${mode}',${sq(notes)})
-      on conflict (siren) do update set stage=excluded.stage, mode=excluded.mode, notes=excluded.notes, updated_at=now() returning id`);
-    $("#d-msg").textContent = "Ajouté au pipeline, étape " + STAGE_L[stage] + ".";
-    const r = ALL.find(a=>a.siren===siren); if(r) r.stage = stage;
-    DEALS = await sql(DEALS_SQL);
+    if (!mcp) {
+      const deal = rememberDeal(siren, stage, mode, notes);
+      if (current.detail) current.detail.d = deal;
+      $("#d-msg").textContent = "Ajouté au pipeline, étape " + STAGE_L[stage] + ". Conservé sur cet appareil.";
+      $("#d-save").textContent = "Mettre à jour";
+    } else {
+      await sql(`insert into deals(siren,stage,mode,notes) values('${siren}','${stage}','${mode}',${sq(notes)})
+        on conflict (siren) do update set stage=excluded.stage, mode=excluded.mode, notes=excluded.notes, updated_at=now() returning id`);
+      $("#d-msg").textContent = "Ajouté au pipeline, étape " + STAGE_L[stage] + ".";
+      const r = ALL.find(a=>a.siren===siren); if(r) r.stage = stage;
+      DEALS = await sql(DEALS_SQL);
+    }
     kpis(false); render(); board(); funnel();
   }catch(e){ $("#d-msg").textContent = explain(e); }
   $("#d-save").disabled = false;
@@ -839,12 +873,18 @@ function board(){
   }).join("");
 }
 $("#board").addEventListener("click", async e=>{
-  const o = e.target.closest("[data-open]"); if(o) return openFiche(o.dataset.open);
+  const o = e.target.closest("[data-open]"); if(o) return openAny(o.dataset.open);
   const b = e.target.closest("[data-mv]"); if(!b) return;
   const siren = b.dataset.mv, st = STAGES[+b.dataset.to]; if(!st || !/^\d{9}$/.test(siren)) return;
   b.disabled = true;
-  try{ await sql(`update deals set stage='${st[0]}', updated_at=now() where siren='${siren}' returning id`);
-    const d = DEALS.find(z=>z.siren===siren); d.stage = st[0]; const r = ALL.find(a=>a.siren===siren); if(r) r.stage = st[0];
+  try{
+    if (!mcp) {
+      const d = DEALS.find(z=>z.siren===siren); if(!d) return;
+      rememberDeal(siren, st[0], d.mode, d.notes);
+    } else {
+      await sql(`update deals set stage='${st[0]}', updated_at=now() where siren='${siren}' returning id`);
+      const d = DEALS.find(z=>z.siren===siren); d.stage = st[0]; const r = ALL.find(a=>a.siren===siren); if(r) r.stage = st[0];
+    }
     board(); render(); kpis(false); funnel();
   }catch(err){ status(explain(err), true); b.disabled = false; }
 });
@@ -984,7 +1024,7 @@ function toTarget(c){
     procedure: ev.procedure && ev.procedure !== "cloture" ? ev.procedure : "",
     date_procedure: ev.date_procedure || "",
     score: ev.score, p_cession: ev.p_cession, decote: ev.decote, qualite: ev.qualite, potentiel: ev.potentiel,
-    vb: ev.vb, vh: ev.vh, sig: ev.signals || [], stage: null,
+    vb: ev.vb, vh: ev.vh, sig: ev.signals || [], stage: (DEALS.find(d => d.siren === c.siren) || {}).stage || null,
     vente_date: c.vente_date || null, vente_prix: c.vente_prix, vente_role: c.vente_role || null, vente_nature: c.vente_nature || null,
     _raw: c, _val: ev
   };
@@ -998,11 +1038,20 @@ function paintCatalogue(rows, phase){
 function paintCatalogueNow(rows, phase){
   lastPaint = Date.now();
   ALL = rows.map(toTarget);
+  let pipeDirty = false;
+  DEALS.forEach(d => {
+    const x = ALL.find(a => a.siren === d.siren);
+    if (!x) return;
+    if (x.score != null && d.score !== x.score) { d.score = x.score; pipeDirty = true; }
+    if (x.nom && d.nom !== x.nom) { d.nom = x.nom; pipeDirty = true; }
+    if (x.commune && d.commune !== x.commune) { d.commune = x.commune; pipeDirty = true; }
+  });
+  if (pipeDirty && !mcp) saveLocalDeals();
   kpis(phase === "bodacc" && ALL.length && $("#k-total").textContent === "–");
   matrix();
   radar(!swept);
   swept = true;
-  top5(); deptBars(); flux(); render();
+  top5(); deptBars(); flux(); render(); board(); funnel();
   const live = $("#fresh").closest(".live");
   if (live) live.classList.toggle("off", phase !== "done");
   $("#fresh").textContent = ALL.length + " cibles · " + (phase === "done" ? "BODACC + Sirene" : "chargement");
@@ -1027,7 +1076,7 @@ function detailOf(x){
     } : null,
     s: { score: ev.score, p_cession: ev.p_cession, decote: ev.decote, qualite: ev.qualite, potentiel: ev.potentiel },
     g: (ev.signals || []).map(s => ({ categorie: s.c, libelle: s.l })),
-    d: null,
+    d: DEALS.find(d => d.siren === x.siren) || null,
     l: c.listings || []
   };
 }
@@ -1059,6 +1108,7 @@ async function openCatalogue(siren){
   render();
 }
 async function loadCatalogue(force){
+  if (!mcp) DEALS = loadLocalDeals();
   status("Chargement des cibles BODACC et Sirene…");
   $("#fresh").textContent = "Chargement…";
   $("#smin").value = "0";
