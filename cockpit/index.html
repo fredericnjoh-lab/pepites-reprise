@@ -972,16 +972,35 @@ clock(); setInterval(clock, 30000);
 
 const PUB_TAG = {Liquidation:"liquidation", Redressement:"redressement", Sauvegarde:"sauvegarde", "Procédure":"decote", Cession:"pub-cession"};
 let PUB = [];
-function openPublicFiche(i){
+let pubGen = 0;
+function publicFicheHtml(x, s, state){
+  const lines = filonFicheLignes(x, s).map(function (line) {
+    let v = line.v;
+    if (line.k === "Activité" && NAF[v]) v = v + " " + NAF[v];
+    return `<div><span class="label">${esc(line.k)}</span><span>${esc(v)}</span></div>`;
+  }).join("");
+  const complement = x.complement ? `<p class="sub">${esc(x.complement)}</p>` : "";
+  const note = filonFicheNote(x, s, state);
+  return `<div class="sec"><h3 class="label">Annonce</h3><div class="kv">${lines}</div>${complement}${note ? `<p class="sub">${esc(note)}</p>` : ""}</div>`;
+}
+async function openPublicFiche(i){
   const x = PUB[i];
   if (!x) return;
-  $("#f-siren").textContent = "BODACC · " + fmtD(x.date);
+  const gen = ++pubGen;
+  $("#f-siren").textContent = x.siren ? "SIREN " + x.siren.replace(/(\d{3})(\d{3})(\d{3})/, "$1 $2 $3") : "BODACC · " + fmtD(x.date);
   $("#f-title").textContent = x.nom;
   $("#f-sub").textContent = [x.commune, x.dept, x.label].filter(Boolean).join(" · ");
   const href = /^https:/.test(x.url || "") ? x.url : "";
-  $("#f-body").innerHTML = `<p class="sub">Annonce publique. Le Score Pépite se charge via le connecteur Supabase.</p>` +
-    (href ? `<p><a class="btn primary" href="${esc(href)}" rel="noopener noreferrer">Voir l'annonce</a></p>` : "");
+  const btn = href ? `<p><a class="btn primary" href="${esc(href)}" rel="noopener noreferrer">Voir l'annonce</a></p>` : "";
+  const paint = function (s, state) { $("#f-body").innerHTML = publicFicheHtml(x, s, state) + btn; };
+  paint(null, x.siren ? "loading" : "none");
   if (!$("#fiche").open) $("#fiche").showModal();
+  if (!x.siren) return;
+  const s = await filonSirene(x.siren);
+  if (gen !== pubGen) return;
+  if (s && s.ok) paint(s, "ok");
+  else if (s && s.reason === "http") paint(null, "error");
+  else paint(null, "miss");
 }
 async function loadBodaccPublic(){
   status("Chargement des annonces BODACC…");

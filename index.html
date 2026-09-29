@@ -149,10 +149,15 @@ header.top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-
 .feed{grid-column:span 12}
 .feed-head{display:flex;justify-content:space-between;align-items:baseline;gap:var(--space-3);margin-bottom:var(--space-2)}
 .annonce{display:grid;grid-template-columns:88px minmax(0,1fr) auto;gap:12px;align-items:baseline;padding:10px 0;border-bottom:1px solid var(--line);text-decoration:none;color:inherit;background:none;border-left:0;border-right:0;border-top:0;font:inherit;text-align:left;width:100%;cursor:pointer}
-dialog.fiche{border:1px solid var(--line);border-radius:14px;background:var(--surface-1);color:var(--ink);padding:var(--space-6);max-width:440px;width:calc(100% - 32px)}
+dialog.fiche{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:14px;background:var(--surface-1);color:var(--ink);padding:var(--space-6);max-width:520px;width:calc(100% - 32px);max-height:min(720px, calc(100dvh - 32px));overflow:hidden}
 dialog.fiche::backdrop{background:#000000a6}
 dialog.fiche h2{margin:8px 0;font:600 20px/1.25 var(--font-sans)}
-dialog.fiche .actions{margin-top:var(--space-6)}
+dialog.fiche #fiche-body{overflow:auto;min-height:0}
+dialog.fiche .facts{display:grid;gap:10px;margin-top:var(--space-4)}
+dialog.fiche .facts div{display:grid;grid-template-columns:120px minmax(0,1fr);gap:8px;align-items:baseline;font-size:14px}
+dialog.fiche .facts .label{color:var(--ink-muted);font-size:12px}
+dialog.fiche #fiche-body .note{margin:12px 0 0}
+dialog.fiche .actions{flex:none;margin-top:var(--space-6)}
 .annonce:last-child{border-bottom:0}
 .annonce .who{display:grid;min-width:0}
 .annonce .nm{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -323,6 +328,7 @@ footer.site strong{color:var(--ink);font-weight:500}
     <p class="label" id="fiche-kicker"></p>
     <h2 id="fiche-nom"></h2>
     <p class="note" id="fiche-meta"></p>
+    <div id="fiche-body"></div>
     <div class="actions">
       <a class="btn primary" id="fiche-url" href="">Voir l'annonce</a>
       <button type="button" class="btn" id="fiche-close">Fermer</button>
@@ -360,17 +366,56 @@ stage.addEventListener("pointerleave", () => {
 
 const ANGLES = {93:0, 92:45, 75:90, 94:135, 91:180, 77:225, 78:270, 95:315};
 let ROWS = [];
+let ficheGen = 0;
 const fiche = document.getElementById("fiche");
-function showFiche(i){
+function paintFiche(x, s, state){
+  const box = document.getElementById("fiche-body");
+  box.replaceChildren();
+  const facts = document.createElement("div");
+  facts.className = "facts";
+  filonFicheLignes(x, s).forEach(function (line) {
+    const row = document.createElement("div");
+    const k = document.createElement("span");
+    k.className = "label";
+    k.textContent = line.k;
+    const v = document.createElement("span");
+    v.textContent = line.v;
+    row.append(k, v);
+    facts.appendChild(row);
+  });
+  box.appendChild(facts);
+  if (x.complement) {
+    const p = document.createElement("p");
+    p.className = "note";
+    p.textContent = x.complement;
+    box.appendChild(p);
+  }
+  const note = filonFicheNote(x, s, state);
+  if (note) {
+    const p = document.createElement("p");
+    p.className = "note";
+    p.textContent = note;
+    box.appendChild(p);
+  }
+}
+async function showFiche(i){
   const x = ROWS[i];
   if (!x) return;
+  const gen = ++ficheGen;
   document.getElementById("fiche-kicker").textContent = "BODACC · " + fmtDate(x.date);
   document.getElementById("fiche-nom").textContent = x.nom;
   document.getElementById("fiche-meta").textContent = [x.commune, x.dept, x.label].filter(Boolean).join(" · ");
   const link = document.getElementById("fiche-url");
   if (/^https:/.test(x.url || "")) { link.href = x.url; link.hidden = false; }
   else { link.hidden = true; link.removeAttribute("href"); }
+  paintFiche(x, null, x.siren ? "loading" : "none");
   if (!fiche.open) fiche.showModal();
+  if (!x.siren) return;
+  const s = await filonSirene(x.siren);
+  if (gen !== ficheGen) return;
+  if (s && s.ok) paintFiche(x, s, "ok");
+  else if (s && s.reason === "http") paintFiche(x, null, "error");
+  else paintFiche(x, null, "miss");
 }
 document.getElementById("fiche-close").onclick = () => fiche.close();
 fiche.addEventListener("click", e => { if (e.target === fiche) fiche.close(); });
@@ -443,7 +488,7 @@ function place(rows){
 filonAnnonces().then(function (rows) {
   place(rows);
   const n = rows.length;
-  document.getElementById("loaded").textContent = n + " sociétés publiées au BODACC sur 21 jours. Le Score Pépite se charge dans le cockpit, via le connecteur Supabase.";
+  document.getElementById("loaded").textContent = n + " sociétés publiées au BODACC sur 21 jours.";
   document.getElementById("feed-meta").textContent = n + " annonces";
   if (!n) document.getElementById("feed-rows").textContent = "Aucune annonce sur les 21 derniers jours.";
 }).catch(function () {
