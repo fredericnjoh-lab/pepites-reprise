@@ -638,7 +638,7 @@ function markSelected(siren){
   if (d) { d.classList.add("sel"); d.parentNode.appendChild(d); halo.setAttribute("cx", d.getAttribute("cx")); halo.setAttribute("cy", d.getAttribute("cy")); halo.classList.add("on"); }
   else halo.classList.remove("on");
 }
-$("#dots").addEventListener("click", e => { const d = e.target.closest(".dot"); if (d) openFiche(d.dataset.siren); });
+$("#dots").addEventListener("click", e => { const d = e.target.closest(".dot"); if (d) openAny(d.dataset.siren); });
 
 /* ---------- Cadran ---------- */
 function dial(v, size, hotAt){
@@ -652,7 +652,7 @@ function dial(v, size, hotAt){
 }
 
 function top5(){
-  const t = [...ALL].sort((a,b)=>b.score-a.score).slice(0,5);
+  const t = [...ALL].filter(x => x.score != null).sort((a,b)=>b.score-a.score).slice(0,5);
   $("#top5").innerHTML = t.map(x => `<button class="t5" data-siren="${esc(x.siren)}">${dial(x.score,40,HOT)}
     <span><span class="nm">${esc(x.nom)}</span><br><span class="sub">${esc(x.commune||"")} · ${esc(NAF[x.naf]||x.naf||"")}</span></span>
     <span>${situationTag(x)}</span></button>`).join("");
@@ -664,7 +664,7 @@ function filtered(){
   const q = $("#q").value.trim().toLowerCase(), dep = $("#dep").value, smin = +$("#smin").value,
         camin = +$("#camin").value, amin = +$("#agemin").value, frag = $("#btp").value;
   let r = ALL.filter(x =>
-    x.score >= smin &&
+    (x.score == null ? smin === 0 : x.score >= smin) &&
     (!dep || x.departement === dep) &&
     (typeF === "all" || (typeF === "proc" ? !!PROC_L[x.procedure] : typeF === "vente" ? !!x.vente_role : x.source === "sirene_cedant" || (x.age >= 60 && !PROC_L[x.procedure]))) &&
     (!camin || (camin === 1 ? x.ca != null : x.ca >= camin)) &&
@@ -689,10 +689,10 @@ function situationTag(x){
   return `${base}<span class="tag vente" style="margin-left:4px">${venteLabel(x.vente_role, x.vente_nature)}</span>`;
 }
 function render(){
-  const r = filtered(), shown = r.slice(0, 250);
+  const r = filtered(), shown = r.slice(0, 3000);
   $("#rows").innerHTML = shown.map(x => `
     <tr class="row" data-siren="${esc(x.siren)}" tabindex="0">
-      <td>${dial(x.score,40,HOT)}</td>
+      <td>${x.score == null ? '<span class="sub mono">–</span>' : dial(x.score,40,HOT)}</td>
       <td><div class="nm">${esc(x.nom)}</div><div class="sub">${esc(x.commune||"")} (${esc(x.departement||"?")}) · <span class="mono">${esc(x.naf||"")}</span> ${esc(NAF[x.naf]||"")}${x.te && x.te!=="NN" ? " · "+esc(EFF[x.te]||x.te)+" sal." : ""}</div></td>
       <td>${situationTag(x)}${PROC_L[x.procedure]?`<div class="sub mono" style="margin-top:4px">${fmtD(x.date_procedure)}</div>`:""}${x.vente_prix!=null?`<div class="sub mono" style="margin-top:4px">${fmtE(x.vente_prix)}</div>`:""}${x.stage?`<div style="margin-top:4px"><span class="tag stage">${STAGE_L[x.stage]}</span></div>`:""}</td>
       <td class="num"><span class="fig">${fmtE(x.ca)}</span>${x.annee_fin?`<div class="sub mono">${x.annee_fin}</div>`:""}</td>
@@ -700,7 +700,7 @@ function render(){
       <td class="num"><span class="fig">${x.vh ? fmtE(x.vb)+" – "+fmtE(x.vh) : "–"}</span></td>
       <td><div class="chips">${(x.sig||[]).slice(0,4).map(s=>`<span class="chip ${esc(s.c)}">${esc(s.l.length>34?s.l.slice(0,33)+"…":s.l)}</span>`).join("")}</div></td>
     </tr>`).join("") || `<tr><td colspan="7" class="more sub">Aucune cible ne correspond à ces filtres.</td></tr>`;
-  $("#count").textContent = `${r.length} cible${r.length>1?"s":""}` + (r.length>250?" · les 250 premières sont affichées":"");
+  $("#count").textContent = `${r.length} cible${r.length>1?"s":""}` + (r.length>3000?" · les 3 000 premières sont affichées":"");
 }
 
 /* ---------- Fiche ---------- */
@@ -784,6 +784,7 @@ function drawFiche(){
   $("#d-save").onclick = saveDeal;
   $("#ai-go").onclick = draft;
   if(!sample) $("#ai-go").disabled = true;
+  if(!mcp){ $("#d-save").disabled = true; $("#d-msg").textContent = "Le pipeline s'enregistre dans la base."; }
 }
 
 async function saveDeal(){
@@ -892,16 +893,16 @@ document.querySelectorAll("nav.tabs [data-tab]").forEach(b=>b.onclick=()=>{
 $("#smin").addEventListener("input", e=>{ $("#smin-o").textContent = e.target.value; render(); });
 $("#typeSeg").addEventListener("click", e=>{ const b=e.target.closest("button"); if(!b) return; typeF=b.dataset.v; $("#typeSeg").querySelectorAll("button").forEach(z=>z.setAttribute("aria-pressed", z===b)); render(); });
 document.querySelectorAll("th[data-sort]").forEach(th=>th.onclick=()=>{ const k=th.dataset.sort; if(sortK===k) sortDir*=-1; else {sortK=k; sortDir = k==="nom"?1:-1;} render(); });
+function openAny(siren){ if (!mcp) return openCatalogue(siren); return openFiche(siren); }
 function openFrom(el){
-  if (!el) return;
-  if (el.dataset.pub !== undefined && el.dataset.pub !== "") { openPublicFiche(+el.dataset.pub); return; }
-  openFiche(el.dataset.siren);
+  if (!el || !el.dataset.siren) return;
+  return openAny(el.dataset.siren);
 }
 $("#rows").addEventListener("click", e=>{ const tr=e.target.closest("tr.row"); if(tr) openFrom(tr); });
 $("#rows").addEventListener("keydown", e=>{ if(e.key==="Enter"){ const tr=e.target.closest("tr.row"); if(tr) openFrom(tr); }});
 $("#f-close").onclick = ()=>$("#fiche").close();
 $("#fiche").addEventListener("click", e=>{ if(e.target.id==="fiche") $("#fiche").close(); });
-$("#refresh").onclick = ()=>{ if(mcp) load(); };
+$("#refresh").onclick = ()=>{ if(mcp) load(); else loadCatalogue(true); };
 
 
 /* ---------- Matrice de points (densité des cibles) ---------- */
@@ -939,7 +940,7 @@ function callouts(){
     box.appendChild(el); requestAnimationFrame(() => el.classList.add("show"));
   });
 }
-$("#callouts").addEventListener("click", e => { const c = e.target.closest(".callout"); if (c) openFiche(c.dataset.siren); });
+$("#callouts").addEventListener("click", e => { const c = e.target.closest(".callout"); if (c) openAny(c.dataset.siren); });
 
 /* ---------- Tuiles secondaires ---------- */
 function deptBars(){
@@ -970,66 +971,105 @@ document.querySelectorAll(".tile").forEach(t => t.addEventListener("pointermove"
 function clock(){ $("#clock").textContent = new Date().toLocaleString("fr-FR",{weekday:"short",day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"}).toUpperCase(); }
 clock(); setInterval(clock, 30000);
 
-const PUB_TAG = {Liquidation:"liquidation", Redressement:"redressement", Sauvegarde:"sauvegarde", "Procédure":"decote", Cession:"pub-cession"};
-let PUB = [];
-let pubGen = 0;
-function publicFicheHtml(x, s, state){
-  const lines = filonFicheLignes(x, s).map(function (line) {
-    let v = line.v;
-    if (line.k === "Activité" && NAF[v]) v = v + " " + NAF[v];
-    return `<div><span class="label">${esc(line.k)}</span><span>${esc(v)}</span></div>`;
-  }).join("");
-  const complement = x.complement ? `<p class="sub">${esc(x.complement)}</p>` : "";
-  const note = filonFicheNote(x, s, state);
-  return `<div class="sec"><h3 class="label">Annonce</h3><div class="kv">${lines}</div>${complement}${note ? `<p class="sub">${esc(note)}</p>` : ""}</div>`;
+let catGen = 0;
+let swept = false;
+let paintTimer = null;
+let lastPaint = 0;
+function toTarget(c){
+  const ev = filonEvaluer(c);
+  return {
+    siren: c.siren, nom: c.nom, naf: c.naf || "", departement: c.dept || "", commune: c.commune || "",
+    te: c.te || "", source: c.source || "", date_creation: c.creation || "",
+    lat: c.lat, lon: c.lon, age: ev.age, ca: ev.ca, rn: ev.rn, annee_fin: ev.annee_fin,
+    procedure: ev.procedure && ev.procedure !== "cloture" ? ev.procedure : "",
+    date_procedure: ev.date_procedure || "",
+    score: ev.score, p_cession: ev.p_cession, decote: ev.decote, qualite: ev.qualite, potentiel: ev.potentiel,
+    vb: ev.vb, vh: ev.vh, sig: ev.signals || [], stage: null,
+    vente_date: c.vente_date || null, vente_prix: c.vente_prix, vente_role: c.vente_role || null, vente_nature: c.vente_nature || null,
+    _raw: c, _val: ev
+  };
 }
-async function openPublicFiche(i){
-  const x = PUB[i];
+function paintCatalogue(rows, phase){
+  const run = function () { paintCatalogueNow(rows, phase); };
+  const now = Date.now();
+  if (phase === "done" || now - lastPaint > 800) { clearTimeout(paintTimer); run(); }
+  else { clearTimeout(paintTimer); paintTimer = setTimeout(run, 800); }
+}
+function paintCatalogueNow(rows, phase){
+  lastPaint = Date.now();
+  ALL = rows.map(toTarget);
+  kpis(phase === "bodacc" && ALL.length && $("#k-total").textContent === "–");
+  matrix();
+  radar(!swept);
+  swept = true;
+  top5(); deptBars(); flux(); render();
+  const live = $("#fresh").closest(".live");
+  if (live) live.classList.toggle("off", phase !== "done");
+  $("#fresh").textContent = ALL.length + " cibles · " + (phase === "done" ? "BODACC + Sirene" : "chargement");
+  status(null);
+}
+function detailOf(x){
+  const c = x._raw || {};
+  const ev = x._val || filonEvaluer(c);
+  return {
+    c: {
+      nom: x.nom, naf: x.naf, date_creation: x.date_creation, tranche_effectif: x.te,
+      categorie: c.categorie || "", nb_etablissements: c.etablissements, est_rge: !!c.rge,
+      adresse: c.adresse || "", commune: x.commune || ""
+    },
+    o: c.officers || [],
+    f: c.financials || [],
+    e: (c.events || []).map(e => ({ date: e.date, nature: e.nature, tribunal: e.tribunal, url: e.url, complement: e.complement })),
+    v: ev.vb != null || ev.vh != null ? {
+      fourchette_bas: ev.vb, fourchette_haut: ev.vh,
+      methode_rendement_bas: ev.rb, methode_rendement_haut: ev.rh,
+      methode_ca_bas: ev.cb, methode_ca_haut: ev.ch
+    } : null,
+    s: { score: ev.score, p_cession: ev.p_cession, decote: ev.decote, qualite: ev.qualite, potentiel: ev.potentiel },
+    g: (ev.signals || []).map(s => ({ categorie: s.c, libelle: s.l })),
+    d: null,
+    l: c.listings || []
+  };
+}
+async function openCatalogue(siren){
+  if (!/^\d{9}$/.test(siren || "")) return;
+  const x = ALL.find(r => r.siren === siren);
   if (!x) return;
-  const gen = ++pubGen;
-  $("#f-siren").textContent = x.siren ? "SIREN " + x.siren.replace(/(\d{3})(\d{3})(\d{3})/, "$1 $2 $3") : "BODACC · " + fmtD(x.date);
-  $("#f-title").textContent = x.nom;
-  $("#f-sub").textContent = [x.commune, x.dept, x.label].filter(Boolean).join(" · ");
-  const href = /^https:/.test(x.url || "") ? x.url : "";
-  const btn = href ? `<p><a class="btn primary" href="${esc(href)}" rel="noopener noreferrer">Voir l'annonce</a></p>` : "";
-  const paint = function (s, state) { $("#f-body").innerHTML = publicFicheHtml(x, s, state) + btn; };
-  paint(null, x.siren ? "loading" : "none");
+  const gen = ++catGen;
+  current = { x, detail: null };
+  markSelected(siren);
+  $("#f-siren").textContent = "SIREN " + siren.replace(/(\d{3})(\d{3})(\d{3})/, "$1 $2 $3");
+  $("#f-title").textContent = x.nom || "";
+  $("#f-sub").textContent = [x.commune, x.naf && (x.naf + " " + (NAF[x.naf] || ""))].filter(Boolean).join(" · ");
+  $("#f-body").innerHTML = `<p class="sub">Lecture de la fiche…</p>`;
   if (!$("#fiche").open) $("#fiche").showModal();
-  if (!x.siren) return;
-  const s = await filonSirene(x.siren);
-  if (gen !== pubGen) return;
-  if (s && s.ok) paint(s, "ok");
-  else if (s && s.reason === "http") paint(null, "error");
-  else paint(null, "miss");
+  if (!x._raw.enriched) {
+    const s = await filonSirene(siren);
+    if (gen !== catGen) return;
+    if (s && s.ok) {
+      filonFusion(x._raw, s);
+      Object.assign(x, toTarget(x._raw));
+    }
+  } else {
+    Object.assign(x, toTarget(x._raw));
+  }
+  current.x = x;
+  current.detail = detailOf(x);
+  drawFiche();
+  render();
 }
-async function loadBodaccPublic(){
-  status("Chargement des annonces BODACC…");
+async function loadCatalogue(force){
+  status("Chargement des cibles BODACC et Sirene…");
   $("#fresh").textContent = "Chargement…";
-  $("#fresh").closest(".live").classList.add("off");
-  try{
-    const rows = await filonAnnonces();
-    PUB = rows;
-    const proc = rows.filter(x => x.kind !== "cession").length;
-    $("#k-total").textContent = String(rows.length);
-    $("#k-proc").textContent = String(proc);
-    const head = document.querySelector(".t-top .sub");
-    if (head) head.textContent = "annonces BODACC";
-    $("#top5").innerHTML = rows.slice(0,5).map((x, i) => {
-      const tag = PUB_TAG[x.label] || "decote";
-      return `<button type="button" class="t5" data-pub="${i}"><span class="mono">${esc(x.dept)}</span><span><span class="nm">${esc(x.nom)}</span><br><span class="sub">${esc(x.commune)} · <span class="mono">${fmtD(x.date)}</span></span></span><span class="tag ${tag}">${esc(x.label)}</span></button>`;
-    }).join("") || `<p class="sub">Aucune annonce BODACC sur les 21 derniers jours.</p>`;
-    $("#flux").innerHTML = rows.slice(0,8).map((x, i) => {
-      return `<button type="button" class="fx" data-pub="${i}"><span class="mono">${fmtD(x.date)}</span><span class="nm">${esc(x.nom)}</span></button>`;
-    }).join("");
-    $("#rows").innerHTML = rows.slice(0,80).map((x, i) => {
-      const tag = PUB_TAG[x.label] || "decote";
-      return `<tr class="row" tabindex="0" data-pub="${i}"><td class="num mono">–</td><td><div class="nm">${esc(x.nom)}</div><div class="sub">${esc(x.commune)} (${esc(x.dept)})</div></td><td><span class="tag ${tag}">${esc(x.label)}</span><div class="sub mono" style="margin-top:4px">${fmtD(x.date)}</div></td><td class="num">–</td><td class="num">–</td><td class="num">–</td><td class="sub">Ouvrir la fiche</td></tr>`;
-    }).join("") || `<tr><td colspan="7" class="more sub">Aucune annonce BODACC sur les 21 derniers jours.</td></tr>`;
-    $("#count").textContent = rows.length + " annonce" + (rows.length > 1 ? "s" : "");
-    $("#fresh").textContent = rows.length + " annonces · BODACC";
-    status(rows.length ? null : "Aucune annonce BODACC sur les 21 derniers jours.", !rows.length);
-  }catch(e){
-    status("Les annonces BODACC ne répondent pas.", true);
+  $("#smin").value = "0";
+  $("#smin-o").textContent = "0";
+  try {
+    await filonCatalogue({
+      force: !!force,
+      onProgress: function (rows, meta) { paintCatalogue(rows, meta && meta.phase || ""); }
+    });
+  } catch (e) {
+    status("Les sources BODACC ou Sirene ne répondent pas.", true);
     $("#fresh").textContent = "Hors ligne";
   }
 }
@@ -1037,7 +1077,7 @@ drawRings();
 if (!RM) $("#sweep").classList.add("run");
 (async ()=>{
   try{ [mcp, sample] = await Promise.all([window.claude.use("mcp"), window.claude.use("sample")]); }catch{}
-  if(!mcp){ loadBodaccPublic(); return; }
+  if(!mcp){ loadCatalogue(false); return; }
   load();
 })();
 </script>

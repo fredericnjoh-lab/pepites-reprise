@@ -147,6 +147,11 @@ header.top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-
 .call.c2{right:0;top:42%}
 .call.c3{left:6%;bottom:10%}
 .feed{grid-column:span 12}
+#feed-rows{max-height:70vh;overflow:auto}
+dialog.fiche .score{margin:12px 0 0;font:500 28px/1 var(--font-mono);color:var(--gold);font-variant-numeric:tabular-nums}
+dialog.fiche .sec{margin-top:14px}
+dialog.fiche .sec h3{margin:0 0 6px;font:500 12px/1.3 var(--font-sans);color:var(--ink-muted)}
+.tag.cedant{color:var(--cession);border-color:color-mix(in srgb, var(--cession) 55%, var(--line))}
 .feed-head{display:flex;justify-content:space-between;align-items:baseline;gap:var(--space-3);margin-bottom:var(--space-2)}
 .annonce{display:grid;grid-template-columns:88px minmax(0,1fr) auto;gap:12px;align-items:baseline;padding:10px 0;border-bottom:1px solid var(--line);text-decoration:none;color:inherit;background:none;border-left:0;border-right:0;border-top:0;font:inherit;text-align:left;width:100%;cursor:pointer}
 dialog.fiche{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:14px;background:var(--surface-1);color:var(--ink);padding:var(--space-6);max-width:520px;width:calc(100% - 32px);max-height:min(720px, calc(100dvh - 32px));overflow:hidden}
@@ -368,33 +373,116 @@ const ANGLES = {93:0, 92:45, 75:90, 94:135, 91:180, 77:225, 78:270, 95:315};
 let ROWS = [];
 let ficheGen = 0;
 const fiche = document.getElementById("fiche");
-function paintFiche(x, s, state){
+function addSection(box, title){
+  const sec = document.createElement("section");
+  sec.className = "sec";
+  const h = document.createElement("h3");
+  h.textContent = title;
+  sec.appendChild(h);
+  box.appendChild(sec);
+  return sec;
+}
+function addLine(parent, k, v){
+  if (v == null || v === "") return;
+  const row = document.createElement("div");
+  const a = document.createElement("span");
+  a.className = "label";
+  a.textContent = k;
+  const b = document.createElement("span");
+  b.textContent = String(v);
+  row.append(a, b);
+  parent.appendChild(row);
+}
+function money(n){
+  if (typeof n !== "number") return "";
+  const sign = n < 0 ? "−" : "";
+  const abs = Math.abs(n);
+  if (abs >= 1e6) return sign + (abs / 1e6).toLocaleString("fr-FR", { maximumFractionDigits: 1 }) + " M€";
+  if (abs >= 1e3) return sign + Math.round(abs / 1e3).toLocaleString("fr-FR") + " k€";
+  return sign + Math.round(abs).toLocaleString("fr-FR") + " €";
+}
+function paintDetail(x, state){
   const box = document.getElementById("fiche-body");
   box.replaceChildren();
+  const ev = filonEvaluer(x);
+  if (ev.score != null) {
+    const score = document.createElement("p");
+    score.className = "score";
+    score.textContent = String(ev.score);
+    const cap = document.createElement("p");
+    cap.className = "label";
+    cap.textContent = "Score Pépite";
+    box.append(score, cap);
+    const axes = document.createElement("div");
+    axes.className = "facts";
+    [["Probabilité de cession", ev.p_cession], ["Décote estimée", ev.decote], ["Qualité du business", ev.qualite], ["Potentiel de création de valeur", ev.potentiel]].forEach(function (pair) {
+      addLine(axes, pair[0], pair[1] == null ? "" : String(Math.round(pair[1])));
+    });
+    box.appendChild(axes);
+  }
+  if ((ev.signals || []).length) {
+    const sec = addSection(box, "Signaux");
+    ev.signals.forEach(function (s) {
+      const p = document.createElement("p");
+      p.className = "note";
+      p.textContent = s.l;
+      sec.appendChild(p);
+    });
+  }
+  const id = addSection(box, "Identité");
   const facts = document.createElement("div");
   facts.className = "facts";
-  filonFicheLignes(x, s).forEach(function (line) {
-    const row = document.createElement("div");
-    const k = document.createElement("span");
-    k.className = "label";
-    k.textContent = line.k;
-    const v = document.createElement("span");
-    v.textContent = line.v;
-    row.append(k, v);
-    facts.appendChild(row);
-  });
-  box.appendChild(facts);
+  addLine(facts, "SIREN", x.siren ? x.siren.replace(/(\d{3})(\d{3})(\d{3})/, "$1 $2 $3") : "");
+  addLine(facts, "Activité", x.naf || "");
+  addLine(facts, "Effectif", x.te || "");
+  addLine(facts, "Création", fmtDate(x.creation));
+  addLine(facts, "État", x.etat || "");
+  addLine(facts, "Siège", x.adresse || [x.commune, x.dept].filter(Boolean).join(" · "));
+  addLine(facts, "Jugement", [x.nature || x.label, fmtDate(x.jugementDate) || x.jugementDate].filter(Boolean).join(" · "));
+  addLine(facts, "Tribunal", x.tribunal || "");
+  addLine(facts, "Parution", fmtDate(x.date));
+  id.appendChild(facts);
+  if ((x.officers || []).length) {
+    const sec = addSection(box, "Dirigeants");
+    x.officers.forEach(function (o) {
+      const p = document.createElement("p");
+      p.className = "note";
+      const age = o.annee_naissance ? (new Date().getFullYear() - o.annee_naissance) + " ans" : "";
+      p.textContent = [o.prenoms, o.nom, o.qualite, age].filter(Boolean).join(" · ");
+      sec.appendChild(p);
+    });
+  }
+  if ((x.financials || []).length) {
+    const sec = addSection(box, "Finances publiées");
+    x.financials.forEach(function (f) {
+      const p = document.createElement("p");
+      p.className = "note";
+      p.textContent = [String(f.annee), f.ca != null ? "CA " + money(f.ca) : "", f.resultat_net != null ? "Résultat net " + money(f.resultat_net) : ""].filter(Boolean).join(" · ");
+      sec.appendChild(p);
+    });
+  }
+  if (ev.vb != null || ev.vh != null) {
+    const sec = addSection(box, "Valorisation indicative");
+    const p = document.createElement("p");
+    p.className = "note";
+    p.textContent = money(ev.vb) + " – " + money(ev.vh) + ". Estimation indicative à partir des comptes publiés. Ne constitue pas un conseil en investissement.";
+    sec.appendChild(p);
+  }
   if (x.complement) {
     const p = document.createElement("p");
     p.className = "note";
     p.textContent = x.complement;
     box.appendChild(p);
   }
-  const note = filonFicheNote(x, s, state);
-  if (note) {
+  if (state === "loading") {
     const p = document.createElement("p");
     p.className = "note";
-    p.textContent = note;
+    p.textContent = "Lecture du répertoire Sirene.";
+    box.appendChild(p);
+  } else if (state === "error") {
+    const p = document.createElement("p");
+    p.className = "note";
+    p.textContent = "Le répertoire Sirene ne répond pas.";
     box.appendChild(p);
   }
 }
@@ -402,20 +490,19 @@ async function showFiche(i){
   const x = ROWS[i];
   if (!x) return;
   const gen = ++ficheGen;
-  document.getElementById("fiche-kicker").textContent = "BODACC · " + fmtDate(x.date);
+  document.getElementById("fiche-kicker").textContent = (x.kind === "cedant" ? "Sirene" : "BODACC") + " · " + (fmtDate(x.date) || x.label || "");
   document.getElementById("fiche-nom").textContent = x.nom;
   document.getElementById("fiche-meta").textContent = [x.commune, x.dept, x.label].filter(Boolean).join(" · ");
   const link = document.getElementById("fiche-url");
   if (/^https:/.test(x.url || "")) { link.href = x.url; link.hidden = false; }
   else { link.hidden = true; link.removeAttribute("href"); }
-  paintFiche(x, null, x.siren ? "loading" : "none");
+  paintDetail(x, x.enriched ? "ok" : (x.siren ? "loading" : "ok"));
   if (!fiche.open) fiche.showModal();
-  if (!x.siren) return;
+  if (!x.siren || x.enriched) return;
   const s = await filonSirene(x.siren);
   if (gen !== ficheGen) return;
-  if (s && s.ok) paintFiche(x, s, "ok");
-  else if (s && s.reason === "http") paintFiche(x, null, "error");
-  else paintFiche(x, null, "miss");
+  if (s && s.ok) { filonFusion(x, s); paintDetail(x, "ok"); }
+  else paintDetail(x, s && s.reason === "http" ? "error" : "miss");
 }
 document.getElementById("fiche-close").onclick = () => fiche.close();
 fiche.addEventListener("click", e => { if (e.target === fiche) fiche.close(); });
@@ -426,6 +513,8 @@ function fmtDate(d){
 function place(rows){
   ROWS = rows;
   const disc = document.getElementById("blips");
+  disc.replaceChildren();
+  document.getElementById("calls").replaceChildren();
   const used = {};
   rows.slice(0, 12).forEach(function (x, i) {
     const n = used[x.dept] || 0;
@@ -461,7 +550,7 @@ function place(rows){
   });
   const box = document.getElementById("feed-rows");
   box.replaceChildren();
-  rows.slice(0, 12).forEach(function (x, i) {
+  rows.forEach(function (x, i) {
     const el = document.createElement("button");
     el.type = "button";
     el.className = "annonce";
@@ -485,13 +574,21 @@ function place(rows){
     box.appendChild(el);
   });
 }
-filonAnnonces().then(function (rows) {
-  place(rows);
-  const n = rows.length;
-  document.getElementById("loaded").textContent = n + " sociétés publiées au BODACC sur 21 jours.";
-  document.getElementById("feed-meta").textContent = n + " annonces";
-  if (!n) document.getElementById("feed-rows").textContent = "Aucune annonce sur les 21 derniers jours.";
-}).catch(function () {
+let feedTimer = null;
+let lastFeed = 0;
+function showRows(rows, phase){
+  const run = function () {
+    lastFeed = Date.now();
+    place(rows);
+    const n = rows.length;
+    document.getElementById("loaded").textContent = n + " sociétés en Île-de-France, procédures BODACC sur 90 jours et cédants Sirene.";
+    document.getElementById("feed-meta").textContent = n + (phase === "done" ? " sociétés" : " · chargement");
+    if (!n) document.getElementById("feed-rows").textContent = "Chargement des sociétés.";
+  };
+  if (phase === "done" || Date.now() - lastFeed > 800) { clearTimeout(feedTimer); run(); }
+  else { clearTimeout(feedTimer); feedTimer = setTimeout(run, 800); }
+}
+filonCatalogue({ onProgress: function (rows, meta) { showRows(rows, meta && meta.phase); } }).catch(function () {
   document.getElementById("loaded").textContent = "Les annonces BODACC ne répondent pas.";
   document.getElementById("feed-meta").textContent = "Hors ligne";
   document.getElementById("feed-rows").textContent = "Les annonces BODACC ne répondent pas.";
