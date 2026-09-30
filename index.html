@@ -170,6 +170,46 @@ p{margin:0}
 .flow .chip.on{background:var(--gold-fill);color:var(--on-gold);border-color:transparent}
 .flow s{text-decoration:none;color:var(--ink-muted);font-size:12px}
 
+.story{padding-top:clamp(28px,4vh,48px)}
+.chapter{display:grid;grid-template-columns:minmax(0,1fr);gap:clamp(36px,6vw,72px);align-items:center;padding-block:clamp(72px,10vh,128px);border-top:1px solid var(--line)}
+.chapter-num{margin:0;font:700 clamp(72px,8vw,112px)/.8 var(--font-display);letter-spacing:-.06em;color:var(--gold)}
+.chapter h2{margin-top:18px;font-size:clamp(40px,5vw,68px);line-height:.92;letter-spacing:-.04em;text-transform:uppercase}
+.chapter .lead{margin-top:22px;max-width:28em;font-size:clamp(18px,1.5vw,22px);color:var(--ink)}
+.chapter-copy > p{max-width:36em}
+.chapter-copy > p + p{margin-top:14px;color:var(--ink-muted);font-size:16px;line-height:1.65}
+.chapter-visual{display:grid;gap:36px;justify-items:start;align-content:center}
+.chapter .rings{width:min(240px,72vw);height:auto;aspect-ratio:1}
+.chapter .rings i:nth-child(2){inset:18%}
+.chapter .rings i:nth-child(3){inset:36%}
+.chapter .rings em{width:14px;height:14px}
+.chapter .dial b{font-size:clamp(96px,12vw,148px);letter-spacing:-.05em}
+.chapter .dial span{letter-spacing:.16em}
+.chapter .chips{justify-content:flex-start}
+.chapter .caption{margin:0 0 14px;font:600 12px/1 var(--font-sans);letter-spacing:.16em;text-transform:uppercase;color:var(--ink-muted)}
+.chapter .rows{width:100%;max-width:none;gap:0}
+.chapter .rows div{background:none;border-radius:0;padding:16px 0;border-top:1px solid var(--line);font-size:16px}
+.chapter .rows div:last-child{border-bottom:1px solid var(--line)}
+.chapter .rows div i{border-radius:0;height:2px;background:var(--line-strong)}
+.chapter .rows div i.g{background:var(--gold-fill)}
+.axes{list-style:none;margin:32px 0 0;padding:0;display:grid;max-width:440px}
+.axes li{display:flex;justify-content:space-between;align-items:baseline;gap:24px;padding:16px 0;border-top:1px solid var(--line);font-size:17px}
+.axes li:last-child{border-bottom:1px solid var(--line)}
+.axes b{font:700 28px/1 var(--font-display);letter-spacing:-.03em;color:var(--gold);font-variant-numeric:tabular-nums}
+.chapter .compare{display:grid;gap:36px;width:100%;margin-top:8px}
+.chapter .compare h3{margin:0 0 4px;font-size:20px}
+.ledger-name{margin:0 0 8px;font:600 12px/1 var(--font-sans);letter-spacing:.16em;text-transform:uppercase;color:var(--ink-muted)}
+.ledger-name.gold{color:var(--gold)}
+.chapter .flow{flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:0}
+.chapter .flow .chip{padding:8px 0;border:0;border-radius:0;background:none;font:600 clamp(26px,3vw,40px)/1 var(--font-display);letter-spacing:-.03em}
+.chapter .flow .chip.on{background:none;border:0;color:var(--gold)}
+.chapter .flow s{display:block;padding:2px 0 2px 4px;font:500 22px/1 var(--font-sans);color:var(--gold);letter-spacing:0}
+.chapter .actions{margin-top:32px;justify-content:flex-start}
+@media (min-width:901px){
+  .chapter{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(56px,7vw,120px);min-height:88vh;padding-block:clamp(80px,9vh,140px)}
+  .chapter:nth-child(even) .chapter-visual{order:-1}
+  .chapter:nth-child(3){align-items:start}
+}
+
 .stepper{position:relative;margin:0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px}
 .stepper::before{content:"";position:absolute;left:12%;right:12%;top:44px;height:1px;background:var(--line-strong);opacity:.6}
 .stepper .card{position:relative;display:grid;gap:10px;padding-top:28px}
@@ -390,89 +430,97 @@ dialog.fiche .actions{flex:none;margin-top:24px;display:flex;flex-wrap:wrap;gap:
       </div>
     </section>
 
-    <section class="block reveal" id="produit" aria-labelledby="produit-title">
-      <div class="block-head">
-        <span class="pill">Le cockpit</span>
-        <h2 id="produit-title">Six modules, un seul écran.</h2>
-        <p class="lead">La liste, le score, la fiche et le suivi des dossiers tiennent dans le même cockpit.</p>
-      </div>
-      <div class="grid-3">
-        <article class="card module">
-          <div class="visual"><div class="rings"><i></i><i></i><i></i><em></em><em class="b"></em><em class="c"></em></div></div>
-          <div class="body"><h3>Radar</h3><p>Huit départements. Les sociétés géolocalisées apparaissent sur le radar du cockpit.</p></div>
-        </article>
-        <article class="card module">
-          <div class="visual strong"><div class="dial"><b>/100</b><span>Score Filon</span></div></div>
-          <div class="body"><h3>Score</h3><p>Quatre axes. Poids : cession 30, décote 25, qualité 25, potentiel 20.</p></div>
-        </article>
-        <article class="card module">
-          <div class="visual"><div class="rows"><div>SIREN<i></i></div><div>Activité<i></i></div><div>Comptes publiés<i class="g"></i></div><div>Valorisation indicative<i class="g"></i></div></div></div>
-          <div class="body"><h3>Fiche</h3><p>Identité, effectif, siège, jugement, dirigeants, comptes publiés, fourchette indicative.</p></div>
-        </article>
-        <article class="card module">
-          <div class="visual"><div class="chips"><span class="chip cession">Cession</span><span class="chip procedure">Procédure</span><span class="chip">Dirigeant 60 ans et plus</span></div></div>
-          <div class="body"><h3>Signaux</h3><p>Chaque signal porte son mot et sa couleur.</p></div>
-        </article>
-        <article class="card module">
-          <div class="visual"><div class="flow"><span class="chip on">Détectée</span><s>→</s><span class="chip">Contactée</span><s>→</s><span class="chip">NDA</span><s>→</s><span class="chip">Data room</span><s>→</s><span class="chip">LOI</span><s>→</s><span class="chip">Closing</span></div></div>
-          <div class="body"><h3>Pipeline</h3><p>Sur cet appareil, ou dans la base quand le connecteur est actif.</p></div>
-        </article>
-        <article class="card module">
-          <div class="visual"><div class="chips"><span class="chip">BODACC <b>chaque jour</b></span><span class="chip">Sirene <b>le lundi</b></span><span class="chip">RNE</span></div></div>
-          <div class="body"><h3>Sources</h3><p>Procédures et cessions au BODACC. Cédants par famille via Sirene. Comptes publiés via RNE.</p></div>
-        </article>
-      </div>
-    </section>
-
-    <section class="block reveal" id="methode" aria-labelledby="methode-title">
-      <div class="block-head">
-        <span class="pill">Méthode</span>
-        <h2 id="methode-title">De l’annonce publiée au dossier suivi.</h2>
-        <p class="lead">Quatre étapes, les mêmes pour chaque société détectée.</p>
-      </div>
-      <ol class="stepper">
-        <li class="card">
-          <span class="num">1</span>
-          <h3>Collecte</h3>
+    <section class="story" id="produit" aria-labelledby="ch-detecter">
+      <article class="chapter reveal" id="methode">
+        <div class="chapter-copy">
+          <p class="chapter-num">01</p>
+          <h2 id="ch-detecter">Détecter</h2>
+          <p class="lead">Filon surveille les signaux issus de BODACC, Sirene et RNE.</p>
+          <p>Huit départements. Les sociétés géolocalisées apparaissent sur le radar du cockpit.</p>
           <p>Annonces des 90 derniers jours en Île-de-France, plus un échantillon de dirigeants de 60 ans et plus. Sociétés de 3 à 99 salariés, clôtures écartées.</p>
-        </li>
-        <li class="card">
-          <span class="num">2</span>
-          <h3>Score</h3>
-          <p>Le barème du cockpit, appliqué aux données publiées : cession 30, décote 25, qualité 25, potentiel 20. Plafond 100.</p>
-        </li>
-        <li class="card">
-          <span class="num">3</span>
-          <h3>Fiche</h3>
+          <p>Procédures et cessions au BODACC. Cédants par famille via Sirene. Comptes publiés via RNE.</p>
+          <p>Chaque signal porte son mot et sa couleur.</p>
+        </div>
+        <div class="chapter-visual">
+          <div class="rings" aria-hidden="true"><i></i><i></i><i></i><em></em><em class="b"></em><em class="c"></em></div>
+          <div>
+            <p class="caption">Signaux</p>
+            <div class="chips"><span class="chip cession">Cession</span><span class="chip procedure">Procédure</span><span class="chip">Dirigeant 60 ans et plus</span></div>
+          </div>
+          <div>
+            <p class="caption">Sources</p>
+            <div class="chips"><span class="chip">BODACC <b>chaque jour</b></span><span class="chip">Sirene <b>le lundi</b></span><span class="chip">RNE</span></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="chapter reveal">
+        <div class="chapter-copy">
+          <p class="chapter-num">02</p>
+          <h2 id="ch-qualifier">Qualifier</h2>
+          <p class="lead">Chaque entreprise reçoit un Score Filon sur 100.</p>
+          <p>Le barème du cockpit, appliqué aux données publiées. Quatre axes. Poids : cession 30, décote 25, qualité 25, potentiel 20. Plafond 100.</p>
+          <ul class="axes">
+            <li><span>Probabilité de cession</span><b>30</b></li>
+            <li><span>Décote</span><b>25</b></li>
+            <li><span>Qualité du business</span><b>25</b></li>
+            <li><span>Potentiel de création de valeur</span><b>20</b></li>
+          </ul>
+        </div>
+        <div class="chapter-visual">
+          <div class="dial"><b>/100</b><span>Score Filon</span></div>
+        </div>
+      </article>
+
+      <article class="chapter reveal">
+        <div class="chapter-copy">
+          <p class="chapter-num">03</p>
+          <h2 id="ch-analyser">Analyser</h2>
+          <p class="lead">Une fiche rassemble l’identité, les dirigeants, les finances publiées, l’historique et une valorisation indicative.</p>
+          <p>Identité, effectif, siège, jugement, dirigeants, comptes publiés, fourchette indicative.</p>
           <p>Identité, dirigeants, finances publiées, historique des jugements et fourchette indicative, dans une seule fiche.</p>
-        </li>
-        <li class="card">
-          <span class="num">4</span>
-          <h3>Suivi</h3>
-          <p>Détectée, Contactée, NDA, Data room, LOI, Closing. Notes et mode rachat ou intermédiation sur chaque dossier.</p>
-        </li>
-      </ol>
-      <div class="grid-2 compare" style="margin-top:24px">
-        <article class="card">
-          <header><span class="pill soft">Annonce</span><h3>Ce que publie l’annonce</h3></header>
-          <div class="line"><span>Date</span><span>Parution</span></div>
-          <div class="line"><span>Dénomination</span><span>Raison sociale</span></div>
-          <div class="line"><span>Commune</span><span>Siège ou établissement</span></div>
-          <div class="line"><span>Nature</span><span>Procédure ou cession de fonds</span></div>
-        </article>
-        <article class="card win">
-          <header><span class="pill">Fiche Filon</span><h3>Ce qu’ajoute la fiche</h3></header>
-          <div class="line"><span>Score Filon</span><span>Sur 100</span></div>
-          <div class="line"><span>Quatre axes</span><span>Cession, décote, qualité, potentiel</span></div>
-          <div class="line"><span>Dirigeant</span><span>Qualité et âge</span></div>
-          <div class="line"><span>Comptes</span><span>CA et résultat net publiés</span></div>
-          <div class="line"><span>Valorisation</span><span>Fourchette indicative</span></div>
-        </article>
-      </div>
-      <div class="actions center" style="margin-top:32px">
-        <a class="btn" href="cockpit/">Ouvrir le cockpit</a>
-        <a class="btn" href="#societes">Revoir les sociétés</a>
-      </div>
+        </div>
+        <div class="chapter-visual">
+          <div class="rows"><div>SIREN<i></i></div><div>Activité<i></i></div><div>Comptes publiés<i class="g"></i></div><div>Valorisation indicative<i class="g"></i></div></div>
+          <div class="compare">
+            <div>
+              <p class="ledger-name">Annonce</p>
+              <h3>Ce que publie l’annonce</h3>
+              <div class="line"><span>Date</span><span>Parution</span></div>
+              <div class="line"><span>Dénomination</span><span>Raison sociale</span></div>
+              <div class="line"><span>Commune</span><span>Siège ou établissement</span></div>
+              <div class="line"><span>Nature</span><span>Procédure ou cession de fonds</span></div>
+            </div>
+            <div>
+              <p class="ledger-name gold">Fiche Filon</p>
+              <h3>Ce qu’ajoute la fiche</h3>
+              <div class="line"><span>Score Filon</span><span>Sur 100</span></div>
+              <div class="line"><span>Quatre axes</span><span>Cession, décote, qualité, potentiel</span></div>
+              <div class="line"><span>Dirigeant</span><span>Qualité et âge</span></div>
+              <div class="line"><span>Comptes</span><span>CA et résultat net publiés</span></div>
+              <div class="line"><span>Valorisation</span><span>Fourchette indicative</span></div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="chapter reveal">
+        <div class="chapter-copy">
+          <p class="chapter-num">04</p>
+          <h2 id="ch-engager">Engager</h2>
+          <p class="lead">Transformer le signal en deal.</p>
+          <p>Quatre étapes, les mêmes pour chaque société détectée. Détectée, Contactée, NDA, Data room, LOI, Closing. Notes et mode rachat ou intermédiation sur chaque dossier.</p>
+          <p>Sur cet appareil, ou dans la base quand le connecteur est actif.</p>
+          <p>La liste, le score, la fiche et le suivi des dossiers tiennent dans le même cockpit.</p>
+          <div class="actions">
+            <a class="btn" href="cockpit/">Ouvrir le cockpit</a>
+            <a class="btn" href="#societes">Revoir les sociétés</a>
+          </div>
+        </div>
+        <div class="chapter-visual">
+          <div class="flow"><span class="chip on">Détectée</span><s>→</s><span class="chip">Contactée</span><s>→</s><span class="chip">NDA</span><s>→</s><span class="chip">Data room</span><s>→</s><span class="chip">LOI</span><s>→</s><span class="chip">Closing</span></div>
+        </div>
+      </article>
     </section>
 
     <section class="block fam reveal" id="familles" aria-labelledby="familles-title">
