@@ -171,6 +171,7 @@ nav.main-nav .mono{color:var(--gold);margin-left:4px;font-size:12px}
 .callout:hover{border-color:var(--gold-fill)}
 .callout .in{display:grid;grid-template-columns:58px minmax(0,max-content);column-gap:12px;align-items:center}
 .callout .mark{grid-column:1;grid-row:1;width:58px}
+.callout .mark span{white-space:normal;line-height:1.15;letter-spacing:.08em}
 .callout .txt{grid-column:2;min-width:0;display:grid;gap:2px}
 .callout .c-nm,.callout .c-meta,.callout .c-val{min-width:0}
 .callout .c-nm{font:600 13px/1.2 var(--font-display);letter-spacing:-.01em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -193,7 +194,7 @@ nav.main-nav .mono{color:var(--gold);margin-left:4px;font-size:12px}
 
 /* ---------- Opportunités à surveiller : classement éditorial ---------- */
 .rank{display:grid}
-.t5{display:grid;grid-template-columns:44px minmax(0,1fr) auto minmax(72px,88px);gap:clamp(16px,2vw,32px);align-items:center;padding:22px 0;width:100%;background:none;border:0;border-top:1px solid var(--line);text-align:left;color:inherit;cursor:pointer;text-decoration:none;transition:background var(--ui)}
+.t5{display:grid;grid-template-columns:44px minmax(0,1fr) auto minmax(96px,112px);gap:clamp(16px,2vw,32px);align-items:center;padding:22px 0;width:100%;background:none;border:0;border-top:1px solid var(--line);text-align:left;color:inherit;cursor:pointer;text-decoration:none;transition:background var(--ui)}
 .t5:last-child{border-bottom:1px solid var(--line)}
 .t5 .rk{font:600 13px/1 var(--font-display);color:var(--ink-muted);letter-spacing:.06em;transition:color var(--ui),transform .35s var(--ease)}
 .t5 .nm{display:block;font:600 clamp(18px,1.6vw,22px)/1.2 var(--font-display);letter-spacing:-.015em;transition:color var(--ui);overflow-wrap:anywhere}
@@ -513,7 +514,7 @@ dialog.fiche::backdrop{background:var(--scrim);backdrop-filter:blur(3px)}
       <div class="actions">
         <button type="button" class="btn primary" data-goto="cibles">Explorer les opportunités</button>
       </div>
-      <button class="link score-link" data-goto="reglages">Score Pépite</button>
+      <button class="link score-link" data-goto="reglages">Score Filon</button>
     </div>
     <div class="radar-stage">
       <div class="radar-wrap" id="radarWrap">
@@ -543,7 +544,7 @@ dialog.fiche::backdrop{background:var(--scrim);backdrop-filter:blur(3px)}
 
   <section class="metrics rv" aria-label="Chiffres clés">
     <div class="metric"><b id="k-total">–</b><span class="label">Cibles</span></div>
-    <div class="metric gold"><b id="k-top">–</b><span class="label">Pépites</span><span class="label">Score ≥ 70</span></div>
+    <div class="metric gold"><b id="k-top">–</b><span class="label">Cibles à fort score</span><span class="label">Score ≥ 70</span></div>
     <div class="metric"><b id="k-proc">–</b><span class="label">Procédures</span></div>
     <div class="metric"><b id="k-ced">–</b><span class="label">Cédants</span><span class="label">Potentiels</span></div>
   </section>
@@ -553,7 +554,7 @@ dialog.fiche::backdrop{background:var(--scrim);backdrop-filter:blur(3px)}
       <div class="sect-head rv">
         <span class="kicker label">Opportunités à surveiller</span>
         <h2 id="h-top">Les cinq cibles les mieux notées.</h2>
-        <p>Classement en direct par Score Pépite. Survole une société pour la situer sur le radar, clique pour ouvrir sa fiche.</p>
+        <p>Classement en direct par Score Filon. Survole une société pour la situer sur le radar, clique pour ouvrir sa fiche.</p>
       </div>
       <div class="rank rv" id="top5"><p class="sub">Les cinq meilleures cibles apparaissent ici après le chargement.</p></div>
     </div>
@@ -574,7 +575,7 @@ dialog.fiche::backdrop{background:var(--scrim);backdrop-filter:blur(3px)}
     <div class="sect-head rv">
       <span class="kicker label">Répartition des opportunités</span>
       <h2 id="h-sect">Où se trouvent les opportunités ?</h2>
-      <p>Répartition des pépites (score ≥ 70) par secteur. Clique sur un secteur pour filtrer la liste des cibles.</p>
+      <p>Répartition des cibles à fort score (score ≥ 70) par secteur. Clique sur un secteur pour filtrer la liste des cibles.</p>
     </div>
     <div class="bars" id="deptBars"></div>
   </section>
@@ -618,7 +619,7 @@ dialog.fiche::backdrop{background:var(--scrim);backdrop-filter:blur(3px)}
     <div class="tablewrap">
       <table>
         <thead><tr>
-          <th class="label" data-sort="score">Pépite</th>
+          <th class="label" data-sort="score">Score Filon</th>
           <th class="label" data-sort="nom">Entreprise</th>
           <th class="label">Situation</th>
           <th class="label num" data-sort="ca">CA</th>
@@ -647,11 +648,11 @@ dialog.fiche::backdrop{background:var(--scrim);backdrop-filter:blur(3px)}
     <div class="sect-head">
       <span class="kicker label">Scoring et sources</span>
       <h2>Comment le radar note une cible.</h2>
-      <p>Le Score Pépite combine probabilité de cession, décote, qualité du business et potentiel de création de valeur. Les pondérations sont ajustables.</p>
+      <p>Le Score Filon combine probabilité de cession, décote, qualité du business et potentiel de création de valeur. Les pondérations sont ajustables.</p>
     </div>
     <div class="settings">
       <div>
-        <h2>Pondérations du Score Pépite</h2>
+        <h2>Pondérations du Score Filon</h2>
         <div id="weights" style="display:grid;gap:var(--space-4)"></div>
         <p class="sub" id="wsum" style="margin:var(--space-4) 0 var(--space-6)"></p>
         <button class="btn primary" id="saveW">Enregistrer et recalculer</button>
@@ -874,22 +875,22 @@ function dial(v, size, hotAt){
   const r = 42, c = 2*Math.PI*r, hot = v >= (hotAt ?? 60);
   let ticks = "";
   for (let i=0;i<40;i++){ const a=i/40*2*Math.PI-Math.PI/2, r1=47, r2=i%10===0?50:48.5; ticks += `<line class="tk" x1="${50+r1*Math.cos(a)}" y1="${50+r1*Math.sin(a)}" x2="${50+r2*Math.cos(a)}" y2="${50+r2*Math.sin(a)}"/>`; }
-  return `<span class="dial${hot?" hot":""}" style="width:${size}px;height:${size}px" role="img" aria-label="Score Pépite ${v} sur 100">
+  return `<span class="dial${hot?" hot":""}" style="width:${size}px;height:${size}px" role="img" aria-label="Score Filon ${v} sur 100">
     <svg viewBox="0 0 100 100" width="${size}" height="${size}" aria-hidden="true">${size>=64?ticks:""}<circle class="trk" cx="50" cy="50" r="${r}"/><circle class="arc" cx="50" cy="50" r="${r}" stroke-dasharray="${c}" stroke-dashoffset="${c*(1-v/100)}" transform="rotate(-90 50 50)"/></svg>
     <span style="font-size:${Math.round(size*.34)}px">${v}</span></span>`;
 }
 
 function pepite(v, size){
-  if (v == null || v === "") return `<span class="mark ${size}"><b>–</b><span>Pépite</span></span>`;
+  if (v == null || v === "") return `<span class="mark ${size}"><b>–</b><span>Score Filon</span></span>`;
   const n = Math.round(+v);
-  return `<span class="mark ${size}${n>=HOT?" hot":""}"><b>${n}</b><span>Pépite</span></span>`;
+  return `<span class="mark ${size}${n>=HOT?" hot":""}"><b>${n}</b><span>Score Filon</span></span>`;
 }
 function top5(){
   const t = [...ALL].filter(x => x.score != null).sort((a,b)=>b.score-a.score).slice(0,5);
   $("#top5").innerHTML = t.length ? t.map((x,i) => `<button class="t5" data-siren="${esc(x.siren)}"><span class="rk">${String(i+1).padStart(2,"0")}</span>
     <span><span class="nm">${esc(x.nom)}</span><span class="sub">${esc(x.commune||"")} · ${esc(SECT_L[secteur(x.naf)]||"")}${NAF[x.naf]?" · "+esc(NAF[x.naf]):""}</span></span>
     <span class="st">${situationTag(x)}</span>
-    ${pepite(x.score,"rank")}</button>`).join("") : `<p class="sub">Aucune pépite à classer pour le moment.</p>`;
+    ${pepite(x.score,"rank")}</button>`).join("") : `<p class="sub">Aucune opportunité à classer pour le moment.</p>`;
 }
 $("#top5").addEventListener("click", e => { const b = e.target.closest(".t5"); if (!b) return; e.preventDefault(); openFrom(b); });
 /* Survol d'une ligne du classement : la cible correspondante s'allume sur le radar. */
