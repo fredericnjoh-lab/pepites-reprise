@@ -195,10 +195,6 @@ p{margin:0}
 .axes li{display:flex;justify-content:space-between;align-items:baseline;gap:24px;padding:16px 0;border-top:1px solid var(--line);font-size:17px}
 .axes li:last-child{border-bottom:1px solid var(--line)}
 .axes b{font:700 28px/1 var(--font-display);letter-spacing:-.03em;color:var(--gold);font-variant-numeric:tabular-nums}
-.chapter .compare{display:grid;gap:36px;width:100%;margin-top:8px}
-.chapter .compare h3{margin:0 0 4px;font-size:20px}
-.ledger-name{margin:0 0 8px;font:600 12px/1 var(--font-sans);letter-spacing:.16em;text-transform:uppercase;color:var(--ink-muted)}
-.ledger-name.gold{color:var(--gold)}
 .chapter .flow{flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:0}
 .chapter .flow .chip{padding:8px 0;border:0;border-radius:0;background:none;font:600 clamp(26px,3vw,40px)/1 var(--font-display);letter-spacing:-.03em}
 .chapter .flow .chip.on{background:none;border:0;color:var(--gold)}
@@ -207,7 +203,32 @@ p{margin:0}
 @media (min-width:901px){
   .chapter{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(56px,7vw,120px);min-height:88vh;padding-block:clamp(80px,9vh,140px)}
   .chapter:nth-child(even) .chapter-visual{order:-1}
-  .chapter:nth-child(3){align-items:start}
+}
+
+.shift{padding-block:clamp(96px,14vh,160px);border-top:1px solid var(--line)}
+.shift-head{max-width:16em;margin:0 0 clamp(56px,8vh,96px)}
+.shift h2{color:var(--ink);font-size:clamp(36px,4.4vw,58px);line-height:1.02;letter-spacing:-.035em}
+.shift .lead{margin-top:22px;max-width:34em;font-size:18px}
+.shift-grid{display:grid;grid-template-columns:minmax(0,1fr);align-items:start}
+.shift-from{display:grid;grid-template-columns:minmax(0,1fr)}
+.shift-kicker{margin:0 0 8px;font:600 12px/1 var(--font-sans);letter-spacing:.18em;text-transform:uppercase;color:var(--ink-muted)}
+.shift-side ol{list-style:none;margin:0;padding:0}
+.shift-side li{padding:16px 0;border-top:1px solid var(--line);font:500 16px/1.35 var(--font-sans);color:var(--ink-muted)}
+.shift-side li:last-child{border-bottom:1px solid var(--line)}
+.shift-side.filon{margin-top:8px}
+.shift-side.filon .shift-kicker{color:var(--gold)}
+.shift-side.filon li{color:var(--ink);font:600 clamp(26px,2.5vw,34px)/1.15 var(--font-display);letter-spacing:-.03em;padding:14px 0}
+.shift-side.filon li:first-child{color:var(--gold)}
+.shift-mark{position:relative;display:grid;place-items:center;height:72px;color:var(--gold)}
+.shift-mark::before{content:"";position:absolute;left:0;right:0;top:50%;height:1px;background:linear-gradient(to right, transparent, var(--line-strong), var(--gold-fill), var(--line-strong), transparent)}
+.shift-mark span{position:relative;padding:0 14px;background:var(--void);font:500 22px/1 var(--font-sans)}
+@media (min-width:901px){
+  .shift-grid{grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);column-gap:12px}
+  .shift-from{grid-template-columns:minmax(0,1fr) 88px;align-items:center}
+  .shift-side.filon{margin-top:0;padding-left:40px;border-left:1px solid var(--gold-fill)}
+  .shift-mark{height:auto;align-self:stretch}
+  .shift-mark::before{left:50%;right:auto;top:8%;bottom:8%;width:1px;height:auto;background:linear-gradient(to bottom, transparent, var(--line-strong) 20%, var(--gold-fill) 50%, var(--line-strong) 80%, transparent)}
+  .shift-mark span{padding:16px 0}
 }
 
 .stepper{position:relative;margin:0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px}
@@ -482,25 +503,6 @@ dialog.fiche .actions{flex:none;margin-top:24px;display:flex;flex-wrap:wrap;gap:
         </div>
         <div class="chapter-visual">
           <div class="rows"><div>SIREN<i></i></div><div>Activité<i></i></div><div>Comptes publiés<i class="g"></i></div><div>Valorisation indicative<i class="g"></i></div></div>
-          <div class="compare">
-            <div>
-              <p class="ledger-name">Annonce</p>
-              <h3>Ce que publie l’annonce</h3>
-              <div class="line"><span>Date</span><span>Parution</span></div>
-              <div class="line"><span>Dénomination</span><span>Raison sociale</span></div>
-              <div class="line"><span>Commune</span><span>Siège ou établissement</span></div>
-              <div class="line"><span>Nature</span><span>Procédure ou cession de fonds</span></div>
-            </div>
-            <div>
-              <p class="ledger-name gold">Fiche Filon</p>
-              <h3>Ce qu’ajoute la fiche</h3>
-              <div class="line"><span>Score Filon</span><span>Sur 100</span></div>
-              <div class="line"><span>Quatre axes</span><span>Cession, décote, qualité, potentiel</span></div>
-              <div class="line"><span>Dirigeant</span><span>Qualité et âge</span></div>
-              <div class="line"><span>Comptes</span><span>CA et résultat net publiés</span></div>
-              <div class="line"><span>Valorisation</span><span>Fourchette indicative</span></div>
-            </div>
-          </div>
         </div>
       </article>
 
@@ -521,6 +523,39 @@ dialog.fiche .actions{flex:none;margin-top:24px;display:flex;flex-wrap:wrap;gap:
           <div class="flow"><span class="chip on">Détectée</span><s>→</s><span class="chip">Contactée</span><s>→</s><span class="chip">NDA</span><s>→</s><span class="chip">Data room</span><s>→</s><span class="chip">LOI</span><s>→</s><span class="chip">Closing</span></div>
         </div>
       </article>
+    </section>
+
+    <section class="shift reveal" aria-labelledby="shift-title">
+      <div class="shift-head">
+        <h2 id="shift-title">De l’information publique à une cible exploitable.</h2>
+        <p class="lead">Filon transforme de l’information publique dispersée en opportunité exploitable.</p>
+      </div>
+      <div class="shift-grid">
+        <div class="shift-from">
+          <div class="shift-side raw">
+            <p class="shift-kicker">Une annonce</p>
+            <ol>
+              <li>Date</li>
+              <li>Raison sociale</li>
+              <li>Commune</li>
+              <li>Nature</li>
+            </ol>
+          </div>
+          <div class="shift-mark" aria-hidden="true"><span>→</span></div>
+        </div>
+        <div class="shift-side filon">
+          <p class="shift-kicker">Filon</p>
+          <ol>
+            <li>Score Filon</li>
+            <li>Quatre axes</li>
+            <li>Dirigeants</li>
+            <li>Comptes</li>
+            <li>Signaux</li>
+            <li>Valorisation</li>
+            <li>Pipeline</li>
+          </ol>
+        </div>
+      </div>
     </section>
 
     <section class="block fam reveal" id="familles" aria-labelledby="familles-title">
