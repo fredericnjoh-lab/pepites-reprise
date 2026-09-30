@@ -295,12 +295,12 @@ dialog.fiche .actions{flex:none;margin-top:24px;display:flex;flex-wrap:wrap;gap:
       <div class="copy">
         <span class="pill soft">Île-de-France · 8 départements</span>
         <h1>Le radar des PME <em>à reprendre.</em></h1>
-        <p class="lead">Filon lit les procédures collectives et les cessions de fonds du BODACC, puis les fiches Sirene et RNE. <strong>Chaque cible reçoit un Score Pépite sur 100</strong> et une valorisation indicative.</p>
+        <p class="lead">Repérez les PME d’Île-de-France qui vont changer de mains et concentrez votre temps sur les meilleures. <strong>Chaque cible reçoit un Score Pépite sur 100</strong>, une fiche complète et une valorisation indicative.</p>
         <div class="actions">
           <a class="btn primary" id="hero-cta" href="cockpit/">Ouvrir le cockpit</a>
           <a class="btn" href="#methode">Voir la méthode</a>
         </div>
-        <p class="note" id="loaded">Chargement des annonces BODACC…</p>
+        <p class="note" id="loaded">Chargement des sociétés…</p>
       </div>
       <div class="frame">
         <div class="frame-bar">
@@ -822,7 +822,7 @@ function showRows(rows, phase){
     const shown = Math.min(8, n);
     const kpi = document.getElementById("kpi-n");
     if (kpi) kpi.textContent = String(n);
-    document.getElementById("loaded").textContent = n + " sociétés en Île-de-France, procédures BODACC sur 90 jours et cédants Sirene.";
+    document.getElementById("loaded").textContent = n + " sociétés détectées en Île-de-France, mises à jour chaque jour.";
     document.getElementById("feed-meta").textContent = phase === "done"
       ? shown + " affichées · " + n + " au radar"
       : n + " · chargement";
