@@ -351,10 +351,9 @@ dialog.fiche .actions{flex:none;margin-top:24px;display:flex;flex-wrap:wrap;gap:
       </svg>
     </a>
     <nav class="nav-links" aria-label="Page">
-      <a href="#societes">Sociétés</a>
-      <a href="#produit">Produit</a>
-      <a href="#methode">Méthode</a>
-      <a href="#familles">Familles</a>
+      <a href="#societes">Opportunités</a>
+      <a href="#produit">Comment ça marche</a>
+      <a href="#sources">Sources</a>
       <a href="#questions">Questions</a>
     </nav>
     <div class="nav-cta">
@@ -587,7 +586,7 @@ dialog.fiche .actions{flex:none;margin-top:24px;display:flex;flex-wrap:wrap;gap:
       <nav aria-label="Pied de page">
         <ul>
           <li><a href="#societes">Opportunités</a></li>
-          <li><a href="#methode">Méthode</a></li>
+          <li><a href="#produit">Comment ça marche</a></li>
           <li><a href="#sources">Sources</a></li>
           <li><a href="#questions">Questions</a></li>
           <li><a href="cockpit/">Explorer Filon</a></li>
@@ -634,17 +633,25 @@ if (heroCta && navCta && "IntersectionObserver" in window) {
   }, { threshold: 0.4 }).observe(heroCta);
 }
 const navLinks = Array.from(document.querySelectorAll(".nav-links a[href^='#']"));
-if (navLinks.length && "IntersectionObserver" in window) {
-  const spy = new IntersectionObserver(function (entries) {
-    entries.forEach(function (e) {
-      if (!e.isIntersecting) return;
-      navLinks.forEach(function (a) { a.classList.toggle("on", a.getAttribute("href") === "#" + e.target.id); });
-    });
-  }, { rootMargin: "-40% 0px -55% 0px" });
-  navLinks.forEach(function (a) {
-    const sec = document.getElementById(a.getAttribute("href").slice(1));
-    if (sec) spy.observe(sec);
+const navTargets = navLinks.map(function (a) {
+  return document.getElementById(a.getAttribute("href").slice(1));
+}).filter(Boolean);
+function markNav() {
+  if (!navTargets.length) return;
+  const line = (parseFloat(getComputedStyle(navTargets[0]).scrollMarginTop) || 0) + 12;
+  const holding = navTargets.filter(function (el) {
+    const r = el.getBoundingClientRect();
+    return r.top <= line && r.bottom >= line;
   });
+  if (!holding.length) return;
+  holding.sort(function (a, b) { return a.getBoundingClientRect().height - b.getBoundingClientRect().height; });
+  const id = "#" + holding[0].id;
+  navLinks.forEach(function (a) { a.classList.toggle("on", a.getAttribute("href") === id); });
+}
+if (navTargets.length) {
+  markNav();
+  document.addEventListener("scroll", markNav, { passive: true });
+  window.addEventListener("resize", markNav);
 }
 const revealed = document.querySelectorAll(".reveal");
 if (reduce || !("IntersectionObserver" in window)) {
