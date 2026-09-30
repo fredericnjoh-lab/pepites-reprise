@@ -175,16 +175,18 @@
   function personneNom(p) {
     if (!p) return "";
     if (p.denomination) return String(p.denomination).replace(/\s+/g, " ").trim();
-    return [p.prenom || p.prenoms, p.nom].filter(Boolean).join(" ").replace(/\s+/g, " ").trim();
+    if (p.typePersonne === "pp" || p.prenom || p.prenoms) return "";
+    return String(p.nom || "").replace(/\s+/g, " ").trim();
   }
 
   function personLike(nom) {
-    const s = String(nom || "");
-    if (/\b(M\.|Mme|Monsieur|Madame)\b/.test(s)) return true;
-    const parts = s.split(",");
-    if (parts.length === 2) {
-      const last = parts[1].trim();
-      if (last && last.split(/\s+/).length === 1) return true;
+    const s = String(nom || "").replace(/\s+/g, " ").trim();
+    if (/\b(M\.|Mme|Monsieur|Madame|Mlle)\b/.test(s)) return true;
+    if (/\((EI|EIRL)\)/i.test(s)) return true;
+    const parts = s.split(",").map(function (p) { return p.trim(); }).filter(Boolean);
+    if (parts.length >= 2 && parts.length <= 3) {
+      const given = parts[1];
+      if (given && given.split(/\s+/).length <= 3 && !/\d/.test(given) && !/\b(SARL|SASU|SAS|EURL|SCI|SA|SELARL|SNC)\b/i.test(s)) return true;
     }
     return false;
   }
