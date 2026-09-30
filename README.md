@@ -1,6 +1,8 @@
-# Pépites Reprise
+# Filon
 
-Détection de PME rachetables à bas prix en Île-de-France (pilote BTP et maintenance), pour un rachat en propre ou une intermédiation.
+> Le radar des PME à reprendre. Nom de code technique : `pepites-reprise`.
+
+Détection de PME rachetables à bas prix en Île-de-France, pour un rachat en propre ou une intermédiation. Ciblage multisecteur : IT et numérique en priorité, puis services B2B, industrie et maintenance, négoce, transport et BTP. Les procédures collectives BODACC couvrent tous les secteurs.
 
 Les données viennent du BODACC (procédures collectives et cessions de fonds), de Sirene et du RNE (via l'API Recherche d'entreprises). Chaque cible reçoit un **Score Pépite** sur 100 et une valorisation indicative.
 
@@ -13,11 +15,26 @@ supabase/
     20260926234202_scoring.sql         # vue v_company_facts, compute_scores()
     20260926234227_ingestion_cron.sql  # secret, run_ingest(), tâches pg_cron
     20260927184500_bodacc_ventes.sql   # cessions de fonds dans listings + cron 4 h 05
-  functions/ingest/index.ts            # Edge Function : BODACC (procédures et cessions), enrichissement, cédants 60+
-cockpit/index.html                     # cockpit privé (artifact Claude, lit la base via le connecteur Supabase)
+    20260927200000_multisecteur.sql    # scoring IT et récurrence, multiples par secteur, cédants par famille
+    20260927203000_durcissement.sql    # RLS lecture réservée à filon_admin, index, droits run_ingest
+  functions/ingest/index.ts            # Edge Function : BODACC (procédures et cessions), enrichissement, cédants 60+ par secteur
+index.html                             # page d'accueil Filon, radar en volume
+annonces.js                            # sociétés publiées au BODACC, chargées dans l'accueil et le cockpit
+cockpit/index.html                     # cockpit (interface ; données via le connecteur Supabase dans claude.ai)
 docs/spec-et-business-model.md         # spec fonctionnelle, roadmap, modèle de revenus
-.cursor/rules/                         # contexte projet pour l'agent Cursor
+brand/                                 # identité Filon : tokens, logos, règles, composants de référence
+.cursor/rules/                         # contexte projet et marque pour l'agent Cursor
 ```
+
+## Site
+
+Le workflow `.github/workflows/pages.yml` copie `index.html` et `cockpit/index.html` et les publie sur GitHub Pages à chaque push sur `main`.
+
+Activation, une fois, par un administrateur du dépôt : [Réglages → Pages](https://github.com/fredericnjoh-lab/pepites-reprise/settings/pages), source **GitHub Actions**. Le jeton d'intégration ne peut pas changer ce réglage. Relancer ensuite le workflow [Pages](https://github.com/fredericnjoh-lab/pepites-reprise/actions/workflows/pages.yml).
+
+Adresse, dépôt public : https://fredericnjoh-lab.github.io/pepites-reprise/
+
+Le cockpit ouvert depuis cette adresse affiche l'interface. Les cibles se chargent dans claude.ai, via le connecteur Supabase. Aucune clé n'est embarquée dans les pages.
 
 ## Infra
 
@@ -25,7 +42,7 @@ docs/spec-et-business-model.md         # spec fonctionnelle, roadmap, modèle de
 | --- | --- |
 | Projet Supabase | `pepites-reprise` (ref `lwfcgzhndwpffeebpjpy`, région eu-west-3 Paris) |
 | Edge Function | `ingest`, `verify_jwt = false`, protégée par l'en-tête `x-ingest-secret` |
-| Planification | pg_cron : BODACC chaque jour 4 h UTC, cessions de fonds 4 h 05, enrichissement 4 h 10 et 4 h 20, cédants le lundi 5 h UTC, rattrapage toutes les 2 min |
+| Planification | pg_cron : BODACC chaque jour 4 h UTC, cessions de fonds 4 h 05, enrichissement 4 h 10 et 4 h 20, cédants le lundi de 5 h à 5 h 50 UTC (une famille de secteurs toutes les 10 min) |
 
 ## Démarrer
 
@@ -43,7 +60,7 @@ Déclencher une ingestion à la main (SQL, depuis l'éditeur Supabase) :
 select private.run_ingest('{"mode":"bodacc","max":500}'::jsonb);
 select private.run_ingest('{"mode":"ventes","max":800}'::jsonb);
 select private.run_ingest('{"mode":"enrich","batch":200}'::jsonb);
-select private.run_ingest('{"mode":"cedants","pages":8}'::jsonb);
+select private.run_ingest('{"mode":"cedants","secteur":"it","pages":12}'::jsonb);  -- it | services | industrie | negoce | transport | btp
 select public.compute_scores();
 ```
 

@@ -61,7 +61,7 @@ Le MVP couvre 5 des 7 livrables du cahier des charges. Il manque les alertes ema
 | Connecteurs d'ingestion | Livré | BODACC (procédures IDF et cessions de fonds), API Recherche d'entreprises (Sirene + RNE), cédants 60+ |
 | Moteur de scoring | Livré | Fonction SQL, poids en table de config, réglables dans l'app |
 | UI MVP | Livré | Cibles, fiche, pipeline, réglages, message IA |
-| Jeu de test IDF | Livré | Pilote BTP et maintenance ; \~2 800 sociétés en base, enrichissement en cours |
+| Jeu de test IDF | Livré | Multisecteur (IT, services B2B, industrie, négoce, transport, BTP) ; \~2 800 sociétés en base, enrichissement en cours |
 | Alertes email | À faire | Besoin d'un service d'envoi (Resend ou Brevo) |
 | Comptes INPI détaillés | À faire | Nécessaire pour l'EBE et l'actif net corrigé |
 
