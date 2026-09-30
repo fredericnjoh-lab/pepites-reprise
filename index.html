@@ -236,7 +236,7 @@ p{margin:0}
 .feed-head .lead{margin-top:12px;font-size:17px}
 #feed-meta{background:none;border-radius:0;padding:0;color:var(--ink-muted);font:500 13px/1.4 var(--font-sans);letter-spacing:0;text-transform:none}
 #feed-rows{background:none;border:0;border-radius:0;box-shadow:none}
-.annonce{display:grid;grid-template-columns:92px minmax(0,1fr) auto;gap:clamp(12px,2.5vw,36px);align-items:center;padding:20px 4px;border:0;border-radius:0;border-top:1px solid var(--line);box-shadow:none;color:inherit;background:none;font:inherit;text-align:left;width:100%;cursor:pointer;transition:background var(--ui)}
+.annonce{display:grid;grid-template-columns:92px minmax(0,1fr) auto;gap:clamp(12px,2.5vw,36px);align-items:center;padding:20px 4px;border:0;border-radius:0;border-top:1px solid var(--line);box-shadow:none;color:inherit;background:none;font:inherit;text-align:left;width:100%;min-width:0;cursor:pointer;transition:background var(--ui)}
 .annonce:last-child{border-bottom:1px solid var(--line)}
 .annonce:hover{background:linear-gradient(90deg,color-mix(in srgb,var(--gold) 7%,transparent),transparent 72%)}
 .annonce .mono{font:500 13px/1.3 var(--font-sans);color:var(--ink-muted);background:none;border-radius:0;padding:0;white-space:nowrap;font-variant-numeric:tabular-nums}
@@ -244,7 +244,7 @@ p{margin:0}
 .annonce .nm{font:600 clamp(17px,1.4vw,20px)/1.25 var(--font-display);letter-spacing:-.015em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;transition:color var(--ui)}
 .annonce:hover .nm{color:var(--gold)}
 .annonce .note{font-size:13px}
-.annonce .tag{background:none;border-radius:0;padding:0;font:600 12px/1.2 var(--font-sans);letter-spacing:.06em;text-transform:uppercase}
+.annonce .tag{background:none;border-radius:0;padding:0;min-width:0;max-width:100%;font:600 12px/1.2 var(--font-sans);letter-spacing:.06em;text-transform:uppercase}
 .annonce .tag.cession,.annonce .tag.cedant,.annonce .tag.procedure{background:none}
 .feed .actions{margin-top:28px;justify-content:flex-start}
 .skel{display:grid;grid-template-columns:88px minmax(0,1fr) 96px;gap:16px;align-items:center;padding:20px 0;border-bottom:1px solid var(--line)}
@@ -281,7 +281,8 @@ footer.site .legal{grid-column:1 / -1;padding-top:20px;border-top:1px solid var(
 dialog.fiche:not([open]){display:none}
 dialog.fiche[open]{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:var(--r-card);background:var(--surface-1);color:var(--ink);padding:28px;max-width:540px;width:calc(100% - 32px);max-height:min(760px, calc(100dvh - 32px));overflow:hidden;box-shadow:var(--shadow)}
 dialog.fiche::backdrop{background:#000000a6}
-dialog.fiche h2{margin:10px 0 6px;font:700 24px/1.2 var(--font-display)}
+dialog.fiche h2{margin:10px 0 6px;font:700 24px/1.2 var(--font-display);overflow-wrap:anywhere}
+dialog.fiche .facts span{overflow-wrap:anywhere;min-width:0}
 dialog.fiche .label{font:600 12px/1.4 var(--font-sans);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-muted)}
 dialog.fiche #fiche-body{overflow:auto;min-height:0}
 dialog.fiche .score{margin:16px 0 0;font:700 44px/1 var(--font-display);color:var(--gold);letter-spacing:-.03em}
@@ -293,9 +294,10 @@ dialog.fiche .facts .label{text-transform:none;letter-spacing:0;font-weight:500;
 dialog.fiche #fiche-body .note{margin:10px 0 0;font-size:15px}
 dialog.fiche .actions{flex:none;margin-top:24px;display:flex;flex-wrap:wrap;gap:12px}
 
-[id]{scroll-margin-top:100px}
+[id]{scroll-margin-top:108px}
 
 @media (max-width:900px){
+  [id]{scroll-margin-top:132px}
   .nav .wrap{flex-wrap:wrap;gap:8px 16px;padding-block:12px;min-height:0}
   .nav-cta{margin-left:auto}
   .nav-links{order:3;width:100%;margin:0;gap:18px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
@@ -326,7 +328,7 @@ dialog.fiche .actions{flex:none;margin-top:24px;display:flex;flex-wrap:wrap;gap:
   .stage{height:340px}
   .call{max-width:180px}
   .annonce{grid-template-columns:auto minmax(0,1fr)}
-  .annonce .tag{grid-column:2}
+  .annonce .tag{grid-column:2;white-space:normal;overflow-wrap:anywhere;text-align:left}
 }
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}
@@ -819,6 +821,11 @@ function place(rows){
     el.tabIndex = 0;
     el.setAttribute("role", "button");
     el.addEventListener("click", function () { showFiche(i); });
+    el.addEventListener("keydown", function (e) {
+      if (e.key !== "Enter" && e.key !== " ") return;
+      e.preventDefault();
+      showFiche(i);
+    });
     disc.appendChild(el);
   });
   const calls = document.getElementById("calls");
@@ -878,7 +885,9 @@ function showRows(rows, phase){
     document.getElementById("feed-meta").textContent = phase === "done"
       ? shown + " sur " + n + " au radar"
       : n + " détectées · chargement";
-    if (!n) document.getElementById("feed-rows").textContent = "Chargement des sociétés.";
+    const feed = document.getElementById("feed-rows");
+    feed.setAttribute("aria-busy", phase === "done" ? "false" : "true");
+    if (!n) feed.textContent = phase === "done" ? "Aucune société au radar." : "Chargement des sociétés.";
   };
   if (phase === "done" || Date.now() - lastFeed > 800) { clearTimeout(feedTimer); run(); }
   else { clearTimeout(feedTimer); feedTimer = setTimeout(run, 800); }
@@ -886,7 +895,9 @@ function showRows(rows, phase){
 filonCatalogue({ onProgress: function (rows, meta) { showRows(rows, meta && meta.phase); } }).catch(function () {
   document.getElementById("loaded").textContent = "Les annonces BODACC ne répondent pas.";
   document.getElementById("feed-meta").textContent = "Hors ligne";
-  document.getElementById("feed-rows").textContent = "Les annonces BODACC ne répondent pas.";
+  const feed = document.getElementById("feed-rows");
+  feed.textContent = "Les annonces BODACC ne répondent pas.";
+  feed.setAttribute("aria-busy", "false");
   const kpi = document.getElementById("kpi-n");
   if (kpi && kpi.textContent === "…") kpi.textContent = "—";
 });
