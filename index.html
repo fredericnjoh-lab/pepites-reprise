@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Filon — Le radar des PME à reprendre.</title>
-<meta name="description" content="Filon. Le radar des PME à reprendre. Score Pépite sur 100, Île-de-France, sources BODACC, Sirene et RNE.">
+<meta name="description" content="Filon. Le radar des PME à reprendre. Score Filon sur 100, Île-de-France, sources BODACC, Sirene et RNE.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='28' fill='none' stroke='%23EDEFEA' stroke-width='4'/%3E%3Ccircle cx='44' cy='41' r='6' fill='%23E8B84A'/%3E%3C/svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -307,7 +307,7 @@ dialog.fiche .actions{flex:none;margin-top:24px;display:flex;flex-wrap:wrap;gap:
       <div class="copy">
         <span class="pill soft">Île-de-France · 8 départements</span>
         <h1>Le radar des PME <em>à reprendre.</em></h1>
-        <p class="lead">Repérez les PME d’Île-de-France qui vont changer de mains et concentrez votre temps sur les meilleures. <strong>Chaque cible reçoit un Score Pépite sur 100</strong>, une fiche complète et une valorisation indicative.</p>
+        <p class="lead">Repérez les PME d’Île-de-France qui vont changer de mains et concentrez votre temps sur les meilleures. <strong>Chaque cible reçoit un Score Filon sur 100</strong>, une fiche complète et une valorisation indicative.</p>
         <div class="actions">
           <a class="btn primary" id="hero-cta" href="cockpit/">Ouvrir le cockpit</a>
           <a class="btn" href="#societes">Voir les sociétés</a>
@@ -351,7 +351,7 @@ dialog.fiche .actions{flex:none;margin-top:24px;display:flex;flex-wrap:wrap;gap:
 
     <section class="stats reveal" aria-label="Repères">
       <div class="stat gold"><b id="kpi-n">…</b><span>Sociétés au radar</span></div>
-      <div class="stat"><b>100</b><span>Score Pépite, plafond</span></div>
+      <div class="stat"><b>100</b><span>Score Filon, plafond</span></div>
       <div class="stat"><b>8</b><span>Départements couverts</span></div>
       <div class="stat"><b>6</b><span>Familles suivies</span></div>
     </section>
@@ -385,7 +385,7 @@ dialog.fiche .actions{flex:none;margin-top:24px;display:flex;flex-wrap:wrap;gap:
           <div class="body"><h3>Radar</h3><p>Huit départements. Les sociétés géolocalisées apparaissent sur le radar du cockpit.</p></div>
         </article>
         <article class="card module">
-          <div class="visual strong"><div class="dial"><b>/100</b><span>Score Pépite</span></div></div>
+          <div class="visual strong"><div class="dial"><b>/100</b><span>Score Filon</span></div></div>
           <div class="body"><h3>Score</h3><p>Quatre axes. Poids : cession 30, décote 25, qualité 25, potentiel 20.</p></div>
         </article>
         <article class="card module">
@@ -445,7 +445,7 @@ dialog.fiche .actions{flex:none;margin-top:24px;display:flex;flex-wrap:wrap;gap:
         </article>
         <article class="card win">
           <header><span class="pill">Fiche Filon</span><h3>Ce qu’ajoute la fiche</h3></header>
-          <div class="line"><span>Score Pépite</span><span>Sur 100</span></div>
+          <div class="line"><span>Score Filon</span><span>Sur 100</span></div>
           <div class="line"><span>Quatre axes</span><span>Cession, décote, qualité, potentiel</span></div>
           <div class="line"><span>Dirigeant</span><span>Qualité et âge</span></div>
           <div class="line"><span>Comptes</span><span>CA et résultat net publiés</span></div>
@@ -485,7 +485,7 @@ dialog.fiche .actions{flex:none;margin-top:24px;display:flex;flex-wrap:wrap;gap:
           <p>Procédures collectives et cessions de fonds publiées au BODACC sur 90 jours, en Île-de-France, plus un échantillon Sirene de dirigeants de 60 ans et plus. Les clôtures sont écartées.</p>
         </details>
         <details name="faq">
-          <summary>Comment le Score Pépite est-il calculé ?</summary>
+          <summary>Comment le Score Filon est-il calculé ?</summary>
           <p>Quatre axes de 0 à 100. Poids : probabilité de cession 30, décote 25, qualité 25, potentiel 20. Le barème est celui du cockpit, appliqué aux données publiées.</p>
         </details>
         <details name="faq">
@@ -507,7 +507,7 @@ dialog.fiche .actions{flex:none;margin-top:24px;display:flex;flex-wrap:wrap;gap:
       <div class="close">
         <span class="pill soft">Cockpit</span>
         <h2 id="close-title">Trouver le filon.</h2>
-        <p class="lead">Île-de-France. Score Pépite sur 100. Valorisation indicative.</p>
+        <p class="lead">Île-de-France. Score Filon sur 100. Valorisation indicative.</p>
         <a class="btn primary" id="close-cta" href="cockpit/">Ouvrir le cockpit</a>
       </div>
     </section>
@@ -649,7 +649,7 @@ function paintDetail(x, state){
     score.textContent = String(ev.score);
     const cap = document.createElement("p");
     cap.className = "label";
-    cap.textContent = "Score Pépite";
+    cap.textContent = "Score Filon";
     box.append(score, cap);
     const axes = document.createElement("div");
     axes.className = "facts";
