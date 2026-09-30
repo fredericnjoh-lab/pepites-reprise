@@ -84,8 +84,8 @@ button,select,input,textarea{font:inherit;color:inherit}
 .split{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,7fr);gap:clamp(32px,6vw,96px);align-items:start}
 .split > .sect-head{position:sticky;top:104px}
 
-/* Apparition discrète au défilement */
-.rv{opacity:0;transform:translateY(10px);transition:opacity .5s var(--ease),transform .5s var(--ease)}
+/* Apparition discrète : héro, chiffres, titres, classement. Le radar garde son balayage. */
+.rv{opacity:0;transform:translateY(10px);transition:opacity .45s var(--ease),transform .45s var(--ease)}
 .rv.in{opacity:1;transform:none}
 
 /* ---------- Barre supérieure : marque, navigation, état ---------- */
@@ -95,16 +95,17 @@ button,select,input,textarea{font:inherit;color:inherit}
 .brand a{display:flex;color:inherit;text-decoration:none}
 .brand svg{display:block;height:24px;width:auto}
 .brand .wm{stroke:var(--ink)} .brand .gem{fill:var(--gold-fill)}
-nav.tabs{display:flex;align-items:center;gap:clamp(16px,2.4vw,36px);flex:1;min-width:0;overflow-x:auto;scrollbar-width:none}
-nav.tabs::-webkit-scrollbar{display:none}
-nav.tabs .tab{position:relative;flex:none;background:none;border:0;padding:23px 0;cursor:pointer;color:var(--ink-muted);font:500 14px/20px var(--font-sans);text-decoration:none;transition:color var(--ui);white-space:nowrap}
-nav.tabs .tab::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;background:var(--gold-fill);transform:scaleX(0);transform-origin:left;transition:transform .35s var(--ease)}
-nav.tabs .tab:hover{color:var(--ink)}
-nav.tabs .tab[aria-selected="true"],nav.tabs .tab[aria-current="true"]{color:var(--ink)}
-nav.tabs .tab[aria-selected="true"]::after,nav.tabs .tab[aria-current="true"]::after{transform:scaleX(1)}
-nav.tabs[data-at="radar"] .tab[aria-selected="true"]{color:var(--ink-muted)}
-nav.tabs[data-at="radar"] .tab[aria-selected="true"]::after{transform:scaleX(0)}
-nav.tabs .tab .mono{color:var(--gold);margin-left:4px;font-size:12px}
+nav.main-nav{display:flex;align-items:center;gap:clamp(18px,2.2vw,32px);flex:1;min-width:0;overflow-x:auto;scrollbar-width:none}
+nav.main-nav::-webkit-scrollbar{display:none}
+nav.main-nav > a,nav.main-nav > button{position:relative;flex:none;background:none;border:0;padding:23px 0;cursor:pointer;color:var(--ink-muted);font:500 14px/20px var(--font-sans);text-decoration:none;transition:color var(--ui);white-space:nowrap}
+nav.main-nav > a{margin-right:clamp(8px,1.4vw,20px)}
+nav.main-nav > a::after,nav.main-nav > button::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;background:var(--gold-fill);transform:scaleX(0);transform-origin:left;transition:transform .35s var(--ease)}
+nav.main-nav > a:hover,nav.main-nav > button:hover{color:var(--ink)}
+nav.main-nav > a[aria-current="true"],nav.main-nav > button[aria-current="true"]{color:var(--ink)}
+nav.main-nav > a[aria-current="true"]::after,nav.main-nav > button[aria-current="true"]::after{transform:scaleX(1)}
+nav.main-nav[data-at="radar"] > button[aria-current="true"]{color:var(--ink-muted)}
+nav.main-nav[data-at="radar"] > button[aria-current="true"]::after{transform:scaleX(0)}
+nav.main-nav .mono{color:var(--gold);margin-left:4px;font-size:12px}
 .topbar .side{display:flex;align-items:center;gap:clamp(12px,2vw,28px);margin-left:auto;flex:none}
 .live{display:flex;align-items:center;gap:var(--space-2);white-space:nowrap}
 .live i{width:6px;height:6px;border-radius:50%;background:var(--cession);box-shadow:0 0 0 0 var(--cession);animation:pulse 2.4s ease-out infinite}
@@ -121,17 +122,18 @@ nav.tabs .tab .mono{color:var(--gold);margin-left:4px;font-size:12px}
 
 /* ---------- Héro : éditorial à gauche, radar à droite ---------- */
 .hero{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,6fr);gap:clamp(24px,4vw,72px);align-items:center;padding-block:clamp(40px,6vw,88px) clamp(24px,4vw,56px)}
-.hero-copy{max-width:580px}
+.hero-copy{max-width:580px;container-type:inline-size}
 .eyebrow{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 .eyebrow .clock{color:var(--ink-muted);letter-spacing:0;text-transform:none;font-weight:500}
-.hero h1{margin:26px 0 0;font:700 var(--t-hero)/.97 var(--font-display);letter-spacing:-.045em;text-wrap:balance}
+.hero h1{margin:26px 0 0;font:700 clamp(42px,11.2cqi,84px)/.97 var(--font-display);letter-spacing:-.045em}
 .hero h1 em{font-style:normal;color:var(--gold)}
 .hero .lead{margin:30px 0 0;font-size:clamp(16px,1.25vw,18px);line-height:1.55;color:var(--ink-muted);max-width:46ch}
 .hero .actions{display:flex;gap:var(--space-6);align-items:center;margin-top:40px;flex-wrap:wrap}
 
-.radar-stage{position:relative;margin-right:calc(-1*min(80px,max(0px,(100vw - var(--wrap))/2 - 6px)))}
-.radar-stage::before{content:"";position:absolute;inset:-6%;background:radial-gradient(closest-side,var(--ambient),transparent 72%);pointer-events:none;z-index:-1}
-.radar-wrap{position:relative;aspect-ratio:1;width:100%;max-width:820px;margin-left:auto}
+/* Scène, pas une carte : aucun fond, aucun bord, aucun rayon, aucune ombre. */
+.radar-stage{position:relative;isolation:isolate;display:grid;place-items:center;min-height:640px;margin-right:calc(-1*min(80px,max(0px,(100vw - var(--wrap))/2 - 6px)));background:none;border:0;border-radius:0;box-shadow:none}
+.radar-stage::before{content:"";position:absolute;inset:12% 5%;z-index:-1;background:radial-gradient(circle,color-mix(in srgb,var(--gold) 12%,transparent),transparent 65%);filter:blur(40px);pointer-events:none}
+.radar-wrap{position:relative;z-index:1;aspect-ratio:1;width:100%;max-width:820px;margin-left:auto}
 .radar{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
 .matrix circle{fill:var(--matrix)}
 .ring{fill:none;stroke:var(--line);stroke-width:.25}
@@ -174,14 +176,13 @@ nav.tabs .tab .mono{color:var(--gold);margin-left:4px;font-size:12px}
 .radar-legend i{width:7px;height:7px;border-radius:50%;background:var(--ink-muted)}
 .radar-legend i.g{background:var(--gold-fill);box-shadow:0 0 6px var(--bloom)}
 
-/* ---------- Chiffres clés : une ligne, pas quatre boîtes ---------- */
-.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));padding-block:clamp(32px,4vw,52px);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-.metric{position:relative;display:grid;gap:12px;align-content:start;padding-inline:clamp(16px,3vw,48px)}
-.metric:first-child{padding-left:0}
-.metric + .metric::before{content:"";position:absolute;left:0;top:10%;bottom:10%;width:1px;background:var(--line)}
-.metric b{font:700 var(--t-metric)/1 var(--font-display);letter-spacing:-.045em;font-variant-numeric:tabular-nums}
+/* ---------- Chiffres clés : une ligne typographique, pas quatre cartes ---------- */
+.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:none}
+.metric{display:grid;gap:10px;align-content:start;justify-items:start;padding:32px 0;background:none;border-radius:0}
+.metric + .metric{border-left:1px solid var(--line);padding-left:32px}
+.metric b{display:block;font:700 clamp(36px,4vw,56px)/1 var(--font-display);letter-spacing:-.04em;font-variant-numeric:tabular-nums}
 .metric.gold b{color:var(--gold)}
-.metric .sub{margin-top:-6px;font-size:12.5px}
+.metric .label + .label{margin-top:-6px}
 
 /* ---------- Opportunités à surveiller : classement éditorial ---------- */
 .rank{display:grid}
@@ -387,7 +388,7 @@ dialog.fiche::backdrop{background:var(--scrim);backdrop-filter:blur(3px)}
 /* ---------- Réactivité ---------- */
 @media (max-width:1180px){
   .hero{grid-template-columns:minmax(0,45fr) minmax(0,55fr)}
-  .radar-stage{margin-right:0}
+  .radar-stage{margin-right:0;min-height:520px}
   .callout{padding:8px 12px 8px 12px;gap:0 12px}
   .callout b{font-size:24px}
   .callout .c-nm{max-width:160px}
@@ -404,7 +405,7 @@ dialog.fiche::backdrop{background:var(--scrim);backdrop-filter:blur(3px)}
   .hero{grid-template-columns:1fr;padding-top:var(--space-12)}
   .hero-copy{max-width:640px}
   .radar-wrap{max-width:640px;margin-inline:auto}
-  .radar-stage{margin-top:var(--space-4)}
+  .radar-stage{margin-top:var(--space-8);min-height:0}
   .toolbar{grid-template-columns:1fr 1fr}
   .toolbar .f:first-child,.toolbar .f:has(.seg){grid-column:1/-1}
   details.more-f{grid-column:1/-1;justify-self:start}
@@ -417,15 +418,17 @@ dialog.fiche::backdrop{background:var(--scrim);backdrop-filter:blur(3px)}
   .bar{grid-template-columns:minmax(100px,150px) minmax(0,1fr) 56px}
 }
 @media (max-width:760px){
-  .metrics{grid-template-columns:1fr 1fr;row-gap:36px}
-  .metric{padding-inline:20px}
-  .metric:nth-child(odd){padding-left:0}
-  .metric:nth-child(3)::before{display:none}
+  .metrics{grid-template-columns:1fr 1fr}
+  .metric{padding:28px 0}
+  .metric:nth-child(odd){border-left:0;padding-left:0}
+  .metric:nth-child(even){padding-left:24px}
+  .metric:nth-child(n+3){border-top:1px solid var(--line)}
   .topbar .live span,.topbar #refresh .t{display:none}
   .topbar #refresh{width:36px;padding:0;font-size:16px}
   .topbar .in{gap:14px}
-  nav.tabs{gap:16px;mask-image:linear-gradient(90deg,#000 82%,transparent);-webkit-mask-image:linear-gradient(90deg,#000 82%,transparent);padding-right:24px}
-  nav.tabs .tab{font-size:13px}
+  nav.main-nav{gap:16px;mask-image:linear-gradient(90deg,#000 82%,transparent);-webkit-mask-image:linear-gradient(90deg,#000 82%,transparent);padding-right:24px}
+  nav.main-nav > a,nav.main-nav > button{font-size:13px}
+  nav.main-nav > a{margin-right:4px}
   .radar-read{gap:1px} .radar-read .sub{font-size:11px} .radar-read b{font-size:13px}
   .radar-legend{gap:4px;font-size:10px}
   .callout .c-meta,.callout .c-val{display:none}
@@ -441,6 +444,7 @@ dialog.fiche::backdrop{background:var(--scrim);backdrop-filter:blur(3px)}
 }
 @media (max-width:520px){
   .hero .actions{gap:16px}
+  .metric + .metric,.metric:nth-child(even){padding-left:16px}
   .panel-head .count{text-align:left}
   .eyebrow .clock{display:none}
 }
@@ -467,11 +471,11 @@ dialog.fiche::backdrop{background:var(--scrim);backdrop-filter:blur(3px)}
         </svg>
         </a>
       </div>
-      <nav class="tabs" role="tablist" aria-label="Sections">
-        <a class="tab" href="#hero" id="nav-radar">Radar</a>
-        <button class="tab" role="tab" aria-selected="true" data-tab="cibles">Opportunités</button>
-        <button class="tab" role="tab" aria-selected="false" data-tab="pipeline">Pipeline<span class="mono" id="k-deals"></span></button>
-        <button class="tab" role="tab" aria-selected="false" data-tab="reglages">Scoring</button>
+      <nav class="main-nav" aria-label="Navigation principale">
+        <a href="#hero" id="nav-radar">Radar</a>
+        <button data-tab="cibles" aria-current="true">Opportunités</button>
+        <button data-tab="pipeline">Pipeline<span class="mono" id="k-deals"></span></button>
+        <button data-tab="reglages">Scoring</button>
       </nav>
       <div class="side">
         <div class="live label"><i></i><span id="fresh">Connexion…</span></div>
@@ -483,7 +487,7 @@ dialog.fiche::backdrop{background:var(--scrim);backdrop-filter:blur(3px)}
   <section class="hero" id="hero" aria-label="Vue d'ensemble">
     <div class="hero-copy rv">
       <p class="eyebrow label"><span class="kicker">Radar Île-de-France</span><span class="clock mono" id="clock"></span></p>
-      <h1>Trouver le <em>filon</em> avant qu'il soit sur le marché.</h1>
+      <h1>Trouver le <em>filon</em><br>avant qu'il soit<br>sur le marché.</h1>
       <p class="lead">Filon analyse en continu les signaux faibles des PME franciliennes — jugements, comptes publiés, âge des dirigeants — pour repérer les opportunités de reprise avant qu'elles n'arrivent officiellement sur le marché.</p>
       <div class="actions">
         <a class="btn primary" href="#panels">Explorer les opportunités</a>
@@ -517,10 +521,10 @@ dialog.fiche::backdrop{background:var(--scrim);backdrop-filter:blur(3px)}
   </section>
 
   <section class="metrics rv" aria-label="Chiffres clés">
-    <div class="metric"><b id="k-total">–</b><span class="label">Cibles</span><span class="sub">Sociétés suivies par le radar</span></div>
-    <div class="metric gold"><b id="k-top">–</b><span class="label">Pépites</span><span class="sub">Score ≥ 70</span></div>
-    <div class="metric"><b id="k-proc">–</b><span class="label">Procédures</span><span class="sub">Redressement, sauvegarde, cession</span></div>
-    <div class="metric"><b id="k-ced">–</b><span class="label">Cédants potentiels</span><span class="sub">Dirigeant de 60 ans et plus</span></div>
+    <div class="metric"><b id="k-total">–</b><span class="label">Cibles</span></div>
+    <div class="metric gold"><b id="k-top">–</b><span class="label">Pépites</span><span class="label">Score ≥ 70</span></div>
+    <div class="metric"><b id="k-proc">–</b><span class="label">Procédures</span></div>
+    <div class="metric"><b id="k-ced">–</b><span class="label">Cédants</span><span class="label">Potentiels</span></div>
   </section>
 
   <section class="sect" aria-labelledby="h-top">
@@ -541,7 +545,7 @@ dialog.fiche::backdrop{background:var(--scrim);backdrop-filter:blur(3px)}
         <h2 id="h-flux">Les derniers jugements publiés.</h2>
         <p>Redressements, sauvegardes et plans de cession relevés au BODACC, du plus récent au plus ancien.</p>
       </div>
-      <div class="feed rv" id="flux"></div>
+      <div class="feed" id="flux"></div>
     </div>
   </section>
 
@@ -551,7 +555,7 @@ dialog.fiche::backdrop{background:var(--scrim);backdrop-filter:blur(3px)}
       <h2 id="h-sect">Où se trouvent les opportunités ?</h2>
       <p>Répartition des pépites (score ≥ 70) par secteur. Clique sur un secteur pour filtrer la liste des cibles.</p>
     </div>
-    <div class="bars rv" id="deptBars"></div>
+    <div class="bars" id="deptBars"></div>
   </section>
 
   <div class="panels" id="panels">
@@ -1137,8 +1141,9 @@ $("#runEnrich").onclick = ()=>run({mode:"enrich", batch:200}, "Enrichissement");
 $("#runCed").onclick = ()=>run({mode:"cedants", pages:8}, "Cédants");
 
 /* ---------- Câblage ---------- */
-document.querySelectorAll("nav.tabs [data-tab]").forEach(b=>b.onclick=()=>{
-  document.querySelectorAll("nav.tabs [data-tab]").forEach(z=>z.setAttribute("aria-selected", z===b));
+document.querySelectorAll("nav.main-nav [data-tab]").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll("nav.main-nav [data-tab]").forEach(z=>z.removeAttribute("aria-current"));
+  b.setAttribute("aria-current","true");
   ["cibles","pipeline","reglages"].forEach(t=>$("#tab-"+t).hidden = t!==b.dataset.tab);
   if(b.dataset.tab==="reglages" && mcp) loadSettings();
 });
@@ -1158,19 +1163,19 @@ $("#fiche").addEventListener("click", e=>{ if(e.target.id==="fiche") $("#fiche")
 $("#refresh").onclick = ()=>{ if(mcp) load(); else loadCatalogue(true); };
 
 /* ---------- Navigation : défilement vers les panneaux, repère « Radar », apparitions ---------- */
-document.querySelectorAll("nav.tabs [data-tab]").forEach(b => b.addEventListener("click", () => {
+document.querySelectorAll("nav.main-nav [data-tab]").forEach(b => b.addEventListener("click", () => {
   const top = $("#panels").getBoundingClientRect().top;
   if (top < 60 || top > 200) $("#panels").scrollIntoView({ behavior: RM ? "auto" : "smooth" });
 }));
 document.querySelectorAll("[data-goto]").forEach(b => b.addEventListener("click", () => {
-  const t = document.querySelector(`nav.tabs [data-tab="${b.dataset.goto}"]`); if (t) t.click();
+  const t = document.querySelector(`nav.main-nav [data-tab="${b.dataset.goto}"]`); if (t) t.click();
 }));
 if ("IntersectionObserver" in window) {
-  const nav = document.querySelector("nav.tabs"), radarLink = $("#nav-radar");
+  const nav = document.querySelector("nav.main-nav"), radarLink = $("#nav-radar");
   new IntersectionObserver(([e]) => {
     const at = e.isIntersecting;
     nav.dataset.at = at ? "radar" : "";
-    radarLink.setAttribute("aria-current", at ? "true" : "false");
+    if (at) radarLink.setAttribute("aria-current", "true"); else radarLink.removeAttribute("aria-current");
   }, { rootMargin: "-40% 0px -50% 0px" }).observe($("#hero"));
   const rv = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add("in"); rv.unobserve(e.target); } }), { rootMargin: "0px 0px -8% 0px" });
   document.querySelectorAll(".rv").forEach(el => rv.observe(el));
