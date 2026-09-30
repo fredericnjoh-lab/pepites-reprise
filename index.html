@@ -8,263 +8,258 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='28' fill='none' stroke='%23EDEFEA' stroke-width='4'/%3E%3Ccircle cx='44' cy='41' r='6' fill='%23E8B84A'/%3E%3C/svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Michroma&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700&family=Inter:wght@400;500;600&display=swap">
 <style>
 :root{
   color-scheme:dark;
-  --void:#07090A; --surface-1:#0D1112; --surface-2:#141A1B; --line:#1C2426; --line-strong:#5E6B66;
-  --ink:#EDEFEA; --ink-muted:#8A958F;
+  --void:#07090A; --surface-1:#0D1112; --surface-2:#141A1B; --surface-3:#1A2224; --line:#1C2426; --line-strong:#5E6B66;
+  --ink:#EDEFEA; --ink-muted:#9AA5A0;
   --gold:#E8B84A; --gold-fill:#E8B84A; --on-gold:#1A1405; --gold-soft:#2A2210;
   --cession:#4FD1A5; --decote:#FF7A59;
   --focus:var(--gold);
   --glow-gold:0 0 0 1px #E8B84A, 0 0 24px #E8B84A55;
-  --grid-dot:#ffffff0d; --beam:.14;
-  --glass:#0D1112b8; --glass-edge:#ffffff12; --ambient:#E8B84A24; --ambient-2:#4FD1A512; --bloom:#E8B84A99;
-  --font-display:"Michroma","Eurostile","Arial Black",sans-serif;
-  --font-sans:"Geist",system-ui,-apple-system,"Segoe UI",sans-serif;
-  --font-mono:"Geist Mono",ui-monospace,"SF Mono",Menlo,monospace;
-  --space-1:4px; --space-2:8px; --space-3:12px; --space-4:16px; --space-6:24px; --space-8:32px; --space-12:48px;
-  --radius-xs:2px; --radius-sm:6px; --ui:160ms cubic-bezier(.2,.8,.2,1);
+  --ambient:#E8B84A2e; --ambient-2:#4FD1A514; --bloom:#E8B84A99;
+  --shadow:0 24px 48px -24px rgba(0,0,0,.7);
+  --tint:color-mix(in srgb, var(--gold-fill) 12%, var(--surface-2));
+  --tint-strong:color-mix(in srgb, var(--gold-fill) 22%, var(--surface-2));
+  --font-display:"Outfit","Inter",system-ui,sans-serif;
+  --font-sans:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --r-card:24px; --r-inner:16px; --r-pill:999px; --ui:160ms cubic-bezier(.2,.8,.2,1);
 }
 @media (prefers-color-scheme:light){:root:not([data-theme="dark"]){
   color-scheme:light;
-  --void:#F3F4F1; --surface-1:#FFFFFF; --surface-2:#E9ECE7; --line:#D8DDD6; --line-strong:#7E8882;
-  --ink:#0B0F10; --ink-muted:#525C57;
+  --void:#FFFFFF; --surface-1:#FFFFFF; --surface-2:#F4F5F2; --surface-3:#E9ECE7; --line:#E3E6E1; --line-strong:#9AA39E;
+  --ink:#0B0F10; --ink-muted:#5E6864;
   --gold:#8A5F00; --gold-fill:#C8901E; --on-gold:#1A1405; --gold-soft:#F4E7C6;
   --cession:#0E6F50; --decote:#B03A1C;
   --glow-gold:0 0 0 1px #C8901E, 0 0 16px #C8901E33;
-  --grid-dot:#0000000f; --beam:.16;
-  --glass:#FFFFFFc7; --glass-edge:#FFFFFF; --ambient:#C8901E1f; --ambient-2:#0E6F5012; --bloom:#C8901E66;
+  --ambient:#C8901E22; --ambient-2:#0E6F5012; --bloom:#C8901E66;
+  --shadow:0 24px 48px -28px rgba(20,25,20,.28);
 }}
 *{box-sizing:border-box}
 html{scroll-behavior:auto}
 body{
-  margin:0; background:var(--void); color:var(--ink); font:15px/1.5 var(--font-sans);
-  background-image:radial-gradient(var(--grid-dot) 1px, transparent 1.2px); background-size:24px 24px;
+  margin:0; background:var(--void); color:var(--ink);
+  font:400 17px/1.6 var(--font-sans);
+  -webkit-font-smoothing:antialiased;
   position:relative; isolation:isolate;
 }
-body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
-  background:radial-gradient(60vmax 45vmax at 18% 18%, var(--ambient), transparent 60%),
-             radial-gradient(40vmax 30vmax at 92% 8%, var(--ambient-2), transparent 60%)}
-body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.05;mix-blend-mode:overlay;
-  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
-.wrap{max-width:1120px;margin:0 auto;padding-inline:var(--space-4)}
+body::before{content:"";position:absolute;left:0;right:0;top:0;height:900px;z-index:-1;pointer-events:none;
+  background:radial-gradient(720px 420px at 50% 0%, var(--ambient), transparent 70%)}
+.wrap{max-width:1160px;margin:0 auto;padding-inline:24px}
 a{color:inherit}
-:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
-.mono{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
-.label{font:500 11px/14px var(--font-sans);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-muted)}
-.block{padding-block:80px}
-.block h2{margin:var(--space-3) 0 var(--space-6);font:500 clamp(26px,3vw,36px)/1.15 var(--font-sans);letter-spacing:-.02em;text-wrap:balance}
-.block .intro{margin:-8px 0 var(--space-8);max-width:52ch;color:var(--ink-muted)}
+:focus-visible{outline:2px solid var(--focus);outline-offset:3px;border-radius:4px}
+h1,h2,h3{font-family:var(--font-display);letter-spacing:-.02em;color:var(--ink);margin:0}
+h1{font-weight:700;font-size:clamp(40px,5.6vw,66px);line-height:1.08;text-wrap:balance}
+h2{font-weight:700;font-size:clamp(30px,3.6vw,44px);line-height:1.15;text-wrap:balance}
+h3{font-weight:600;font-size:20px;line-height:1.35}
+p{margin:0}
+.muted{color:var(--ink-muted)}
+.center{text-align:center}
+.center .lead,.center .pill{margin-left:auto;margin-right:auto}
 
-.nav{
-  position:sticky;top:0;z-index:30;
-  border-bottom:1px solid var(--line);
-  background:color-mix(in srgb, var(--void) 94%, transparent);
-  -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);
-}
-.nav .wrap{display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-4);min-height:68px;padding-block:10px}
-.brand{display:flex;align-items:center;gap:var(--space-4);text-decoration:none;min-width:0}
-.brand svg{display:block;height:22px;width:auto;flex:none}
-.brand .wm{stroke:var(--ink)} .brand .gem{fill:var(--gold-fill)}
-.brand p{margin:0;padding-left:var(--space-4);border-left:1px solid var(--line);color:var(--ink-muted);font-size:12px;line-height:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.nav-links{display:flex;flex-wrap:wrap;gap:var(--space-4);margin-left:auto;align-items:center}
-.nav-links a{text-decoration:none;color:var(--ink-muted);font-size:13px}
-.nav-links a:hover{color:var(--ink)}
-.btn{display:inline-flex;align-items:center;border:1px solid var(--line-strong);background:transparent;padding:10px 16px;border-radius:var(--radius-sm);text-decoration:none;font:500 13px/1 var(--font-sans);color:var(--ink);cursor:pointer;transition:border-color var(--ui),color var(--ui),box-shadow var(--ui)}
+.pill{display:inline-flex;align-items:center;gap:8px;border-radius:var(--r-pill);padding:6px 12px;font:600 12px/1.2 var(--font-sans);letter-spacing:.02em;text-transform:uppercase;background:var(--gold-fill);color:var(--on-gold)}
+.pill.soft{background:var(--tint-strong);color:var(--gold)}
+.btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line-strong);background:transparent;padding:13px 22px;border-radius:var(--r-pill);text-decoration:none;font:600 15px/1 var(--font-sans);color:var(--ink);cursor:pointer;transition:border-color var(--ui),color var(--ui),box-shadow var(--ui),background var(--ui),transform var(--ui)}
 .btn:hover{border-color:var(--gold);color:var(--gold)}
+.btn.outline{border-color:var(--gold);color:var(--gold)}
+.btn.outline:hover{background:var(--tint)}
 .btn.primary{background:var(--gold-fill);border-color:transparent;color:var(--on-gold)}
-.btn.primary:hover{box-shadow:var(--glow-gold);color:var(--on-gold)}
-.note{margin:var(--space-4) 0 0;max-width:52ch;color:var(--ink-muted);font-size:13px}
-.note a{color:var(--ink)}
+.btn.primary:hover{box-shadow:var(--glow-gold);color:var(--on-gold);transform:translateY(-1px)}
+.btn.primary::after{content:"→"}
+.btn.small{padding:10px 16px;font-size:14px}
+.note{color:var(--ink-muted);font-size:14px}
+.note a{color:var(--ink);font-weight:500}
+.lead{max-width:640px;color:var(--ink-muted);font-size:19px;line-height:1.55}
+.lead strong{color:var(--ink);font-weight:600}
 
-.hero{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(280px,.9fr);gap:var(--space-8);align-items:center;padding-block:var(--space-12) 80px}
-.hero h1{margin:var(--space-4) 0 var(--space-4);font:400 clamp(28px,4vw,44px)/1.15 var(--font-display);letter-spacing:.02em;text-wrap:balance}
-.hero h1 em{font-style:normal;color:var(--gold);text-shadow:0 0 24px var(--bloom)}
-.lead{margin:0 0 var(--space-6);max-width:46ch;color:var(--ink);font-size:16px}
-.actions{display:flex;flex-wrap:wrap;gap:var(--space-3);align-items:center}
+.nav{position:sticky;top:0;z-index:30;background:color-mix(in srgb, var(--void) 92%, transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.nav .wrap{display:flex;align-items:center;gap:24px;min-height:76px}
+.brand{display:flex;align-items:center;text-decoration:none}
+.brand svg{display:block;height:24px;width:auto}
+.brand .wm{stroke:var(--ink)} .brand .gem{fill:var(--gold-fill)}
+.nav-links{display:flex;align-items:center;gap:28px;margin:0 auto}
+.nav-links a{text-decoration:none;color:var(--ink-muted);font-weight:500;font-size:15px;padding:6px 0;border-bottom:2px solid transparent;transition:color var(--ui),border-color var(--ui)}
+.nav-links a:hover{color:var(--ink);border-color:var(--gold)}
+.nav-cta{display:flex;align-items:center;gap:10px}
 
-.stage{position:relative;height:520px;perspective:880px;perspective-origin:50% 42%;overflow:hidden}
-.scene{
-  position:absolute;left:50%;top:54%;width:340px;height:340px;margin:-170px 0 0 -170px;z-index:0;
-  transform-style:preserve-3d;
-  transform:rotateX(58deg) rotateZ(-18deg);
-  transition:transform var(--ui);
-}
-.floor{
-  position:absolute;inset:-80px;border-radius:50%;
-  background-image:radial-gradient(var(--grid-dot) 1.1px, transparent 1.4px);
-  background-size:18px 18px;
-  transform:translateZ(-18px);
-  -webkit-mask-image:radial-gradient(circle, #000 42%, transparent 72%);
-  mask-image:radial-gradient(circle, #000 42%, transparent 72%);
-}
+.block{padding-block:88px}
+.block-head{max-width:760px;margin:0 auto 48px;text-align:center;display:grid;gap:16px;justify-items:center}
+.block-head .lead{font-size:18px}
+
+.hero{padding:88px 0 40px;display:grid;gap:40px}
+.hero .copy{display:grid;gap:22px;justify-items:center;text-align:center;max-width:820px;margin:0 auto}
+.hero h1 em{font-style:normal;color:var(--gold)}
+.hero .actions{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.frame{position:relative;border-radius:var(--r-card);border:1px solid var(--line);background:linear-gradient(180deg, var(--tint), var(--surface-1) 70%);box-shadow:var(--shadow);padding:24px;overflow:hidden}
+.frame-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}
+.frame-bar .dots{display:flex;gap:6px}
+.frame-bar .dots i{width:10px;height:10px;border-radius:50%;background:var(--line-strong);opacity:.6}
+.frame-bar .dots i:first-child{background:var(--gold-fill);opacity:1}
+
+.stage{position:relative;height:500px;max-width:820px;margin:0 auto;perspective:880px;perspective-origin:50% 42%;overflow:hidden}
+.scene{position:absolute;left:50%;top:54%;width:340px;height:340px;margin:-170px 0 0 -170px;z-index:0;transform-style:preserve-3d;transform:rotateX(58deg) rotateZ(-18deg);transition:transform var(--ui)}
+.floor{position:absolute;inset:-80px;border-radius:50%;background-image:radial-gradient(color-mix(in srgb, var(--ink) 14%, transparent) 1.1px, transparent 1.4px);background-size:18px 18px;transform:translateZ(-18px);-webkit-mask-image:radial-gradient(circle, #000 42%, transparent 72%);mask-image:radial-gradient(circle, #000 42%, transparent 72%)}
 .disc{position:absolute;inset:0;transform-style:preserve-3d}
-.hoop{
-  position:absolute;border:1px solid var(--line);border-radius:50%;
-  transform:translateZ(var(--z));
-}
+.hoop{position:absolute;border:1px solid color-mix(in srgb, var(--ink) 22%, transparent);border-radius:50%;transform:translateZ(var(--z))}
 .hoop.outer{border-color:var(--line-strong)}
-.axis{
-  position:absolute;left:50%;top:0;width:1px;height:100%;background:var(--line);
-  transform:translateX(-50%) translateZ(2px);
-}
+.axis{position:absolute;left:50%;top:0;width:1px;height:100%;background:color-mix(in srgb, var(--ink) 16%, transparent);transform:translateX(-50%) translateZ(2px)}
 .axis.z{transform:translateX(-50%) translateZ(2px) rotate(90deg)}
-.hub{
-  position:absolute;left:50%;top:50%;width:8px;height:8px;margin:-4px;
-  border-radius:50%;background:var(--ink);transform:translateZ(40px);
-}
-.mast{
-  position:absolute;left:50%;top:50%;width:1px;height:40px;margin-left:-0.5px;
-  background:var(--line-strong);transform-origin:center bottom;transform:translateY(-40px) translateZ(20px) rotateX(-90deg);
-}
+.hub{position:absolute;left:50%;top:50%;width:8px;height:8px;margin:-4px;border-radius:50%;background:var(--ink);transform:translateZ(40px)}
+.mast{position:absolute;left:50%;top:50%;width:1px;height:40px;margin-left:-0.5px;background:var(--line-strong);transform-origin:center bottom;transform:translateY(-40px) translateZ(20px) rotateX(-90deg)}
 .sweep-slot{position:absolute;inset:0;transform:translateZ(10px);transform-style:preserve-3d}
-.sweep{
-  position:absolute;inset:0;border-radius:50%;
-  background:conic-gradient(from 0deg, transparent 0 292deg, color-mix(in srgb, var(--gold-fill) 42%, transparent) 360deg);
-  animation:sweep 1.6s cubic-bezier(.45,.05,.3,1) 1 both;
-}
-.sweep i{
-  position:absolute;left:50%;top:0;width:1px;height:50%;
-  background:var(--gold-fill);transform:translateX(-50%);
-  filter:drop-shadow(0 0 6px var(--bloom));
-}
+.sweep{position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 0deg, transparent 0 292deg, color-mix(in srgb, var(--gold-fill) 42%, transparent) 360deg);animation:sweep 1.6s cubic-bezier(.45,.05,.3,1) 1 both}
+.sweep i{position:absolute;left:50%;top:0;width:1px;height:50%;background:var(--gold-fill);transform:translateX(-50%);filter:drop-shadow(0 0 6px var(--bloom))}
 @keyframes sweep{from{transform:rotate(0)}to{transform:rotate(360deg)}}
-.blip,.gem{
-  position:absolute;left:50%;top:50%;border-radius:50%;
-  transform:rotate(var(--a)) translateY(calc(var(--d) * -1)) translateZ(var(--z, 8px));
-}
+.blip,.gem{position:absolute;left:50%;top:50%;border-radius:50%;transform:rotate(var(--a)) translateY(calc(var(--d) * -1)) translateZ(var(--z, 8px))}
 .blip{width:14px;height:14px;margin:-7px;background:var(--ink-muted);opacity:.85;cursor:pointer}
-.gem{
-  width:14px;height:14px;margin:-7px;
-  background:radial-gradient(circle at 32% 30%, #fff 0 1px, var(--gold-fill) 46%, #6a4808);
-  filter:drop-shadow(0 0 10px var(--bloom));
-}
-.mark{
-  position:absolute;left:50%;top:50%;
-  font:500 12px/1 var(--font-mono);color:var(--ink-muted);letter-spacing:.04em;
-  transform:rotate(var(--a)) translateY(-186px) rotate(calc(var(--a) * -1)) translateZ(4px);
-}
+.gem{width:14px;height:14px;margin:-7px;background:radial-gradient(circle at 32% 30%, #fff 0 1px, var(--gold-fill) 46%, #6a4808);filter:drop-shadow(0 0 10px var(--bloom))}
+.mark{position:absolute;left:50%;top:50%;font:600 12px/1 var(--font-sans);color:var(--ink-muted);transform:rotate(var(--a)) translateY(-186px) rotate(calc(var(--a) * -1)) translateZ(4px)}
 .calls{position:absolute;inset:0;z-index:2;pointer-events:none}
-.call{
-  position:absolute;display:flex;align-items:center;gap:8px;max-width:240px;width:auto;
-  padding:6px 10px 6px 6px;border-radius:999px;text-decoration:none;cursor:pointer;
-  background:var(--glass);border:1px solid var(--line-strong);font:inherit;color:inherit;text-align:left;
-  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);font-size:12px;pointer-events:auto;
-}
-.call b{font:500 12px/1 var(--font-mono);background:var(--gold-fill);color:var(--on-gold);border-radius:999px;padding:5px 7px}
-.call span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500}
-.call.c1{left:0;top:12%}
-.call.c2{right:0;top:42%}
-.call.c3{left:6%;bottom:10%}
+.call{position:absolute;display:flex;align-items:center;gap:10px;max-width:260px;padding:8px 14px 8px 8px;border-radius:var(--r-pill);cursor:pointer;background:var(--surface-1);border:1px solid var(--line);box-shadow:var(--shadow);font:600 13px/1 var(--font-sans);color:var(--ink);text-align:left;pointer-events:auto;transition:border-color var(--ui),transform var(--ui)}
+.call:hover{border-color:var(--gold);transform:translateY(-1px)}
+.call b{font:700 12px/1 var(--font-display);background:var(--gold-fill);color:var(--on-gold);border-radius:var(--r-pill);padding:7px 9px}
+.call span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.call.c1{left:2%;top:14%}
+.call.c2{right:2%;top:40%}
+.call.c3{left:8%;bottom:12%}
 
-.figures{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:14px;overflow:hidden}
-.figure{background:var(--surface-1);padding:var(--space-8) var(--space-6);min-width:0}
-.figure b{display:block;font:500 clamp(40px,5vw,64px)/1 var(--font-mono);font-variant-numeric:tabular-nums;letter-spacing:-.04em}
-.figure.gold b{color:var(--gold);text-shadow:0 0 18px var(--bloom)}
-.figure span{display:block;margin-top:var(--space-3);color:var(--ink-muted);font-size:14px;max-width:24ch}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px;padding-block:48px 88px}
+.stat{text-align:center;display:grid;gap:10px;justify-items:center}
+.stat b{font:700 clamp(42px,5vw,60px)/1 var(--font-display);letter-spacing:-.03em;color:var(--ink)}
+.stat.gold b{color:var(--gold)}
+.stat span{font:600 12px/1.4 var(--font-sans);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-muted);max-width:22ch}
 
-.grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-3)}
-.grid-4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--space-3)}
-.card{
-  position:relative;overflow:hidden;background:var(--glass);border:1px solid var(--line);border-radius:14px;padding:var(--space-6);
-  -webkit-backdrop-filter:blur(16px) saturate(140%);backdrop-filter:blur(16px) saturate(140%);
-  box-shadow:inset 0 1px 0 var(--glass-edge);
-}
-.card::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity var(--ui);
-  background:radial-gradient(420px circle at var(--mx,50%) var(--my,50%), var(--ambient), transparent 45%)}
-.card:hover::before{opacity:1}
-.card > *{position:relative}
-.card .n{font:500 12px/1 var(--font-mono);color:var(--gold);letter-spacing:.08em}
-.card h3{margin:var(--space-3) 0 var(--space-2);font:500 16px/1.3 var(--font-sans)}
-.card p{margin:0;color:var(--ink-muted);font-size:14px}
-.card .tags{margin-top:var(--space-4)}
+.grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
+.grid-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}
+.card{background:var(--surface-1);border:1px solid var(--line);border-radius:var(--r-card);padding:24px;box-shadow:var(--shadow);transition:transform var(--ui),border-color var(--ui)}
+.card:hover{transform:translateY(-2px);border-color:var(--line-strong)}
+.card h3{margin-bottom:8px}
+.card p{color:var(--ink-muted);font-size:16px}
+.module{padding:12px 12px 24px}
+.module .body{padding:20px 14px 0}
+.visual{height:176px;border-radius:var(--r-inner);background:var(--tint);display:grid;place-items:center;padding:20px;overflow:hidden}
+.visual.strong{background:var(--tint-strong)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.chip{display:inline-flex;align-items:center;gap:8px;border-radius:var(--r-pill);padding:8px 14px;font:600 13px/1.2 var(--font-sans);background:var(--surface-1);color:var(--ink);border:1px solid var(--line)}
+.chip b{font:700 13px/1 var(--font-display);color:var(--gold)}
+.chip.cession{color:var(--cession);border-color:color-mix(in srgb, var(--cession) 40%, transparent);background:color-mix(in srgb, var(--cession) 12%, var(--surface-1))}
+.chip.procedure{color:var(--decote);border-color:color-mix(in srgb, var(--decote) 40%, transparent);background:color-mix(in srgb, var(--decote) 12%, var(--surface-1))}
+.rings{position:relative;width:120px;height:120px}
+.rings i{position:absolute;inset:0;border-radius:50%;border:1.5px solid color-mix(in srgb, var(--ink) 30%, transparent)}
+.rings i:nth-child(2){inset:22px} .rings i:nth-child(3){inset:44px}
+.rings em{position:absolute;width:12px;height:12px;border-radius:50%;background:var(--gold-fill);box-shadow:0 0 12px var(--bloom);left:78%;top:30%}
+.rings em.b{left:24%;top:62%;background:var(--ink-muted);box-shadow:none}
+.rings em.c{left:58%;top:74%;background:var(--ink-muted);box-shadow:none;width:9px;height:9px}
+.dial{display:grid;justify-items:center;gap:6px}
+.dial b{font:700 56px/1 var(--font-display);color:var(--gold);letter-spacing:-.03em}
+.dial span{font:600 12px/1 var(--font-sans);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-muted)}
+.rows{display:grid;gap:8px;width:100%;max-width:260px}
+.rows div{display:flex;justify-content:space-between;align-items:center;background:var(--surface-1);border-radius:10px;padding:8px 12px;font:500 13px/1.2 var(--font-sans);color:var(--ink)}
+.rows div i{width:56px;height:8px;border-radius:4px;background:var(--surface-3)}
+.rows div i.g{background:var(--gold-fill);width:40px}
+.flow{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;align-items:center}
+.flow .chip{padding:7px 12px;font-size:12px}
+.flow .chip.on{background:var(--gold-fill);color:var(--on-gold);border-color:transparent}
+.flow s{text-decoration:none;color:var(--ink-muted);font-size:12px}
 
-.pair{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-3)}
-.pair article header{margin-bottom:var(--space-4)}
-.pair h3{margin:var(--space-2) 0 0;font:500 18px/1.3 var(--font-sans)}
-.line{display:grid;grid-template-columns:148px minmax(0,1fr);gap:8px;align-items:baseline;padding:12px 0;border-top:1px solid var(--line);font-size:14px}
-.line span:first-child{color:var(--ink-muted);font-size:13px}
+.steps{display:grid;gap:24px}
+.step{display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:center;padding:32px}
+.step:nth-child(even) .step-text{order:2}
+.step-text{display:grid;gap:14px}
+.num{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--gold-fill);color:var(--on-gold);font:700 17px/1 var(--font-display)}
+.step h3{font-size:26px;line-height:1.2}
+.step .visual{height:220px}
+.checks{margin:4px 0 0;padding:0;list-style:none;display:grid;gap:8px}
+.checks li{display:grid;grid-template-columns:18px 1fr;gap:10px;align-items:baseline;color:var(--ink-muted);font-size:16px}
+.checks li::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--gold-fill);margin-top:7px}
 
-.tags{display:flex;flex-wrap:wrap;gap:var(--space-2)}
-.tag{border:1px solid var(--line-strong);border-radius:var(--radius-xs);padding:6px 8px;font-size:12px;color:var(--ink)}
-.tag b{font-weight:500}
-.tag.cedant{color:var(--cession);border-color:color-mix(in srgb, var(--cession) 55%, var(--line))}
-.tag.cession{color:var(--cession);border-color:color-mix(in srgb, var(--cession) 55%, var(--line))}
-.tag.procedure{color:var(--decote);border-color:color-mix(in srgb, var(--decote) 55%, var(--line))}
+.compare .card.win{border-color:color-mix(in srgb, var(--gold-fill) 50%, var(--line));background:linear-gradient(180deg, var(--tint), var(--surface-1) 60%)}
+.compare header{display:grid;gap:10px;justify-items:start;margin-bottom:12px}
+.compare .line{display:flex;justify-content:space-between;gap:12px;padding:14px 0;border-top:1px solid var(--line);font-size:16px}
+.compare .line span:first-child{font-weight:600;color:var(--ink)}
+.compare .line span:last-child{color:var(--ink-muted);text-align:right}
 
-.feed-head{display:flex;justify-content:space-between;align-items:baseline;gap:var(--space-3);margin-bottom:var(--space-2)}
-.annonce{display:grid;grid-template-columns:88px minmax(0,1fr) auto;gap:12px;align-items:baseline;padding:14px 0;border:0;border-bottom:1px solid var(--line);text-decoration:none;color:inherit;background:none;font:inherit;text-align:left;width:100%;cursor:pointer}
+.fam .card{display:grid;gap:6px;padding:26px}
+.fam .card::before{content:"";width:12px;height:12px;border-radius:50%;background:var(--gold-fill);margin-bottom:10px}
+
+.feed .card{padding:8px 24px}
+.feed-head{display:flex;justify-content:space-between;align-items:end;gap:16px;margin-bottom:24px;flex-wrap:wrap}
+.feed-head .lead{font-size:17px}
+.annonce{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:16px;align-items:center;padding:16px 0;border:0;border-bottom:1px solid var(--line);color:inherit;background:none;font:inherit;text-align:left;width:100%;cursor:pointer}
 .annonce:last-child{border-bottom:0}
+.annonce .mono{font:600 12px/1 var(--font-sans);color:var(--ink-muted);background:var(--surface-2);border-radius:var(--r-pill);padding:8px 10px;white-space:nowrap}
 .annonce .who{display:grid;min-width:0}
-.annonce .nm{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.annonce .nm{font:600 16px/1.3 var(--font-display);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;transition:color var(--ui)}
 .annonce:hover .nm{color:var(--gold)}
-.annonce .note{margin:0}
+.annonce .note{font-size:13px}
+.tag{display:inline-flex;border-radius:var(--r-pill);padding:7px 12px;font:600 12px/1.2 var(--font-sans);background:var(--surface-2);color:var(--ink);white-space:nowrap}
+.tag.cession,.tag.cedant{color:var(--cession);background:color-mix(in srgb, var(--cession) 14%, var(--surface-1))}
+.tag.procedure{color:var(--decote);background:color-mix(in srgb, var(--decote) 14%, var(--surface-1))}
 
-dialog.fiche .score{margin:12px 0 0;font:500 28px/1 var(--font-mono);color:var(--gold);font-variant-numeric:tabular-nums}
-dialog.fiche .sec{margin-top:14px}
-dialog.fiche .sec h3{margin:0 0 6px;font:500 12px/1.3 var(--font-sans);color:var(--ink-muted)}
-dialog.fiche{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:14px;background:var(--surface-1);color:var(--ink);padding:var(--space-6);max-width:520px;width:calc(100% - 32px);max-height:min(720px, calc(100dvh - 32px));overflow:hidden}
-dialog.fiche::backdrop{background:#000000a6}
-dialog.fiche h2{margin:8px 0;font:600 20px/1.25 var(--font-sans)}
-dialog.fiche #fiche-body{overflow:auto;min-height:0}
-dialog.fiche .facts{display:grid;gap:10px;margin-top:var(--space-4)}
-dialog.fiche .facts div{display:grid;grid-template-columns:120px minmax(0,1fr);gap:8px;align-items:baseline;font-size:14px}
-dialog.fiche .facts .label{color:var(--ink-muted);font-size:12px}
-dialog.fiche #fiche-body .note{margin:12px 0 0}
-dialog.fiche .actions{flex:none;margin-top:var(--space-6);display:flex;flex-wrap:wrap;gap:var(--space-3)}
-
-.faq{display:grid;border-top:1px solid var(--line)}
-.faq details{border-bottom:1px solid var(--line)}
-.faq summary{cursor:pointer;list-style:none;padding:18px 0;font:500 16px/1.4 var(--font-sans)}
+.faq{display:grid;gap:12px;max-width:820px;margin:0 auto}
+.faq details{background:var(--surface-1);border:1px solid var(--line);border-radius:var(--r-inner);padding:0 24px}
+.faq summary{cursor:pointer;list-style:none;padding:20px 0;font:600 18px/1.4 var(--font-display);display:flex;justify-content:space-between;gap:16px;align-items:center}
 .faq summary::-webkit-details-marker{display:none}
-.faq summary::after{content:"+";float:right;font:500 16px/1.4 var(--font-mono);color:var(--ink-muted)}
+.faq summary::after{content:"+";flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--tint-strong);color:var(--gold);font:600 18px/1 var(--font-sans)}
 .faq details[open] summary::after{content:"–"}
-.faq details p{margin:0 0 18px;max-width:68ch;color:var(--ink-muted)}
+.faq details p{padding-bottom:22px;color:var(--ink-muted);font-size:16px}
 
-.close{
-  display:grid;gap:var(--space-4);justify-items:start;
-  padding:80px var(--space-8);border:1px solid var(--line);border-radius:14px;
-  background:
-    radial-gradient(420px 180px at 0% 0%, var(--ambient), transparent 70%),
-    var(--surface-1);
-}
-.close h2{margin:0}
+.close{position:relative;overflow:hidden;text-align:center;display:grid;gap:18px;justify-items:center;padding:88px 32px;border-radius:var(--r-card);border:1px solid var(--line);background:radial-gradient(600px 300px at 50% 0%, var(--ambient), transparent 70%), var(--surface-1);box-shadow:var(--shadow)}
+.close .lead{font-size:18px}
 
-footer.site{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:var(--space-8);padding-block:var(--space-12) var(--space-8);border-top:1px solid var(--line);color:var(--ink-muted);font-size:13px}
-footer.site strong{display:block;color:var(--ink);font-weight:500;font-size:15px;margin-bottom:var(--space-2)}
-footer.site h2{margin:0 0 var(--space-3);font:500 12px/1 var(--font-sans);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-muted)}
-footer.site ul{margin:0;padding:0;list-style:none;display:grid;gap:8px}
+footer.site{display:grid;grid-template-columns:1.6fr 1fr 1fr;gap:40px;padding-block:56px 40px;border-top:1px solid var(--line);color:var(--ink-muted);font-size:15px}
+footer.site .brand{margin-bottom:14px}
+footer.site h2{font:600 13px/1 var(--font-sans);letter-spacing:.08em;text-transform:uppercase;color:var(--ink);margin-bottom:16px}
+footer.site ul{margin:0;padding:0;list-style:none;display:grid;gap:10px}
 footer.site a{text-decoration:none}
 footer.site a:hover{color:var(--ink)}
-footer.site .legal{grid-column:1 / -1;margin:0;padding-top:var(--space-4);border-top:1px solid var(--line)}
+footer.site .legal{grid-column:1 / -1;padding-top:20px;border-top:1px solid var(--line);font-size:13px}
 
-[id]{scroll-margin-top:84px}
+dialog.fiche:not([open]){display:none}
+dialog.fiche[open]{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:var(--r-card);background:var(--surface-1);color:var(--ink);padding:28px;max-width:540px;width:calc(100% - 32px);max-height:min(760px, calc(100dvh - 32px));overflow:hidden;box-shadow:var(--shadow)}
+dialog.fiche::backdrop{background:#000000a6}
+dialog.fiche h2{margin:10px 0 6px;font:700 24px/1.2 var(--font-display)}
+dialog.fiche .label{font:600 12px/1.4 var(--font-sans);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-muted)}
+dialog.fiche #fiche-body{overflow:auto;min-height:0}
+dialog.fiche .score{margin:16px 0 0;font:700 44px/1 var(--font-display);color:var(--gold);letter-spacing:-.03em}
+dialog.fiche .sec{margin-top:18px}
+dialog.fiche .sec h3{margin:0 0 8px;font:600 13px/1.3 var(--font-sans);letter-spacing:.04em;text-transform:uppercase;color:var(--ink-muted)}
+dialog.fiche .facts{display:grid;gap:10px;margin-top:14px}
+dialog.fiche .facts div{display:grid;grid-template-columns:140px minmax(0,1fr);gap:8px;align-items:baseline;font-size:15px}
+dialog.fiche .facts .label{text-transform:none;letter-spacing:0;font-weight:500;font-size:14px}
+dialog.fiche #fiche-body .note{margin:10px 0 0;font-size:15px}
+dialog.fiche .actions{flex:none;margin-top:24px;display:flex;flex-wrap:wrap;gap:12px}
 
-@media (max-width:860px){
-  .hero{grid-template-columns:1fr;padding-block:var(--space-8) 64px}
-  .hero .copy{order:2}
-  .stage{height:380px;order:1}
-  .floor{inset:-20px}
-  .scene{width:250px;height:250px;margin:-125px 0 0 -125px}
-  .mark{transform:rotate(var(--a)) translateY(-142px) rotate(calc(var(--a) * -1)) translateZ(4px)}
-  .figures,.grid-4,.pair{grid-template-columns:1fr 1fr}
-  .grid-3{grid-template-columns:1fr}
+[id]{scroll-margin-top:92px}
+
+@media (max-width:900px){
+  .nav-links{display:none}
+  .hero{padding-top:56px}
+  .stats{grid-template-columns:1fr 1fr;gap:32px}
+  .grid-3{grid-template-columns:1fr 1fr}
+  .step{grid-template-columns:1fr;padding:24px}
+  .step:nth-child(even) .step-text{order:0}
   .block{padding-block:64px}
   footer.site{grid-template-columns:1fr 1fr}
+  .stage{height:400px}
+  .floor{inset:-20px}
+  .scene{width:260px;height:260px;margin:-130px 0 0 -130px}
+  .mark{transform:rotate(var(--a)) translateY(-146px) rotate(calc(var(--a) * -1)) translateZ(4px)}
 }
-@media (max-width:520px){
-  .figures,.grid-4,.pair,footer.site{grid-template-columns:1fr}
-  .brand p{display:none}
-  .nav-links{width:100%;margin-left:0}
-  .line{grid-template-columns:1fr}
-  .annonce{grid-template-columns:72px minmax(0,1fr)}
+@media (max-width:560px){
+  .wrap{padding-inline:18px}
+  .stats,.grid-3,.grid-2,footer.site{grid-template-columns:1fr}
+  .frame{padding:14px}
+  .stage{height:340px}
+  .call{max-width:180px}
+  .annonce{grid-template-columns:auto minmax(0,1fr)}
   .annonce .tag{grid-column:2}
+  .compare .line{flex-direction:column;gap:2px}
+  .compare .line span:last-child{text-align:left}
 }
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}
-  html{scroll-behavior:auto}
-  .card::before{display:none}
   .scene{transform:rotateX(58deg) rotateZ(-18deg)}
 }
 </style>
@@ -280,15 +275,17 @@ footer.site .legal{grid-column:1 / -1;margin:0;padding-top:var(--space-4);border
         </g>
         <circle class="gem" cx="106" cy="16" r="4.5"/>
       </svg>
-      <p>IT, services, industrie, négoce · Île-de-France</p>
     </a>
     <nav class="nav-links" aria-label="Page">
+      <a href="#produit">Produit</a>
       <a href="#methode">Méthode</a>
       <a href="#familles">Familles</a>
       <a href="#societes">Sociétés</a>
       <a href="#questions">Questions</a>
-      <a class="btn" href="cockpit/">Cockpit</a>
     </nav>
+    <div class="nav-cta">
+      <a class="btn outline small" href="cockpit/">Cockpit</a>
+    </div>
   </div>
 </header>
 
@@ -296,143 +293,172 @@ footer.site .legal{grid-column:1 / -1;margin:0;padding-top:var(--space-4);border
   <div class="wrap">
     <section class="hero">
       <div class="copy">
-        <p class="label">Île-de-France · 8 départements</p>
+        <span class="pill soft">Île-de-France · 8 départements</span>
         <h1>Le radar des PME <em>à reprendre.</em></h1>
-        <p class="lead">Filon lit les procédures collectives et les cessions de fonds du BODACC, puis les fiches Sirene et RNE. Chaque cible reçoit un Score Pépite sur 100 et une valorisation indicative.</p>
+        <p class="lead">Filon lit les procédures collectives et les cessions de fonds du BODACC, puis les fiches Sirene et RNE. <strong>Chaque cible reçoit un Score Pépite sur 100</strong> et une valorisation indicative.</p>
         <div class="actions">
           <a class="btn primary" id="hero-cta" href="cockpit/">Ouvrir le cockpit</a>
+          <a class="btn" href="#methode">Voir la méthode</a>
         </div>
         <p class="note" id="loaded">Chargement des annonces BODACC…</p>
       </div>
-      <div class="stage" id="stage">
-        <div class="scene" id="scene" role="img" aria-label="Radar en volume des huit départements d’Île-de-France">
-          <div class="floor"></div>
-          <div class="disc">
-            <div class="hoop outer" style="inset:0;--z:0px"></div>
-            <div class="hoop" style="inset:42px;--z:14px"></div>
-            <div class="hoop" style="inset:84px;--z:28px"></div>
-            <div class="hoop" style="inset:126px;--z:40px"></div>
-            <div class="axis"></div>
-            <div class="axis z"></div>
-            <div class="mast"></div>
-            <div class="hub"></div>
-            <div class="sweep-slot"><div class="sweep"><i></i></div></div>
-            <span class="gem" style="--a:38deg;--d:118px;--z:46px"></span>
-            <span id="blips"></span>
-            <span class="mark" style="--a:0deg">93</span>
-            <span class="mark" style="--a:45deg">92</span>
-            <span class="mark" style="--a:90deg">75</span>
-            <span class="mark" style="--a:135deg">94</span>
-            <span class="mark" style="--a:180deg">91</span>
-            <span class="mark" style="--a:225deg">77</span>
-            <span class="mark" style="--a:270deg">78</span>
-            <span class="mark" style="--a:315deg">95</span>
-          </div>
+      <div class="frame">
+        <div class="frame-bar">
+          <span class="dots"><i></i><i></i><i></i></span>
+          <span class="note">Radar · Île-de-France</span>
         </div>
-        <div class="calls" id="calls"></div>
+        <div class="stage" id="stage">
+          <div class="scene" id="scene" role="img" aria-label="Radar en volume des huit départements d’Île-de-France">
+            <div class="floor"></div>
+            <div class="disc">
+              <div class="hoop outer" style="inset:0;--z:0px"></div>
+              <div class="hoop" style="inset:42px;--z:14px"></div>
+              <div class="hoop" style="inset:84px;--z:28px"></div>
+              <div class="hoop" style="inset:126px;--z:40px"></div>
+              <div class="axis"></div>
+              <div class="axis z"></div>
+              <div class="mast"></div>
+              <div class="hub"></div>
+              <div class="sweep-slot"><div class="sweep"><i></i></div></div>
+              <span class="gem" style="--a:38deg;--d:118px;--z:46px"></span>
+              <span id="blips"></span>
+              <span class="mark" style="--a:0deg">93</span>
+              <span class="mark" style="--a:45deg">92</span>
+              <span class="mark" style="--a:90deg">75</span>
+              <span class="mark" style="--a:135deg">94</span>
+              <span class="mark" style="--a:180deg">91</span>
+              <span class="mark" style="--a:225deg">77</span>
+              <span class="mark" style="--a:270deg">78</span>
+              <span class="mark" style="--a:315deg">95</span>
+            </div>
+          </div>
+          <div class="calls" id="calls"></div>
+        </div>
       </div>
     </section>
 
-    <section class="block" style="padding-top:0" aria-label="Repères">
-      <div class="figures">
-        <div class="figure gold"><b id="kpi-n">…</b><span>Sociétés au radar, Île-de-France</span></div>
-        <div class="figure"><b>100</b><span>Score Pépite, plafond</span></div>
-        <div class="figure"><b>8</b><span>Départements : 75, 77, 78, 91, 92, 93, 94, 95</span></div>
-        <div class="figure"><b>6</b><span>Familles suivies pour les cédants de 60 ans et plus</span></div>
-      </div>
+    <section class="stats" aria-label="Repères">
+      <div class="stat gold"><b id="kpi-n">…</b><span>Sociétés au radar</span></div>
+      <div class="stat"><b>100</b><span>Score Pépite, plafond</span></div>
+      <div class="stat"><b>8</b><span>Départements couverts</span></div>
+      <div class="stat"><b>6</b><span>Familles suivies</span></div>
     </section>
 
     <section class="block" id="produit" aria-labelledby="produit-title">
-      <p class="label">Produit</p>
-      <h2 id="produit-title">Le cockpit</h2>
-      <p class="intro">Six modules. La liste, le score, la fiche et le suivi tiennent dans le même écran.</p>
+      <div class="block-head">
+        <span class="pill">Le cockpit</span>
+        <h2 id="produit-title">Six modules, un seul écran.</h2>
+        <p class="lead">La liste, le score, la fiche et le suivi des dossiers tiennent dans le même cockpit.</p>
+      </div>
       <div class="grid-3">
-        <article class="card">
-          <span class="n">01</span>
-          <h3>Radar</h3>
-          <p>Huit départements. Les sociétés géolocalisées apparaissent sur le radar du cockpit.</p>
+        <article class="card module">
+          <div class="visual"><div class="rings"><i></i><i></i><i></i><em></em><em class="b"></em><em class="c"></em></div></div>
+          <div class="body"><h3>Radar</h3><p>Huit départements. Les sociétés géolocalisées apparaissent sur le radar du cockpit.</p></div>
         </article>
-        <article class="card">
-          <span class="n">02</span>
-          <h3>Score</h3>
-          <p>Quatre axes, plafond 100. Poids : cession 30, décote 25, qualité 25, potentiel 20.</p>
+        <article class="card module">
+          <div class="visual strong"><div class="dial"><b>/100</b><span>Score Pépite</span></div></div>
+          <div class="body"><h3>Score</h3><p>Quatre axes. Poids : cession 30, décote 25, qualité 25, potentiel 20.</p></div>
         </article>
-        <article class="card">
-          <span class="n">03</span>
-          <h3>Fiche</h3>
-          <p>SIREN, activité, effectif, siège, jugement, dirigeants, comptes publiés, valorisation indicative.</p>
+        <article class="card module">
+          <div class="visual"><div class="rows"><div>SIREN<i></i></div><div>Activité<i></i></div><div>Comptes publiés<i class="g"></i></div><div>Valorisation indicative<i class="g"></i></div></div></div>
+          <div class="body"><h3>Fiche</h3><p>Identité, effectif, siège, jugement, dirigeants, comptes publiés, fourchette indicative.</p></div>
         </article>
-        <article class="card">
-          <span class="n">04</span>
-          <h3>Signaux</h3>
-          <p>Chaque signal porte son mot.</p>
-          <div class="tags">
-            <span class="tag cession">Cession</span>
-            <span class="tag procedure">Procédure</span>
-          </div>
+        <article class="card module">
+          <div class="visual"><div class="chips"><span class="chip cession">Cession</span><span class="chip procedure">Procédure</span><span class="chip">Dirigeant 60 ans et plus</span></div></div>
+          <div class="body"><h3>Signaux</h3><p>Chaque signal porte son mot et sa couleur.</p></div>
         </article>
-        <article class="card">
-          <span class="n">05</span>
-          <h3>Pipeline</h3>
-          <p>Détectée, Contactée, NDA, Data room, LOI, Closing, Perdu. Sur cet appareil, ou dans la base quand le connecteur est actif.</p>
+        <article class="card module">
+          <div class="visual"><div class="flow"><span class="chip on">Détectée</span><s>→</s><span class="chip">Contactée</span><s>→</s><span class="chip">NDA</span><s>→</s><span class="chip">Data room</span><s>→</s><span class="chip">LOI</span><s>→</s><span class="chip">Closing</span></div></div>
+          <div class="body"><h3>Pipeline</h3><p>Sur cet appareil, ou dans la base quand le connecteur est actif.</p></div>
         </article>
-        <article class="card">
-          <span class="n">06</span>
-          <h3>Sources</h3>
-          <p>BODACC chaque jour. Cédants Sirene par famille, le lundi. Comptes publiés via Sirene et RNE.</p>
+        <article class="card module">
+          <div class="visual"><div class="chips"><span class="chip">BODACC <b>chaque jour</b></span><span class="chip">Sirene <b>le lundi</b></span><span class="chip">RNE</span></div></div>
+          <div class="body"><h3>Sources</h3><p>Procédures et cessions au BODACC. Cédants par famille via Sirene. Comptes publiés via RNE.</p></div>
         </article>
       </div>
     </section>
 
     <section class="block" id="methode" aria-labelledby="methode-title">
-      <p class="label">Méthode</p>
-      <h2 id="methode-title">Quatre étapes</h2>
-      <div class="grid-4">
-        <article class="card">
-          <span class="n">01</span>
-          <h3>Collecte</h3>
-          <p>Annonces BODACC sur 90 jours. Cédants de 60 ans et plus, 3 à 99 salariés, sur les six familles.</p>
+      <div class="block-head">
+        <span class="pill">Méthode</span>
+        <h2 id="methode-title">De l’annonce publiée au dossier suivi.</h2>
+        <p class="lead">Quatre étapes, les mêmes pour chaque société détectée.</p>
+      </div>
+      <div class="steps">
+        <article class="card step">
+          <div class="step-text">
+            <span class="num">1</span>
+            <h3>Collecte</h3>
+            <p>Les annonces BODACC des 90 derniers jours en Île-de-France, puis un échantillon Sirene de dirigeants de 60 ans et plus.</p>
+            <ul class="checks">
+              <li>Procédures collectives et cessions de fonds</li>
+              <li>Sociétés de 3 à 99 salariés, six familles</li>
+              <li>Clôtures écartées</li>
+            </ul>
+          </div>
+          <div class="visual"><div class="chips"><span class="chip">75</span><span class="chip">77</span><span class="chip">78</span><span class="chip">91</span><span class="chip">92</span><span class="chip">93</span><span class="chip">94</span><span class="chip">95</span></div></div>
         </article>
-        <article class="card">
-          <span class="n">02</span>
-          <h3>Score</h3>
-          <p>Le même barème que le cockpit, appliqué aux données publiées. Plafond 100.</p>
+        <article class="card step">
+          <div class="step-text">
+            <span class="num">2</span>
+            <h3>Score</h3>
+            <p>Le barème du cockpit, appliqué aux données publiées. Plafond 100.</p>
+            <ul class="checks">
+              <li>Probabilité de cession, poids 30</li>
+              <li>Décote estimée, poids 25</li>
+              <li>Qualité du business, poids 25</li>
+              <li>Potentiel de création de valeur, poids 20</li>
+            </ul>
+          </div>
+          <div class="visual strong"><div class="chips"><span class="chip">Cession <b>30</b></span><span class="chip">Décote <b>25</b></span><span class="chip">Qualité <b>25</b></span><span class="chip">Potentiel <b>20</b></span></div></div>
         </article>
-        <article class="card">
-          <span class="n">03</span>
-          <h3>Fiche</h3>
-          <p>Identité, dirigeants, finances publiées, historique BODACC, fourchette indicative.</p>
+        <article class="card step">
+          <div class="step-text">
+            <span class="num">3</span>
+            <h3>Fiche</h3>
+            <p>Identité, dirigeants, finances publiées, historique BODACC et fourchette indicative, dans une seule fiche.</p>
+            <ul class="checks">
+              <li>SIREN, activité, effectif, siège</li>
+              <li>Jugement, tribunal, parution</li>
+              <li>CA et résultat net publiés</li>
+            </ul>
+          </div>
+          <div class="visual"><div class="rows"><div>Identité<i></i></div><div>Dirigeants<i></i></div><div>Finances publiées<i class="g"></i></div><div>Historique BODACC<i></i></div></div></div>
         </article>
-        <article class="card">
-          <span class="n">04</span>
-          <h3>Suivi</h3>
-          <p>Le dossier reste sur cet appareil. Avec le connecteur, il reste dans la base.</p>
+        <article class="card step">
+          <div class="step-text">
+            <span class="num">4</span>
+            <h3>Suivi</h3>
+            <p>Chaque dossier avance étape par étape. Il reste sur cet appareil, ou dans la base quand le connecteur est actif.</p>
+            <ul class="checks">
+              <li>Détectée, Contactée, NDA, Data room</li>
+              <li>LOI, Closing, Perdu</li>
+              <li>Notes et mode : rachat ou intermédiation</li>
+            </ul>
+          </div>
+          <div class="visual"><div class="flow"><span class="chip">Détectée</span><s>→</s><span class="chip on">Contactée</span><s>→</s><span class="chip">NDA</span><s>→</s><span class="chip">LOI</span></div></div>
         </article>
       </div>
     </section>
 
-    <section class="block" aria-labelledby="lecture-title">
-      <p class="label">Lecture</p>
-      <h2 id="lecture-title">Annonce et fiche</h2>
-      <p class="intro">L’annonce publique donne la parution. La fiche ajoute le score et les comptes publiés.</p>
-      <div class="pair">
+    <section class="block compare" aria-labelledby="lecture-title">
+      <div class="block-head">
+        <span class="pill">Lecture</span>
+        <h2 id="lecture-title">L’annonce d’un côté, la fiche de l’autre.</h2>
+        <p class="lead">L’annonce publique donne la parution. La fiche ajoute le score, les dirigeants et les comptes publiés.</p>
+      </div>
+      <div class="grid-2">
         <article class="card">
-          <header>
-            <p class="label">Annonce</p>
-            <h3>Ce que publie le BODACC</h3>
-          </header>
+          <header><span class="pill soft">Annonce</span><h3>Ce que publie le BODACC</h3></header>
           <div class="line"><span>Date</span><span>Parution</span></div>
           <div class="line"><span>Dénomination</span><span>Raison sociale</span></div>
           <div class="line"><span>Commune</span><span>Siège ou établissement</span></div>
           <div class="line"><span>Nature</span><span>Procédure ou cession de fonds</span></div>
         </article>
-        <article class="card">
-          <header>
-            <p class="label">Fiche</p>
-            <h3>Ce qu’ouvre Filon</h3>
-          </header>
-          <div class="line"><span>Score</span><span>Sur 100</span></div>
-          <div class="line"><span>Axes</span><span>Cession, décote, qualité, potentiel</span></div>
+        <article class="card win">
+          <header><span class="pill">Fiche Filon</span><h3>Ce qu’ouvre le cockpit</h3></header>
+          <div class="line"><span>Score Pépite</span><span>Sur 100</span></div>
+          <div class="line"><span>Quatre axes</span><span>Cession, décote, qualité, potentiel</span></div>
           <div class="line"><span>Dirigeant</span><span>Qualité et âge</span></div>
           <div class="line"><span>Comptes</span><span>CA et résultat net publiés</span></div>
           <div class="line"><span>Valorisation</span><span>Fourchette indicative</span></div>
@@ -440,10 +466,12 @@ footer.site .legal{grid-column:1 / -1;margin:0;padding-top:var(--space-4);border
       </div>
     </section>
 
-    <section class="block" id="familles" aria-labelledby="familles-title">
-      <p class="label">Familles</p>
-      <h2 id="familles-title">Six familles suivies</h2>
-      <p class="intro">Le commerce, la CHR et les autres activités restent dans le cockpit.</p>
+    <section class="block fam" id="familles" aria-labelledby="familles-title">
+      <div class="block-head">
+        <span class="pill">Familles</span>
+        <h2 id="familles-title">Six familles suivies.</h2>
+        <p class="lead">Le commerce, la CHR et les autres activités restent accessibles dans le cockpit.</p>
+      </div>
       <div class="grid-3">
         <article class="card"><h3>IT et numérique</h3><p>Logiciel, conseil en systèmes, données, télécom.</p></article>
         <article class="card"><h3>Services B2B</h3><p>Conseil, publicité, recrutement, sécurité, nettoyage.</p></article>
@@ -454,19 +482,26 @@ footer.site .legal{grid-column:1 / -1;margin:0;padding-top:var(--space-4);border
       </div>
     </section>
 
-    <section class="block" id="societes" aria-labelledby="societes-title">
+    <section class="block feed" id="societes" aria-labelledby="societes-title">
       <div class="feed-head">
-        <h2 id="societes-title" style="margin:0">Sociétés</h2>
-        <span class="label" id="feed-meta">Chargement…</span>
+        <div>
+          <span class="pill">Sociétés</span>
+          <h2 id="societes-title" style="margin-top:14px">Huit premières sociétés.</h2>
+          <p class="lead" style="margin-top:10px">Un clic ouvre la fiche. La liste complète est dans le cockpit.</p>
+        </div>
+        <span class="tag" id="feed-meta">Chargement…</span>
       </div>
-      <p class="intro">Huit premières sociétés. La liste complète est dans le cockpit.</p>
-      <div id="feed-rows"><p class="note">Chargement des annonces publiées au BODACC.</p></div>
-      <p class="note"><a href="cockpit/">Liste complète dans le cockpit</a></p>
+      <div class="card">
+        <div id="feed-rows"><p class="note" style="padding:16px 0">Chargement des annonces publiées au BODACC.</p></div>
+      </div>
+      <p class="note" style="margin-top:16px;text-align:center"><a href="cockpit/">Liste complète dans le cockpit</a></p>
     </section>
 
     <section class="block" id="questions" aria-labelledby="questions-title">
-      <p class="label">Questions</p>
-      <h2 id="questions-title">Sources, score, pipeline</h2>
+      <div class="block-head">
+        <span class="pill">Questions</span>
+        <h2 id="questions-title">Sources, score, pipeline.</h2>
+      </div>
       <div class="faq">
         <details>
           <summary>D’où viennent les sociétés ?</summary>
@@ -493,17 +528,25 @@ footer.site .legal{grid-column:1 / -1;margin:0;padding-top:var(--space-4);border
 
     <section class="block" aria-labelledby="close-title">
       <div class="close">
-        <p class="label">Cockpit</p>
+        <span class="pill soft">Cockpit</span>
         <h2 id="close-title">Trouver le filon.</h2>
-        <p class="note" style="margin:0">Île-de-France. Score Pépite sur 100. Valorisation indicative.</p>
-        <a class="btn" id="close-cta" href="cockpit/">Ouvrir le cockpit</a>
+        <p class="lead">Île-de-France. Score Pépite sur 100. Valorisation indicative.</p>
+        <a class="btn outline" id="close-cta" href="cockpit/">Ouvrir le cockpit</a>
       </div>
     </section>
 
     <footer class="site">
       <div>
-        <strong>Trouver le filon.</strong>
-        <p style="margin:0">Le radar des PME à reprendre.</p>
+        <a class="brand" href="./" aria-label="Filon, accueil">
+          <svg viewBox="-4 -4 168 40" role="img" aria-label="Filon">
+            <g class="wm" fill="none" stroke-width="4.5" stroke-linecap="square" stroke-miterlimit="1.5">
+              <path d="M2 30 V2 H26 M2 16 H21"/><path d="M40 2 V30"/><path d="M54 2 V30 H78"/>
+              <circle cx="106" cy="16" r="14"/><path d="M134 30 V2 L158 30 V2"/>
+            </g>
+            <circle class="gem" cx="106" cy="16" r="4.5"/>
+          </svg>
+        </a>
+        <p>Le radar des PME à reprendre. IT, services, industrie, négoce · Île-de-France.</p>
       </div>
       <div>
         <h2>Produit</h2>
@@ -511,6 +554,7 @@ footer.site .legal{grid-column:1 / -1;margin:0;padding-top:var(--space-4);border
           <li><a href="cockpit/">Cockpit</a></li>
           <li><a href="#methode">Méthode</a></li>
           <li><a href="#societes">Sociétés</a></li>
+          <li><a href="#questions">Questions</a></li>
         </ul>
       </div>
       <div>
@@ -540,14 +584,6 @@ footer.site .legal{grid-column:1 / -1;margin:0;padding-top:var(--space-4);border
 <script src="annonces.js"></script>
 <script>
 const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
-document.querySelectorAll(".card").forEach(t => {
-  t.addEventListener("pointermove", e => {
-    if (reduce) return;
-    const r = t.getBoundingClientRect();
-    t.style.setProperty("--mx", (e.clientX - r.left) + "px");
-    t.style.setProperty("--my", (e.clientY - r.top) + "px");
-  });
-});
 const stage = document.getElementById("stage");
 const scene = document.getElementById("scene");
 stage.addEventListener("pointermove", e => {
@@ -564,7 +600,9 @@ const heroCta = document.getElementById("hero-cta");
 const closeCta = document.getElementById("close-cta");
 if (heroCta && closeCta && "IntersectionObserver" in window) {
   new IntersectionObserver(function (entries) {
-    closeCta.classList.toggle("primary", !entries[0].isIntersecting);
+    const away = !entries[0].isIntersecting;
+    closeCta.classList.toggle("primary", away);
+    closeCta.classList.toggle("outline", !away);
   }, { threshold: 0.4 }).observe(heroCta);
 }
 
