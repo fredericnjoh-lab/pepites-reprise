@@ -491,7 +491,7 @@ dialog.fiche .actions{flex:none;margin-top:24px;display:flex;flex-wrap:wrap;gap:
           <p>Notes, mode de reprise et prochaine action suivent chaque dossier.</p>
           <div class="actions">
             <a class="btn" href="cockpit/">Explorer Filon</a>
-            <a class="btn" href="#societes">Revoir les sociétés</a>
+            <a class="btn" href="#societes">Revoir les opportunités</a>
           </div>
         </div>
         <div class="chapter-visual">
@@ -825,6 +825,7 @@ function place(rows){
     el.title = x.nom;
     el.tabIndex = 0;
     el.setAttribute("role", "button");
+    el.setAttribute("aria-label", x.nom);
     el.addEventListener("click", function () { showFiche(i); });
     el.addEventListener("keydown", function (e) {
       if (e.key !== "Enter" && e.key !== " ") return;
