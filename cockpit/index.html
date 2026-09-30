@@ -127,8 +127,12 @@ nav.main-nav .mono{color:var(--gold);margin-left:4px;font-size:12px}
 .eyebrow .clock{color:var(--ink-muted);letter-spacing:0;text-transform:none;font-weight:500}
 .hero h1{margin:26px 0 0;font:700 clamp(42px,11.2cqi,84px)/.97 var(--font-display);letter-spacing:-.045em}
 .hero h1 em{font-style:normal;color:var(--gold)}
-.hero .lead{margin:30px 0 0;font-size:clamp(16px,1.25vw,18px);line-height:1.55;color:var(--ink-muted);max-width:46ch}
-.hero .actions{display:flex;gap:var(--space-6);align-items:center;margin-top:40px;flex-wrap:wrap}
+.hero .lead{margin:28px 0 0;font-size:clamp(16px,1.25vw,18px);line-height:1.5;color:var(--ink-muted);max-width:36ch}
+.hero .sources{margin:18px 0 0;color:var(--ink-muted);letter-spacing:.14em}
+.hero .sources span{margin:0 .45em;color:var(--line-strong)}
+.hero .actions{display:flex;margin-top:32px}
+.hero .score-link{display:inline-block;margin-top:16px;font-size:12.5px;letter-spacing:.01em;color:var(--ink-muted);opacity:.65}
+.hero .score-link:hover{opacity:1;color:var(--ink-muted)}
 
 /* Scène, pas une carte : aucun fond, aucun bord, aucun rayon, aucune ombre. */
 .radar-stage{position:relative;isolation:isolate;display:grid;place-items:center;min-height:640px;margin-right:calc(-1*min(80px,max(0px,(100vw - var(--wrap))/2 - 6px)));background:none;border:0;border-radius:0;box-shadow:none}
@@ -192,7 +196,8 @@ nav.main-nav .mono{color:var(--gold);margin-left:4px;font-size:12px}
 .t5 .nm{display:block;font:600 clamp(18px,1.6vw,22px)/1.2 var(--font-display);letter-spacing:-.015em;transition:color var(--ui)}
 .t5 .sub{display:block;margin-top:5px}
 .t5 .st{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
-.t5 .sc{font:700 clamp(32px,3vw,40px)/1 var(--font-display);letter-spacing:-.045em;text-align:right;font-variant-numeric:tabular-nums;color:var(--ink-muted)}
+.t5 .sc{display:grid;justify-items:end;gap:6px;font:700 clamp(32px,3vw,40px)/1 var(--font-display);letter-spacing:-.045em;text-align:right;font-variant-numeric:tabular-nums;color:var(--ink-muted)}
+.t5 .sc::after{content:"Pépite";font:600 10px/1 var(--font-sans);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-muted)}
 .t5 .sc.hot{color:var(--gold)}
 .t5:hover{background:linear-gradient(90deg,color-mix(in srgb,var(--gold) 7%,transparent),transparent 70%)}
 .t5:hover .nm,.t5:hover .rk{color:var(--gold)}
@@ -313,7 +318,10 @@ dialog.fiche::backdrop{background:var(--scrim);backdrop-filter:blur(3px)}
 .fb .sec{padding-block:30px;border-top:1px solid var(--line)}
 .fb .sec:first-child{border-top:0;padding-top:26px}
 .fb .sec h3.label{margin:0 0 18px}
-.scorehead{display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(24px,4vw,44px);align-items:center}
+.scorehead{display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(28px,5vw,64px);align-items:center}
+.pepite{display:grid;gap:8px;justify-items:start}
+.pepite b{font:700 clamp(80px,10vw,120px)/.84 var(--font-display);letter-spacing:-.06em;color:var(--gold);font-variant-numeric:tabular-nums}
+.scorehead .axes{border-left:1px solid var(--line);padding-left:28px}
 .axes{display:grid;gap:14px}
 .axis{display:grid;grid-template-columns:1fr 34px;gap:6px 10px;align-items:center;font-size:14px}
 .track{grid-column:1/-1;height:3px;background:var(--line);border-radius:2px;overflow:hidden}
@@ -344,33 +352,32 @@ dialog.fiche::backdrop{background:var(--scrim);backdrop-filter:blur(3px)}
 .x:hover{color:var(--ink);border-color:var(--ink-muted)}
 
 /* ---------- Pipeline : deal flow ---------- */
-.pipe-head{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,7fr);gap:clamp(32px,5vw,80px);align-items:end}
-.funnel{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px}
-.fn{display:grid;gap:10px;font-size:12px;color:var(--ink-muted)}
-.fn > span:first-child{order:3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.fn .tr{order:1;height:3px;background:var(--surface-2);border-radius:2px;overflow:hidden}
-.fn .tr i{display:block;height:100%;background:var(--gold-fill)}
-.fn .tr i.z{background:none}
-.fn .mono{order:2;font:700 22px/1 var(--font-display);letter-spacing:-.03em;color:var(--ink);text-align:left!important}
-.funnel > p{grid-column:1/-1;margin:0}
+.pipe-head{max-width:640px}
+.funnel{display:flex;align-items:flex-end;gap:4px;overflow-x:auto;margin-top:var(--group);padding-bottom:8px;border-top:1px solid var(--line);padding-top:28px}
+.fn{display:grid;gap:10px;min-width:88px;flex:1}
+.fn .mono{font:700 clamp(32px,3.2vw,48px)/1 var(--font-display);letter-spacing:-.045em;color:var(--ink)}
+.fn span{font:600 11px/1.3 var(--font-sans);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-muted);white-space:nowrap}
+.funnel .arr{flex:none;align-self:center;color:var(--line-strong);padding:0 2px 22px;font-size:16px}
+.funnel > p{flex:1 0 100%;margin:8px 0 0}
 .board{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(236px,1fr);overflow-x:auto;margin-top:var(--group);border-top:1px solid var(--line);padding-bottom:var(--space-4)}
 .col{padding:22px 14px 32px;display:grid;gap:10px;align-content:start;min-height:340px;border-left:1px solid var(--line)}
 .col:first-child{border-left:0;padding-left:0} .col:last-child{padding-right:0}
 .col h3{margin:0 0 10px;display:flex;justify-content:space-between;align-items:baseline}
 .col h3 .mono{color:var(--ink);font:600 13px/1 var(--font-display)}
-.card{background:var(--surface-1);border:1px solid transparent;border-radius:12px;padding:16px;display:grid;gap:8px;transition:border-color var(--ui),transform .35s var(--ease),box-shadow .35s var(--ease)}
-.card:hover{border-color:var(--line);transform:translateY(-2px);box-shadow:var(--shadow-float)}
-.card .top{display:flex;gap:12px;align-items:baseline}
-.card .sc{font:700 24px/1 var(--font-display);letter-spacing:-.04em;color:var(--ink-muted);font-variant-numeric:tabular-nums;flex:none}
+.card{background:var(--surface-1);border:1px solid transparent;border-radius:12px;padding:18px 18px 14px;display:grid;gap:6px;transition:border-color var(--ui),transform .35s var(--ease)}
+.card:hover{border-color:var(--line);transform:translateY(-2px)}
+.card .sc{display:flex;align-items:baseline;gap:10px;font:700 clamp(36px,3vw,44px)/1 var(--font-display);letter-spacing:-.05em;color:var(--ink);font-variant-numeric:tabular-nums}
+.card .sc span{font:600 11px/1 var(--font-sans);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-muted)}
 .card .sc.hot{color:var(--gold)}
-.card .nm{cursor:pointer;font-size:15px}
+.card .nm{cursor:pointer;font-size:18px;letter-spacing:-.02em;margin-top:6px}
 .card .nm:hover{color:var(--gold)}
-.card .nx{font-size:12.5px;color:var(--ink);padding-top:6px;border-top:1px solid var(--line);margin-top:2px}
-.card .nx .label{display:block;margin-bottom:3px}
-.card .mv{display:flex;justify-content:space-between;gap:6px;margin-top:4px;opacity:.55;transition:opacity var(--ui)}
-.card:hover .mv,.card:focus-within .mv{opacity:1}
-.card .mv button{width:34px;height:28px;border:1px solid var(--line);background:transparent;border-radius:8px;cursor:pointer;color:var(--ink-muted);transition:color var(--ui),border-color var(--ui)}
-.card .mv button:hover:not(:disabled){color:var(--gold);border-color:var(--gold)}
+.card .px{font:600 15px/1.3 var(--font-display);letter-spacing:-.02em;font-variant-numeric:tabular-nums;margin-top:8px}
+.card .nx{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;align-items:center;font-size:13.5px;color:var(--ink);padding-top:12px;margin-top:8px;border-top:1px solid var(--line)}
+.card .nx .label{grid-column:1/-1;margin:0}
+.card .go,.card .back{border:1px solid var(--line);background:transparent;color:var(--ink-muted);cursor:pointer;transition:color var(--ui),border-color var(--ui)}
+.card .go{width:36px;height:36px;border-radius:10px;font-size:16px}
+.card .go:hover:not(:disabled),.card .back:hover:not(:disabled){color:var(--gold);border-color:var(--gold)}
+.card .back{justify-self:start;margin-top:4px;height:26px;padding:0 8px;border-radius:8px;font-size:12px}
 .empty{color:var(--ink-muted);font-size:13px;padding:8px 0}
 
 /* ---------- Scoring et sources ---------- */
@@ -418,6 +425,9 @@ dialog.fiche::backdrop{background:var(--scrim);backdrop-filter:blur(3px)}
   .bar{grid-template-columns:minmax(100px,150px) minmax(0,1fr) 56px}
 }
 @media (max-width:760px){
+  .scorehead{grid-template-columns:1fr;gap:22px}
+  .scorehead .axes{border-left:0;padding-left:0;border-top:1px solid var(--line);padding-top:18px}
+  .pepite b{font-size:84px}
   .metrics{grid-template-columns:1fr 1fr}
   .metric{padding:28px 0}
   .metric:nth-child(odd){border-left:0;padding-left:0}
@@ -488,11 +498,12 @@ dialog.fiche::backdrop{background:var(--scrim);backdrop-filter:blur(3px)}
     <div class="hero-copy rv">
       <p class="eyebrow label"><span class="kicker">Radar Île-de-France</span><span class="clock mono" id="clock"></span></p>
       <h1>Trouver le <em>filon</em><br>avant qu'il soit<br>sur le marché.</h1>
-      <p class="lead">Filon analyse en continu les signaux faibles des PME franciliennes — jugements, comptes publiés, âge des dirigeants — pour repérer les opportunités de reprise avant qu'elles n'arrivent officiellement sur le marché.</p>
+      <p class="lead">Filon analyse les signaux faibles des PME franciliennes pour détecter les opportunités de reprise avant qu'elles n'arrivent sur le marché.</p>
+      <p class="sources label">BODACC <span>·</span> données financières <span>·</span> dirigeants <span>·</span> cessions</p>
       <div class="actions">
-        <a class="btn primary" href="#panels">Explorer les opportunités</a>
-        <button class="link" data-goto="reglages">Comprendre le Score Pépite →</button>
+        <a class="btn primary" href="#tab-cibles">Explorer les opportunités</a>
       </div>
+      <button class="link score-link" data-goto="reglages">Score Pépite</button>
     </div>
     <div class="radar-stage">
       <div class="radar-wrap" id="radarWrap">
@@ -564,10 +575,10 @@ dialog.fiche::backdrop{background:var(--scrim);backdrop-filter:blur(3px)}
   <section id="tab-cibles" class="panel">
     <div class="panel-head">
       <div class="sect-head">
-        <span class="kicker label">Cibles</span>
-        <h2>Toutes les cibles du radar.</h2>
+        <span class="kicker label">Analyse</span>
+        <h2 id="count">–</h2>
+        <p>Analysez et qualifiez les cibles détectées par Filon.</p>
       </div>
-      <div class="count" id="count"></div>
     </div>
     <div class="toolbar" role="search" aria-label="Filtres">
       <div class="f"><label class="label" for="q">Recherche</label><input id="q" type="search" placeholder="Nom, SIREN, ville, NAF"></div>
@@ -597,7 +608,7 @@ dialog.fiche::backdrop{background:var(--scrim);backdrop-filter:blur(3px)}
     <div class="tablewrap">
       <table>
         <thead><tr>
-          <th class="label" data-sort="score">Score</th>
+          <th class="label" data-sort="score">Pépite</th>
           <th class="label" data-sort="nom">Entreprise</th>
           <th class="label">Situation</th>
           <th class="label num" data-sort="ca">CA</th>
@@ -613,12 +624,12 @@ dialog.fiche::backdrop{background:var(--scrim);backdrop-filter:blur(3px)}
   <section id="tab-pipeline" class="panel" hidden>
     <div class="pipe-head">
       <div class="sect-head">
-        <span class="kicker label">Pipeline</span>
-        <h2>Deal flow.</h2>
-        <p><span class="mono" id="pipeN"></span> en cours, de la détection au closing.</p>
+        <span class="kicker label">Deal flow</span>
+        <h2>Du signal au closing.</h2>
+        <p><span class="mono" id="pipeN"></span> en cours.</p>
       </div>
-      <div class="funnel" id="funnel"></div>
     </div>
+    <div class="funnel" id="funnel"></div>
     <div class="board" id="board"></div>
   </section>
 
@@ -917,7 +928,7 @@ function render(){
       <td class="num"><span class="fig">${x.vh ? fmtE(x.vb)+" – "+fmtE(x.vh) : "–"}</span></td>
       <td><div class="chips">${(x.sig||[]).slice(0,4).map(s=>`<span class="chip ${esc(s.c)}">${esc(s.l.length>34?s.l.slice(0,33)+"…":s.l)}</span>`).join("")}</div></td>
     </tr>`).join("") || `<tr><td colspan="7" class="more sub">Aucune cible ne correspond à ces filtres.</td></tr>`;
-  $("#count").textContent = `${r.length} cible${r.length>1?"s":""}` + (r.length>3000?" · les 3 000 premières sont affichées":"");
+  $("#count").textContent = `${r.length.toLocaleString("fr-FR")} opportunité${r.length>1?"s":""}` + (r.length>3000?" · les 3 000 premières sont affichées":"");
 }
 
 /* ---------- Fiche ---------- */
@@ -956,12 +967,26 @@ function drawFiche(){
   const age = c.date_creation ? new Date().getFullYear() - +c.date_creation.slice(0,4) : null;
   const axes = [["Probabilité de cession",s.p_cession],["Décote estimée",s.decote],["Qualité du business",s.qualite],["Potentiel de création de valeur",s.potentiel]];
   const isProc = (d.e||[]).length > 0;
+  const pepite = Math.round(+s.score || 0);
   $("#f-body").innerHTML = `
   <div class="sec scorehead">
-    ${dial(+s.score||0, 136, 60)}
+    <div class="pepite"><span class="label">Score Pépite</span><b>${pepite}</b></div>
     <div class="axes">${axes.map(([l,val])=>`<div class="axis"><span>${l}</span><span class="mono" style="text-align:right">${val!=null?Math.round(val):"–"}</span><span class="track"><i style="width:${+val||0}%"></i></span></div>`).join("")}</div>
   </div>
-  <div class="sec"><h3 class="label">Signaux détectés</h3><div class="chips">${(d.g||[]).map(g=>`<span class="chip ${esc(g.categorie)}">${esc(g.libelle)}</span>`).join("") || '<span class="sub">Aucun signal</span>'}</div></div>
+  <div class="sec"><h3 class="label">Signaux clés</h3><div class="chips">${(d.g||[]).map(g=>`<span class="chip ${esc(g.categorie)}">${esc(g.libelle)}</span>`).join("") || '<span class="sub">Aucun signal</span>'}</div></div>
+  <div class="sec"><h3 class="label">Finances publiées</h3>${(d.f||[]).length?`<table class="mini"><thead><tr><th class="label">Exercice</th><th class="label" style="text-align:right">CA</th><th class="label" style="text-align:right">Résultat net</th><th class="label" style="text-align:right">Marge</th></tr></thead><tbody>${d.f.map(f=>`<tr style="border-top:1px solid var(--line)"><td class="mono">${f.annee}</td><td class="mono" style="text-align:right">${fmtE(+f.ca)}</td><td class="mono" style="text-align:right">${fmtE(+f.resultat_net)}</td><td class="mono" style="text-align:right">${+f.ca?(f.resultat_net/f.ca*100).toFixed(1).replace(".",",")+" %":"–"}</td></tr>`).join("")}</tbody></table>`:'<p class="sub">Comptes non publiés ou confidentiels. À demander au cédant ou à l\'administrateur judiciaire.</p>'}</div>
+  <div class="sec"><h3 class="label">Valorisation indicative</h3>${v?`<div class="val">
+    <div class="main"><span class="label">Fourchette</span><b>${fmtE(+v.fourchette_bas)} – ${fmtE(+v.fourchette_haut)}</b></div>
+    <div><span class="label">Rendement · 4 à 7 × RN</span><b>${v.methode_rendement_haut?fmtE(+v.methode_rendement_bas)+" – "+fmtE(+v.methode_rendement_haut):"n.a."}</b></div>
+    <div><span class="label">Multiple de CA</span><b>${v.methode_ca_haut?fmtE(+v.methode_ca_bas)+" – "+fmtE(+v.methode_ca_haut):"n.a."}</b></div>
+    <div><span class="label">Actif net corrigé</span><b style="color:var(--ink-muted)">À compléter</b></div></div>
+    <p class="sub">${isProc?"Décote de procédure collective appliquée. ":""}Estimation indicative à partir des comptes publiés. Ne constitue pas un conseil en investissement.</p>`:'<p class="sub">Pas assez de données financières.</p>'}</div>
+  ${(d.l||[]).length?`<div class="sec"><h3 class="label">Cessions de fonds</h3>${d.l.map(item=>{
+    const href = safeUrl(item.url);
+    const role = item.cedant===current.x.siren ? "cedant" : item.acquereur===current.x.siren ? "acquereur" : "mention";
+    return `<div class="ev"><div><span class="tag vente">${esc(venteLabel(role, item.nature))}</span>${item.prix!=null?` <span class="mono">${fmtE(item.prix)}</span>`:""} <span class="mono">${fmtD(item.date)}</span></div><div class="sub">${esc(item.nature||"")}${item.commune?` · ${esc(item.commune)} (${esc(item.departement||"")})`:""}</div>${item.activite?`<div class="sub">${esc(String(item.activite).slice(0,280))}</div>`:""}${href?`<a href="${esc(href)}" target="_blank" rel="noopener">Voir l'annonce</a>`:""}</div>`;
+  }).join("")}<p class="sub">Prix publié au BODACC pour une transaction déjà réalisée. Estimation indicative, ne constitue pas un conseil en investissement.</p></div>`:""}
+  ${isProc?`<div class="sec"><h3 class="label">Historique BODACC</h3>${d.e.map(e=>`<div class="ev"><div><span class="mono">${fmtD(e.date)}</span> · ${esc(e.nature||"")}</div><div class="sub">${esc(e.tribunal||"")}</div>${e.complement?`<div class="sub">${esc(e.complement.slice(0,400))}</div>`:""}${e.url?`<a href="${esc(e.url)}" target="_blank" rel="noopener">Voir l'annonce</a>`:""}</div>`).join("")}</div>`:""}
   <div class="sec"><h3 class="label">Identité</h3><div class="kv">
     <div><span class="label">Création</span><span class="mono">${fmtD(c.date_creation)}${age!=null?` · ${age} ans`:""}</span></div>
     <div><span class="label">Effectif</span><span>${esc(EFF[c.tranche_effectif]||"n.c.")}</span></div>
@@ -971,20 +996,7 @@ function drawFiche(){
     <div><span class="label">Siège</span><span>${esc(c.adresse||c.commune||"–")}</span></div>
   </div></div>
   <div class="sec"><h3 class="label">Dirigeants</h3>${(d.o||[]).length?`<table class="mini"><tbody>${d.o.map(o=>`<tr style="border-bottom:1px solid var(--line)"><td>${esc(o.prenoms)} ${esc(o.nom)}</td><td class="sub">${esc(o.qualite)}</td><td class="mono" style="text-align:right">${o.annee_naissance?(new Date().getFullYear()-o.annee_naissance)+" ans":"–"}</td></tr>`).join("")}</tbody></table>`:'<p class="sub">Non renseignés (entreprise individuelle ou fiche non enrichie).</p>'}</div>
-  <div class="sec"><h3 class="label">Finances publiées</h3>${(d.f||[]).length?`<table class="mini"><thead><tr><th class="label">Exercice</th><th class="label" style="text-align:right">CA</th><th class="label" style="text-align:right">Résultat net</th><th class="label" style="text-align:right">Marge</th></tr></thead><tbody>${d.f.map(f=>`<tr style="border-top:1px solid var(--line)"><td class="mono">${f.annee}</td><td class="mono" style="text-align:right">${fmtE(+f.ca)}</td><td class="mono" style="text-align:right">${fmtE(+f.resultat_net)}</td><td class="mono" style="text-align:right">${+f.ca?(f.resultat_net/f.ca*100).toFixed(1).replace(".",",")+" %":"–"}</td></tr>`).join("")}</tbody></table>`:'<p class="sub">Comptes non publiés ou confidentiels. À demander au cédant ou à l\'administrateur judiciaire.</p>'}</div>
-  ${(d.l||[]).length?`<div class="sec"><h3 class="label">Cessions de fonds</h3>${d.l.map(item=>{
-    const href = safeUrl(item.url);
-    const role = item.cedant===current.x.siren ? "cedant" : item.acquereur===current.x.siren ? "acquereur" : "mention";
-    return `<div class="ev"><div><span class="tag vente">${esc(venteLabel(role, item.nature))}</span>${item.prix!=null?` <span class="mono">${fmtE(item.prix)}</span>`:""} <span class="mono">${fmtD(item.date)}</span></div><div class="sub">${esc(item.nature||"")}${item.commune?` · ${esc(item.commune)} (${esc(item.departement||"")})`:""}</div>${item.activite?`<div class="sub">${esc(String(item.activite).slice(0,280))}</div>`:""}${href?`<a href="${esc(href)}" target="_blank" rel="noopener">Voir l'annonce</a>`:""}</div>`;
-  }).join("")}<p class="sub">Prix publié au BODACC pour une transaction déjà réalisée. Estimation indicative, ne constitue pas un conseil en investissement.</p></div>`:""}
-  <div class="sec"><h3 class="label">Valorisation indicative</h3>${v?`<div class="val">
-    <div class="main"><span class="label">Fourchette</span><b>${fmtE(+v.fourchette_bas)} – ${fmtE(+v.fourchette_haut)}</b></div>
-    <div><span class="label">Rendement · 4 à 7 × RN</span><b>${v.methode_rendement_haut?fmtE(+v.methode_rendement_bas)+" – "+fmtE(+v.methode_rendement_haut):"n.a."}</b></div>
-    <div><span class="label">Multiple de CA</span><b>${v.methode_ca_haut?fmtE(+v.methode_ca_bas)+" – "+fmtE(+v.methode_ca_haut):"n.a."}</b></div>
-    <div><span class="label">Actif net corrigé</span><b style="color:var(--ink-muted)">À compléter</b></div></div>
-    <p class="sub">${isProc?"Décote de procédure collective appliquée. ":""}Estimation indicative à partir des comptes publiés. Ne constitue pas un conseil en investissement.</p>`:'<p class="sub">Pas assez de données financières.</p>'}</div>
-  ${isProc?`<div class="sec"><h3 class="label">Historique BODACC</h3>${d.e.map(e=>`<div class="ev"><div><span class="mono">${fmtD(e.date)}</span> · ${esc(e.nature||"")}</div><div class="sub">${esc(e.tribunal||"")}</div>${e.complement?`<div class="sub">${esc(e.complement.slice(0,400))}</div>`:""}${e.url?`<a href="${esc(e.url)}" target="_blank" rel="noopener">Voir l'annonce</a>`:""}</div>`).join("")}</div>`:""}
-  <div class="sec deal"><h3 class="label">Deal flow</h3>
+  <div class="sec deal"><h3 class="label">Prochaine action</h3>
     <div class="row2">
       <select id="d-stage" aria-label="Étape">${STAGES.map(([k,l])=>`<option value="${k}" ${deal&&deal.stage===k?"selected":""}>${l}</option>`).join("")}</select>
       <select id="d-mode" aria-label="Mode"><option value="rachat" ${deal&&deal.mode==="intermediation"?"":"selected"}>Rachat en propre</option><option value="intermediation" ${deal&&deal.mode==="intermediation"?"selected":""}>Intermédiation</option></select>
@@ -1082,11 +1094,21 @@ function board(){
   $("#board").innerHTML = STAGES.map(([k,l],i)=>{
     const items = DEALS.filter(d=>d.stage===k);
     return `<div class="col"><h3 class="label">${l}<span class="mono">${items.length}</span></h3>
-      ${items.map(d=>`<div class="card"><div class="top"><span class="sc${(+d.score||0)>=HOT?" hot":""}">${d.score!=null?Math.round(d.score):"–"}</span><div class="nm" data-open="${esc(d.siren)}">${esc(d.nom)}</div></div>
-        <div class="sub">${esc(d.commune||"")} · ${d.mode==="intermediation"?"Intermédiation":"Rachat en propre"}</div>
-        ${d.notes?`<div class="nx"><span class="label">Prochaine action</span>${esc(d.notes.slice(0,120))}</div>`:""}
-        <div class="mv"><button data-mv="${esc(d.siren)}" data-to="${i-1}" ${i===0?"disabled":""} aria-label="Étape précédente">←</button><button data-mv="${esc(d.siren)}" data-to="${i+1}" ${i===STAGES.length-1?"disabled":""} aria-label="Étape suivante">→</button></div>
-      </div>`).join("") || `<div class="empty">Aucun dossier</div>`}</div>`;
+      ${items.map(d=>{
+        const x = ALL.find(a => a.siren === d.siren) || {};
+        const loc = [d.commune || x.commune || "", x.naf ? SECT_L[secteur(x.naf)] : ""].filter(Boolean).join(" · ");
+        const mode = d.mode === "intermediation" ? "Intermédiation" : "Rachat en propre";
+        const hot = (d.score || 0) >= HOT;
+        return `<article class="card">
+          <div class="sc${hot?" hot":""}">${d.score!=null?Math.round(d.score):"–"}<span>Pépite</span></div>
+          <div class="nm" data-open="${esc(d.siren)}">${esc(d.nom)}</div>
+          <div class="sub">${esc(loc)}${loc?" · ":""}${mode}</div>
+          ${x.vh!=null?`<div class="px">${fmtE(x.vb)} – ${fmtE(x.vh)}</div>`:""}
+          <div class="nx"><span class="label">Prochaine action</span><span>${d.notes?esc(d.notes.slice(0,140)):"À définir"}</span>
+            <button class="go" data-mv="${esc(d.siren)}" data-to="${i+1}" ${i===STAGES.length-1?"disabled":""} aria-label="Étape suivante">→</button></div>
+          <button class="back" data-mv="${esc(d.siren)}" data-to="${i-1}" ${i===0?"disabled":""} aria-label="Étape précédente">←</button>
+        </article>`;
+      }).join("") || `<div class="empty">Aucun dossier</div>`}</div>`;
   }).join("");
 }
 $("#board").addEventListener("click", async e=>{
@@ -1203,13 +1225,10 @@ function callouts(){
   const box = $("#callouts"), lead = $("#leaders"); box.innerHTML = ""; lead.innerHTML = "";
   const top = ALL.filter(r => r.score >= HOT).map(r => ({r, p: project(r)})).filter(o => o.p)
                  .sort((a,b) => b.r.score - a.r.score).slice(0,3);
-  const used = [];
+  const slots = [{x:78,y:22},{x:22,y:50},{x:76,y:78}];
   top.forEach(({r,p}, i) => {
-    let ang = Math.atan2(p.y-50, p.x-50); if (Math.hypot(p.x-50,p.y-50) < 2) ang = -Math.PI/4 + i*2.1;
-    let tx = p.x + Math.cos(ang)*14, ty = p.y + Math.sin(ang)*14;
-    tx = Math.min(80, Math.max(20, tx)); ty = Math.min(92, Math.max(8, ty));
-    while (used.some(u => Math.abs(u - ty) < 7)) ty = Math.min(92, ty + 7);
-    used.push(ty);
+    let tx = slots[i].x, ty = slots[i].y;
+    if (Math.hypot(p.x-tx, p.y-ty) < 14) tx = tx > 50 ? 24 : 76;
     lead.insertAdjacentHTML("beforeend", `<line class="leader" x1="${p.x}" y1="${p.y}" x2="${tx}" y2="${ty}"/>`);
     const el = document.createElement("button");
     el.className = "callout"; el.style.left = tx + "%"; el.style.top = ty + "%"; el.dataset.siren = r.siren;
@@ -1238,9 +1257,9 @@ $("#flux").addEventListener("click", e => { const f = e.target.closest(".fx"); i
 function funnel(){
   const act = STAGES.filter(([k]) => k !== "perdu");
   const c = act.map(([k,l]) => ({l, n: DEALS.filter(d => d.stage === k).length}));
-  const max = Math.max(1, ...c.map(x => x.n)), tot = DEALS.filter(d => d.stage !== "perdu").length;
+  const tot = DEALS.filter(d => d.stage !== "perdu").length;
   $("#pipeN").textContent = tot + " dossier" + (tot > 1 ? "s" : "");
-  $("#funnel").innerHTML = c.map(x => `<div class="fn"><span>${x.l}</span><span class="tr"><i class="${x.n?"":"z"}" style="width:${x.n/max*100}%"></i></span><span class="mono" style="text-align:right">${x.n}</span></div>`).join("")
+  $("#funnel").innerHTML = c.map((x,i) => `<div class="fn"><span class="mono">${x.n}</span><span>${x.l}</span></div>${i<c.length-1?'<span class="arr" aria-hidden="true">→</span>':""}`).join("")
     + (tot ? "" : `<p class="sub" style="margin:4px 0 0">Ouvre une fiche et clique sur « Ajouter au pipeline » pour lancer ton premier dossier.</p>`);
 }
 
