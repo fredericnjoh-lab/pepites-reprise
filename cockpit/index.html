@@ -164,14 +164,17 @@ nav.main-nav .mono{color:var(--gold);margin-left:4px;font-size:12px}
 @keyframes halo{0%{r:1.6;opacity:.9}100%{r:5;opacity:0}}
 .leader{stroke:var(--gold-fill);stroke-width:.2;opacity:.8}
 /* Annotations des trois meilleures pépites : des notes de deal, pas des pastilles */
-.callout{position:absolute;transform:translate(-50%,-50%);display:grid;grid-template-columns:auto minmax(0,1fr);gap:1px 14px;align-items:center;text-align:left;cursor:pointer;color:var(--ink);
+.callout{position:absolute;transform:translate(-50%,-50%);display:block;width:max-content;max-width:min(280px,46%);text-align:left;cursor:pointer;color:var(--ink);
   padding:10px 16px 10px 14px;border-radius:12px;background:var(--glass);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid var(--glass-edge);box-shadow:var(--shadow-float);font:500 12px/1.3 var(--font-sans);opacity:0;transition:border-color var(--ui),transform var(--ui)}
 .callout::before{content:"";position:absolute;left:-1px;top:10px;bottom:10px;width:2px;border-radius:2px;background:var(--gold-fill)}
 .callout.show{opacity:1;transition:opacity .5s .2s var(--ease),border-color var(--ui)}
 .callout:hover{border-color:var(--gold-fill)}
-.callout b{grid-row:1/span 3;font:700 28px/1 var(--font-display);letter-spacing:-.04em;color:var(--gold);font-variant-numeric:tabular-nums}
-.callout .c-nm{font:600 13px/1.2 var(--font-display);letter-spacing:-.01em;max-width:190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.callout .c-meta{color:var(--ink-muted);font-size:11.5px;white-space:nowrap}
+.callout .in{display:grid;grid-template-columns:58px minmax(0,max-content);column-gap:12px;align-items:center}
+.callout .mark{grid-column:1;grid-row:1;width:58px}
+.callout .txt{grid-column:2;min-width:0;display:grid;gap:2px}
+.callout .c-nm,.callout .c-meta,.callout .c-val{min-width:0}
+.callout .c-nm{font:600 13px/1.2 var(--font-display);letter-spacing:-.01em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.callout .c-meta{color:var(--ink-muted);font-size:11.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .callout .c-val{font-variant-numeric:tabular-nums;font-size:11.5px;white-space:nowrap}
 .radar-read{position:absolute;left:0;top:0;display:grid;gap:3px}
 .radar-read b{font:600 17px/1 var(--font-display);letter-spacing:-.01em}
@@ -190,15 +193,23 @@ nav.main-nav .mono{color:var(--gold);margin-left:4px;font-size:12px}
 
 /* ---------- Opportunités à surveiller : classement éditorial ---------- */
 .rank{display:grid}
-.t5{display:grid;grid-template-columns:44px minmax(0,1fr) auto 78px;gap:clamp(16px,2vw,32px);align-items:center;padding:22px 0;width:100%;background:none;border:0;border-top:1px solid var(--line);text-align:left;color:inherit;cursor:pointer;text-decoration:none;transition:background var(--ui)}
+.t5{display:grid;grid-template-columns:44px minmax(0,1fr) auto minmax(72px,88px);gap:clamp(16px,2vw,32px);align-items:center;padding:22px 0;width:100%;background:none;border:0;border-top:1px solid var(--line);text-align:left;color:inherit;cursor:pointer;text-decoration:none;transition:background var(--ui)}
 .t5:last-child{border-bottom:1px solid var(--line)}
 .t5 .rk{font:600 13px/1 var(--font-display);color:var(--ink-muted);letter-spacing:.06em;transition:color var(--ui),transform .35s var(--ease)}
-.t5 .nm{display:block;font:600 clamp(18px,1.6vw,22px)/1.2 var(--font-display);letter-spacing:-.015em;transition:color var(--ui)}
+.t5 .nm{display:block;font:600 clamp(18px,1.6vw,22px)/1.2 var(--font-display);letter-spacing:-.015em;transition:color var(--ui);overflow-wrap:anywhere}
 .t5 .sub{display:block;margin-top:5px}
 .t5 .st{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
-.t5 .sc{display:grid;justify-items:end;gap:6px;font:700 clamp(32px,3vw,40px)/1 var(--font-display);letter-spacing:-.045em;text-align:right;font-variant-numeric:tabular-nums;color:var(--ink-muted)}
-.t5 .sc::after{content:"Pépite";font:600 10px/1 var(--font-sans);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-muted)}
-.t5 .sc.hot{color:var(--gold)}
+/* Marque Pépite : le chiffre Outfit, le mot en micro capitales. La taille change, pas la forme. */
+.mark{display:grid;justify-items:start;gap:4px;line-height:1;font-size:18px}
+.mark b{font:700 1em/.9 var(--font-display);letter-spacing:-.05em;font-variant-numeric:tabular-nums;color:var(--ink)}
+.mark span{font:600 10px/1 var(--font-sans);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-muted);white-space:nowrap}
+.mark.hot b{color:var(--gold)}
+.mark.radar{font-size:28px}
+.mark.table{font-size:18px}
+.mark.rank{font-size:clamp(32px,3vw,40px);justify-items:end}
+.mark.pipe{font-size:40px}
+.mark.fiche{font-size:100px;gap:8px}
+.mark.fiche span{font-size:12px;letter-spacing:.16em}
 .t5:hover{background:linear-gradient(90deg,color-mix(in srgb,var(--gold) 7%,transparent),transparent 70%)}
 .t5:hover .nm,.t5:hover .rk{color:var(--gold)}
 .t5:hover .rk{transform:translateX(4px)}
@@ -288,7 +299,7 @@ th:first-child,td:first-child{padding-left:0} th:last-child,td:last-child{paddin
 tr.row{cursor:pointer;transition:background var(--ui)}
 tr.row:hover td{background:var(--surface-1)}
 tr.row:hover .nm{color:var(--gold)}
-.nm{font:600 15px/1.3 var(--font-display);letter-spacing:-.01em;transition:color var(--ui)}
+.nm{font:600 15px/1.3 var(--font-display);letter-spacing:-.01em;transition:color var(--ui);overflow-wrap:anywhere}
 td .sub{margin-top:3px;font-size:12.5px}
 td .fig{font:500 13.5px/18px var(--font-sans);font-variant-numeric:tabular-nums;white-space:nowrap}
 .chips{display:flex;flex-wrap:wrap;gap:4px 14px}
@@ -319,8 +330,6 @@ dialog.fiche::backdrop{background:var(--scrim);backdrop-filter:blur(3px)}
 .fb .sec:first-child{border-top:0;padding-top:26px}
 .fb .sec h3.label{margin:0 0 18px}
 .scorehead{display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(28px,5vw,64px);align-items:center}
-.pepite{display:grid;gap:8px;justify-items:start}
-.pepite b{font:700 clamp(80px,10vw,120px)/.84 var(--font-display);letter-spacing:-.06em;color:var(--gold);font-variant-numeric:tabular-nums}
 .scorehead .axes{border-left:1px solid var(--line);padding-left:28px}
 .axes{display:grid;gap:14px}
 .axis{display:grid;grid-template-columns:1fr 34px;gap:6px 10px;align-items:center;font-size:14px}
@@ -366,14 +375,13 @@ dialog.fiche::backdrop{background:var(--scrim);backdrop-filter:blur(3px)}
 .col h3 .mono{color:var(--ink);font:600 13px/1 var(--font-display)}
 .card{background:var(--surface-1);border:1px solid transparent;border-radius:12px;padding:18px 18px 14px;display:grid;gap:6px;transition:border-color var(--ui),transform .35s var(--ease)}
 .card:hover{border-color:var(--line);transform:translateY(-2px)}
-.card .sc{display:flex;align-items:baseline;gap:10px;font:700 clamp(36px,3vw,44px)/1 var(--font-display);letter-spacing:-.05em;color:var(--ink);font-variant-numeric:tabular-nums}
-.card .sc span{font:600 11px/1 var(--font-sans);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-muted)}
-.card .sc.hot{color:var(--gold)}
-.card .nm{cursor:pointer;font-size:18px;letter-spacing:-.02em;margin-top:6px}
+.card .nm{cursor:pointer;font-size:18px;letter-spacing:-.02em;margin-top:10px;overflow-wrap:anywhere}
 .card .nm:hover{color:var(--gold)}
 .card .px{font:600 15px/1.3 var(--font-display);letter-spacing:-.02em;font-variant-numeric:tabular-nums;margin-top:8px}
 .card .nx{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;align-items:center;font-size:13.5px;color:var(--ink);padding-top:12px;margin-top:8px;border-top:1px solid var(--line)}
 .card .nx .label{grid-column:1/-1;margin:0}
+.card .define{grid-column:1;justify-self:start;background:none;border:0;padding:0;cursor:pointer;color:var(--gold);font:500 13.5px/1.4 var(--font-sans);text-align:left}
+.card .define:hover{color:var(--ink)}
 .card .go,.card .back{border:1px solid var(--line);background:transparent;color:var(--ink-muted);cursor:pointer;transition:color var(--ui),border-color var(--ui)}
 .card .go{width:36px;height:36px;border-radius:10px;font-size:16px}
 .card .go:hover:not(:disabled),.card .back:hover:not(:disabled){color:var(--gold);border-color:var(--gold)}
@@ -396,9 +404,9 @@ dialog.fiche::backdrop{background:var(--scrim);backdrop-filter:blur(3px)}
 @media (max-width:1180px){
   .hero{grid-template-columns:minmax(0,45fr) minmax(0,55fr)}
   .radar-stage{margin-right:0;min-height:520px}
-  .callout{padding:8px 12px 8px 12px;gap:0 12px}
-  .callout b{font-size:24px}
-  .callout .c-nm{max-width:160px}
+  .callout{padding:8px 12px 8px 12px;width:max-content;max-width:min(260px,48%)}
+  .callout .in{column-gap:12px}
+  .callout .mark.radar{font-size:24px}
   .toolbar{grid-template-columns:minmax(200px,1.5fr) auto repeat(2,minmax(140px,1fr));row-gap:16px}
   .toolbar .f:nth-child(n+5){grid-column:span 1}
 }
@@ -417,7 +425,8 @@ dialog.fiche::backdrop{background:var(--scrim);backdrop-filter:blur(3px)}
   .toolbar .f:first-child,.toolbar .f:has(.seg){grid-column:1/-1}
   details.more-f{grid-column:1/-1;justify-self:start}
   details.more-f .pop{left:0;right:auto}
-  .t5{grid-template-columns:36px minmax(0,1fr) 64px;gap:16px}
+  .t5{grid-template-columns:36px minmax(0,1fr) 76px;gap:16px}
+  .mark.rank{font-size:28px}
   .t5 .st{display:none}
   .fx{grid-template-columns:62px 18px minmax(0,1fr)}
   .fx::before{left:90.5px}
@@ -427,7 +436,7 @@ dialog.fiche::backdrop{background:var(--scrim);backdrop-filter:blur(3px)}
 @media (max-width:760px){
   .scorehead{grid-template-columns:1fr;gap:22px}
   .scorehead .axes{border-left:0;padding-left:0;border-top:1px solid var(--line);padding-top:18px}
-  .pepite b{font-size:84px}
+  .mark.fiche{font-size:84px}
   .metrics{grid-template-columns:1fr 1fr}
   .metric{padding:28px 0}
   .metric:nth-child(odd){border-left:0;padding-left:0}
@@ -442,9 +451,10 @@ dialog.fiche::backdrop{background:var(--scrim);backdrop-filter:blur(3px)}
   .radar-read{gap:1px} .radar-read .sub{font-size:11px} .radar-read b{font-size:13px}
   .radar-legend{gap:4px;font-size:10px}
   .callout .c-meta,.callout .c-val{display:none}
-  .callout{padding:8px 12px 8px 10px;gap:0 10px}
-  .callout b{font-size:22px}
-  .callout .c-nm{max-width:120px}
+  .callout{padding:8px 12px 8px 10px;width:max-content;max-width:min(200px,72%)}
+  .callout .in{grid-template-columns:52px minmax(0,max-content);column-gap:8px}
+  .callout .mark{grid-row:1;width:52px}
+  .callout .mark.radar{font-size:22px}
   .radar-read b{font-size:14px}
   .w{grid-template-columns:1fr 60px}
   .w input{grid-column:1/-1;order:3}
@@ -501,7 +511,7 @@ dialog.fiche::backdrop{background:var(--scrim);backdrop-filter:blur(3px)}
       <p class="lead">Filon analyse les signaux faibles des PME franciliennes pour détecter les opportunités de reprise avant qu'elles n'arrivent sur le marché.</p>
       <p class="sources label">BODACC <span>·</span> données financières <span>·</span> dirigeants <span>·</span> cessions</p>
       <div class="actions">
-        <a class="btn primary" href="#tab-cibles">Explorer les opportunités</a>
+        <button type="button" class="btn primary" data-goto="cibles">Explorer les opportunités</button>
       </div>
       <button class="link score-link" data-goto="reglages">Score Pépite</button>
     </div>
@@ -869,12 +879,17 @@ function dial(v, size, hotAt){
     <span style="font-size:${Math.round(size*.34)}px">${v}</span></span>`;
 }
 
+function pepite(v, size){
+  if (v == null || v === "") return `<span class="mark ${size}"><b>–</b><span>Pépite</span></span>`;
+  const n = Math.round(+v);
+  return `<span class="mark ${size}${n>=HOT?" hot":""}"><b>${n}</b><span>Pépite</span></span>`;
+}
 function top5(){
   const t = [...ALL].filter(x => x.score != null).sort((a,b)=>b.score-a.score).slice(0,5);
-  $("#top5").innerHTML = t.map((x,i) => `<button class="t5" data-siren="${esc(x.siren)}"><span class="rk">${String(i+1).padStart(2,"0")}</span>
+  $("#top5").innerHTML = t.length ? t.map((x,i) => `<button class="t5" data-siren="${esc(x.siren)}"><span class="rk">${String(i+1).padStart(2,"0")}</span>
     <span><span class="nm">${esc(x.nom)}</span><span class="sub">${esc(x.commune||"")} · ${esc(SECT_L[secteur(x.naf)]||"")}${NAF[x.naf]?" · "+esc(NAF[x.naf]):""}</span></span>
     <span class="st">${situationTag(x)}</span>
-    <span class="sc${x.score>=HOT?" hot":""}">${Math.round(x.score)}</span></button>`).join("");
+    ${pepite(x.score,"rank")}</button>`).join("") : `<p class="sub">Aucune pépite à classer pour le moment.</p>`;
 }
 $("#top5").addEventListener("click", e => { const b = e.target.closest(".t5"); if (!b) return; e.preventDefault(); openFrom(b); });
 /* Survol d'une ligne du classement : la cible correspondante s'allume sur le radar. */
@@ -920,7 +935,7 @@ function render(){
   const r = filtered(), shown = r.slice(0, 3000);
   $("#rows").innerHTML = shown.map(x => `
     <tr class="row" data-siren="${esc(x.siren)}" tabindex="0">
-      <td>${x.score == null ? '<span class="sub mono">–</span>' : dial(x.score,40,HOT)}</td>
+      <td>${pepite(x.score,"table")}</td>
       <td><div class="nm">${esc(x.nom)}</div><div class="sub">${esc(x.commune||"")} (${esc(x.departement||"?")}) · <span class="mono">${esc(x.naf||"")}</span> ${esc(NAF[x.naf]||"")}${x.te && x.te!=="NN" ? " · "+esc(EFF[x.te]||x.te)+" sal." : ""}</div></td>
       <td>${situationTag(x)}${PROC_L[x.procedure]?`<div class="sub mono" style="margin-top:4px">${fmtD(x.date_procedure)}</div>`:""}${x.vente_prix!=null?`<div class="sub mono" style="margin-top:4px">${fmtE(x.vente_prix)}</div>`:""}${x.stage?`<div style="margin-top:4px"><span class="tag stage">${STAGE_L[x.stage]}</span></div>`:""}</td>
       <td class="num"><span class="fig">${fmtE(x.ca)}</span>${x.annee_fin?`<div class="sub mono">${x.annee_fin}</div>`:""}</td>
@@ -967,10 +982,9 @@ function drawFiche(){
   const age = c.date_creation ? new Date().getFullYear() - +c.date_creation.slice(0,4) : null;
   const axes = [["Probabilité de cession",s.p_cession],["Décote estimée",s.decote],["Qualité du business",s.qualite],["Potentiel de création de valeur",s.potentiel]];
   const isProc = (d.e||[]).length > 0;
-  const pepite = Math.round(+s.score || 0);
   $("#f-body").innerHTML = `
   <div class="sec scorehead">
-    <div class="pepite"><span class="label">Score Pépite</span><b>${pepite}</b></div>
+    ${pepite(s.score,"fiche")}
     <div class="axes">${axes.map(([l,val])=>`<div class="axis"><span>${l}</span><span class="mono" style="text-align:right">${val!=null?Math.round(val):"–"}</span><span class="track"><i style="width:${+val||0}%"></i></span></div>`).join("")}</div>
   </div>
   <div class="sec"><h3 class="label">Signaux clés</h3><div class="chips">${(d.g||[]).map(g=>`<span class="chip ${esc(g.categorie)}">${esc(g.libelle)}</span>`).join("") || '<span class="sub">Aucun signal</span>'}</div></div>
@@ -1098,13 +1112,12 @@ function board(){
         const x = ALL.find(a => a.siren === d.siren) || {};
         const loc = [d.commune || x.commune || "", x.naf ? SECT_L[secteur(x.naf)] : ""].filter(Boolean).join(" · ");
         const mode = d.mode === "intermediation" ? "Intermédiation" : "Rachat en propre";
-        const hot = (d.score || 0) >= HOT;
         return `<article class="card">
-          <div class="sc${hot?" hot":""}">${d.score!=null?Math.round(d.score):"–"}<span>Pépite</span></div>
+          ${pepite(d.score,"pipe")}
           <div class="nm" data-open="${esc(d.siren)}">${esc(d.nom)}</div>
           <div class="sub">${esc(loc)}${loc?" · ":""}${mode}</div>
           ${x.vh!=null?`<div class="px">${fmtE(x.vb)} – ${fmtE(x.vh)}</div>`:""}
-          <div class="nx"><span class="label">Prochaine action</span><span>${d.notes?esc(d.notes.slice(0,140)):"À définir"}</span>
+          <div class="nx"><span class="label">Prochaine action</span>${d.notes?`<span>${esc(d.notes.slice(0,140))}</span>`:`<button type="button" class="define" data-open="${esc(d.siren)}">+ Définir une action</button>`}
             <button class="go" data-mv="${esc(d.siren)}" data-to="${i+1}" ${i===STAGES.length-1?"disabled":""} aria-label="Étape suivante">→</button></div>
           <button class="back" data-mv="${esc(d.siren)}" data-to="${i-1}" ${i===0?"disabled":""} aria-label="Étape précédente">←</button>
         </article>`;
@@ -1231,11 +1244,12 @@ function callouts(){
     if (Math.hypot(p.x-tx, p.y-ty) < 14) tx = tx > 50 ? 24 : 76;
     lead.insertAdjacentHTML("beforeend", `<line class="leader" x1="${p.x}" y1="${p.y}" x2="${tx}" y2="${ty}"/>`);
     const el = document.createElement("button");
-    el.className = "callout"; el.style.left = tx + "%"; el.style.top = ty + "%"; el.dataset.siren = r.siren;
+    el.type = "button"; el.className = "callout"; el.style.left = tx + "%"; el.style.top = ty + "%"; el.dataset.siren = r.siren;
     const meta = [SECT_L[secteur(r.naf)], r.commune].filter(Boolean).join(" · ");
-    el.innerHTML = `<b>${Math.round(r.score)}</b><span class="c-nm">${esc(r.nom)}</span>`
+    el.innerHTML = `<span class="in">${pepite(r.score,"radar")}<span class="txt"><span class="c-nm">${esc(r.nom)}</span>`
       + (meta ? `<span class="c-meta">${esc(meta)}</span>` : "")
-      + (r.vh ? `<span class="c-val">${fmtE(r.vb)} – ${fmtE(r.vh)}</span>` : "");
+      + (r.vh ? `<span class="c-val">${fmtE(r.vb)} – ${fmtE(r.vh)}</span>` : "")
+      + `</span></span>`;
     box.appendChild(el); requestAnimationFrame(() => el.classList.add("show"));
   });
 }
