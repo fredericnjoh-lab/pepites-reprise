@@ -37,7 +37,7 @@
   --shadow:0 24px 48px -28px rgba(20,25,20,.28);
 }}
 *{box-sizing:border-box}
-html{scroll-behavior:auto}
+html{scroll-behavior:smooth}
 body{
   margin:0; background:var(--void); color:var(--ink);
   font:400 17px/1.6 var(--font-sans);
@@ -80,7 +80,7 @@ p{margin:0}
 .brand .wm{stroke:var(--ink)} .brand .gem{fill:var(--gold-fill)}
 .nav-links{display:flex;align-items:center;gap:28px;margin:0 auto}
 .nav-links a{text-decoration:none;color:var(--ink-muted);font-weight:500;font-size:15px;padding:6px 0;border-bottom:2px solid transparent;transition:color var(--ui),border-color var(--ui)}
-.nav-links a:hover{color:var(--ink);border-color:var(--gold)}
+.nav-links a:hover,.nav-links a.on{color:var(--ink);border-color:var(--gold)}
 .nav-cta{display:flex;align-items:center;gap:10px}
 
 .block{padding-block:88px}
@@ -163,16 +163,17 @@ p{margin:0}
 .flow .chip.on{background:var(--gold-fill);color:var(--on-gold);border-color:transparent}
 .flow s{text-decoration:none;color:var(--ink-muted);font-size:12px}
 
-.steps{display:grid;gap:24px}
-.step{display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:center;padding:32px}
-.step:nth-child(even) .step-text{order:2}
-.step-text{display:grid;gap:14px}
-.num{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--gold-fill);color:var(--on-gold);font:700 17px/1 var(--font-display)}
-.step h3{font-size:26px;line-height:1.2}
-.step .visual{height:220px}
-.checks{margin:4px 0 0;padding:0;list-style:none;display:grid;gap:8px}
-.checks li{display:grid;grid-template-columns:18px 1fr;gap:10px;align-items:baseline;color:var(--ink-muted);font-size:16px}
-.checks li::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--gold-fill);margin-top:7px}
+.stepper{position:relative;margin:0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px}
+.stepper::before{content:"";position:absolute;left:12%;right:12%;top:44px;height:1px;background:var(--line-strong);opacity:.6}
+.stepper .card{position:relative;display:grid;gap:10px;padding-top:28px}
+.num{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--gold-fill);color:var(--on-gold);font:700 17px/1 var(--font-display);margin-bottom:6px}
+.stepper h3{font-size:22px}
+.compare h3{font-size:20px}
+.actions{display:flex;flex-wrap:wrap;gap:12px}
+.actions.center{justify-content:center}
+
+.reveal{opacity:0;transform:translateY(16px);transition:opacity .5s cubic-bezier(.2,.8,.2,1),transform .5s cubic-bezier(.2,.8,.2,1)}
+.reveal.in{opacity:1;transform:none}
 
 .compare .card.win{border-color:color-mix(in srgb, var(--gold-fill) 50%, var(--line));background:linear-gradient(180deg, var(--tint), var(--surface-1) 60%)}
 .compare header{display:grid;gap:10px;justify-items:start;margin-bottom:12px}
@@ -193,6 +194,11 @@ p{margin:0}
 .annonce .nm{font:600 16px/1.3 var(--font-display);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;transition:color var(--ui)}
 .annonce:hover .nm{color:var(--gold)}
 .annonce .note{font-size:13px}
+.skel{display:grid;grid-template-columns:88px minmax(0,1fr) 96px;gap:16px;align-items:center;padding:20px 0;border-bottom:1px solid var(--line)}
+.skel:last-child{border-bottom:0}
+.skel i,.skel b,.skel u{display:block;height:12px;border-radius:6px;background:var(--surface-2)}
+.skel b{width:60%}
+.skel u{height:26px;border-radius:var(--r-pill)}
 .tag{display:inline-flex;border-radius:var(--r-pill);padding:7px 12px;font:600 12px/1.2 var(--font-sans);background:var(--surface-2);color:var(--ink);white-space:nowrap}
 .tag.cession,.tag.cedant{color:var(--cession);background:color-mix(in srgb, var(--cession) 14%, var(--surface-1))}
 .tag.procedure{color:var(--decote);background:color-mix(in srgb, var(--decote) 14%, var(--surface-1))}
@@ -231,15 +237,19 @@ dialog.fiche .facts .label{text-transform:none;letter-spacing:0;font-weight:500;
 dialog.fiche #fiche-body .note{margin:10px 0 0;font-size:15px}
 dialog.fiche .actions{flex:none;margin-top:24px;display:flex;flex-wrap:wrap;gap:12px}
 
-[id]{scroll-margin-top:92px}
+[id]{scroll-margin-top:100px}
 
 @media (max-width:900px){
-  .nav-links{display:none}
-  .hero{padding-top:56px}
+  .nav .wrap{flex-wrap:wrap;gap:8px 16px;padding-block:12px;min-height:0}
+  .nav-cta{margin-left:auto}
+  .nav-links{order:3;width:100%;margin:0;gap:18px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+  .nav-links::-webkit-scrollbar{display:none}
+  .nav-links a{white-space:nowrap;font-size:14px}
+  .hero{padding-top:48px}
+  .stepper{grid-template-columns:1fr 1fr}
+  .stepper::before{display:none}
   .stats{grid-template-columns:1fr 1fr;gap:32px}
   .grid-3{grid-template-columns:1fr 1fr}
-  .step{grid-template-columns:1fr;padding:24px}
-  .step:nth-child(even) .step-text{order:0}
   .block{padding-block:64px}
   footer.site{grid-template-columns:1fr 1fr}
   .stage{height:400px}
@@ -249,7 +259,7 @@ dialog.fiche .actions{flex:none;margin-top:24px;display:flex;flex-wrap:wrap;gap:
 }
 @media (max-width:560px){
   .wrap{padding-inline:18px}
-  .stats,.grid-3,.grid-2,footer.site{grid-template-columns:1fr}
+  .stats,.grid-3,.grid-2,.stepper,footer.site{grid-template-columns:1fr}
   .frame{padding:14px}
   .stage{height:340px}
   .call{max-width:180px}
@@ -260,6 +270,8 @@ dialog.fiche .actions{flex:none;margin-top:24px;display:flex;flex-wrap:wrap;gap:
 }
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}
+  html{scroll-behavior:auto}
+  .reveal{opacity:1;transform:none}
   .scene{transform:rotateX(58deg) rotateZ(-18deg)}
 }
 </style>
@@ -277,14 +289,14 @@ dialog.fiche .actions{flex:none;margin-top:24px;display:flex;flex-wrap:wrap;gap:
       </svg>
     </a>
     <nav class="nav-links" aria-label="Page">
+      <a href="#societes">Sociétés</a>
       <a href="#produit">Produit</a>
       <a href="#methode">Méthode</a>
       <a href="#familles">Familles</a>
-      <a href="#societes">Sociétés</a>
       <a href="#questions">Questions</a>
     </nav>
     <div class="nav-cta">
-      <a class="btn outline small" href="cockpit/">Cockpit</a>
+      <a class="btn outline small" id="nav-cta" href="cockpit/">Cockpit</a>
     </div>
   </div>
 </header>
@@ -298,7 +310,7 @@ dialog.fiche .actions{flex:none;margin-top:24px;display:flex;flex-wrap:wrap;gap:
         <p class="lead">Repérez les PME d’Île-de-France qui vont changer de mains et concentrez votre temps sur les meilleures. <strong>Chaque cible reçoit un Score Pépite sur 100</strong>, une fiche complète et une valorisation indicative.</p>
         <div class="actions">
           <a class="btn primary" id="hero-cta" href="cockpit/">Ouvrir le cockpit</a>
-          <a class="btn" href="#methode">Voir la méthode</a>
+          <a class="btn" href="#societes">Voir les sociétés</a>
         </div>
         <p class="note" id="loaded">Chargement des sociétés…</p>
       </div>
@@ -337,14 +349,31 @@ dialog.fiche .actions{flex:none;margin-top:24px;display:flex;flex-wrap:wrap;gap:
       </div>
     </section>
 
-    <section class="stats" aria-label="Repères">
+    <section class="stats reveal" aria-label="Repères">
       <div class="stat gold"><b id="kpi-n">…</b><span>Sociétés au radar</span></div>
       <div class="stat"><b>100</b><span>Score Pépite, plafond</span></div>
       <div class="stat"><b>8</b><span>Départements couverts</span></div>
       <div class="stat"><b>6</b><span>Familles suivies</span></div>
     </section>
 
-    <section class="block" id="produit" aria-labelledby="produit-title">
+    <section class="block feed reveal" id="societes" aria-labelledby="societes-title">
+      <div class="feed-head">
+        <div>
+          <span class="pill">Aujourd’hui au radar</span>
+          <h2 id="societes-title" style="margin-top:14px">Huit sociétés, un clic pour la fiche.</h2>
+          <p class="lead" style="margin-top:10px">Score, dirigeants, comptes publiés et fourchette indicative s’ouvrent sur place.</p>
+        </div>
+        <span class="tag" id="feed-meta">Chargement…</span>
+      </div>
+      <div class="card">
+        <div id="feed-rows" aria-busy="true"><div class="skel"><i></i><b></b><u></u></div><div class="skel"><i></i><b></b><u></u></div><div class="skel"><i></i><b></b><u></u></div><div class="skel"><i></i><b></b><u></u></div></div>
+      </div>
+      <div class="actions center" style="margin-top:24px">
+        <a class="btn" href="cockpit/">Voir toutes les sociétés dans le cockpit</a>
+      </div>
+    </section>
+
+    <section class="block reveal" id="produit" aria-labelledby="produit-title">
       <div class="block-head">
         <span class="pill">Le cockpit</span>
         <h2 id="produit-title">Six modules, un seul écran.</h2>
@@ -378,85 +407,44 @@ dialog.fiche .actions{flex:none;margin-top:24px;display:flex;flex-wrap:wrap;gap:
       </div>
     </section>
 
-    <section class="block" id="methode" aria-labelledby="methode-title">
+    <section class="block reveal" id="methode" aria-labelledby="methode-title">
       <div class="block-head">
         <span class="pill">Méthode</span>
         <h2 id="methode-title">De l’annonce publiée au dossier suivi.</h2>
         <p class="lead">Quatre étapes, les mêmes pour chaque société détectée.</p>
       </div>
-      <div class="steps">
-        <article class="card step">
-          <div class="step-text">
-            <span class="num">1</span>
-            <h3>Collecte</h3>
-            <p>Les annonces BODACC des 90 derniers jours en Île-de-France, puis un échantillon Sirene de dirigeants de 60 ans et plus.</p>
-            <ul class="checks">
-              <li>Procédures collectives et cessions de fonds</li>
-              <li>Sociétés de 3 à 99 salariés, six familles</li>
-              <li>Clôtures écartées</li>
-            </ul>
-          </div>
-          <div class="visual"><div class="chips"><span class="chip">75</span><span class="chip">77</span><span class="chip">78</span><span class="chip">91</span><span class="chip">92</span><span class="chip">93</span><span class="chip">94</span><span class="chip">95</span></div></div>
-        </article>
-        <article class="card step">
-          <div class="step-text">
-            <span class="num">2</span>
-            <h3>Score</h3>
-            <p>Le barème du cockpit, appliqué aux données publiées. Plafond 100.</p>
-            <ul class="checks">
-              <li>Probabilité de cession, poids 30</li>
-              <li>Décote estimée, poids 25</li>
-              <li>Qualité du business, poids 25</li>
-              <li>Potentiel de création de valeur, poids 20</li>
-            </ul>
-          </div>
-          <div class="visual strong"><div class="chips"><span class="chip">Cession <b>30</b></span><span class="chip">Décote <b>25</b></span><span class="chip">Qualité <b>25</b></span><span class="chip">Potentiel <b>20</b></span></div></div>
-        </article>
-        <article class="card step">
-          <div class="step-text">
-            <span class="num">3</span>
-            <h3>Fiche</h3>
-            <p>Identité, dirigeants, finances publiées, historique BODACC et fourchette indicative, dans une seule fiche.</p>
-            <ul class="checks">
-              <li>SIREN, activité, effectif, siège</li>
-              <li>Jugement, tribunal, parution</li>
-              <li>CA et résultat net publiés</li>
-            </ul>
-          </div>
-          <div class="visual"><div class="rows"><div>Identité<i></i></div><div>Dirigeants<i></i></div><div>Finances publiées<i class="g"></i></div><div>Historique BODACC<i></i></div></div></div>
-        </article>
-        <article class="card step">
-          <div class="step-text">
-            <span class="num">4</span>
-            <h3>Suivi</h3>
-            <p>Chaque dossier avance étape par étape. Il reste sur cet appareil, ou dans la base quand le connecteur est actif.</p>
-            <ul class="checks">
-              <li>Détectée, Contactée, NDA, Data room</li>
-              <li>LOI, Closing, Perdu</li>
-              <li>Notes et mode : rachat ou intermédiation</li>
-            </ul>
-          </div>
-          <div class="visual"><div class="flow"><span class="chip">Détectée</span><s>→</s><span class="chip on">Contactée</span><s>→</s><span class="chip">NDA</span><s>→</s><span class="chip">LOI</span></div></div>
-        </article>
-      </div>
-    </section>
-
-    <section class="block compare" aria-labelledby="lecture-title">
-      <div class="block-head">
-        <span class="pill">Lecture</span>
-        <h2 id="lecture-title">L’annonce d’un côté, la fiche de l’autre.</h2>
-        <p class="lead">L’annonce publique donne la parution. La fiche ajoute le score, les dirigeants et les comptes publiés.</p>
-      </div>
-      <div class="grid-2">
+      <ol class="stepper">
+        <li class="card">
+          <span class="num">1</span>
+          <h3>Collecte</h3>
+          <p>Annonces des 90 derniers jours en Île-de-France, plus un échantillon de dirigeants de 60 ans et plus. Sociétés de 3 à 99 salariés, clôtures écartées.</p>
+        </li>
+        <li class="card">
+          <span class="num">2</span>
+          <h3>Score</h3>
+          <p>Le barème du cockpit, appliqué aux données publiées : cession 30, décote 25, qualité 25, potentiel 20. Plafond 100.</p>
+        </li>
+        <li class="card">
+          <span class="num">3</span>
+          <h3>Fiche</h3>
+          <p>Identité, dirigeants, finances publiées, historique des jugements et fourchette indicative, dans une seule fiche.</p>
+        </li>
+        <li class="card">
+          <span class="num">4</span>
+          <h3>Suivi</h3>
+          <p>Détectée, Contactée, NDA, Data room, LOI, Closing. Notes et mode rachat ou intermédiation sur chaque dossier.</p>
+        </li>
+      </ol>
+      <div class="grid-2 compare" style="margin-top:24px">
         <article class="card">
-          <header><span class="pill soft">Annonce</span><h3>Ce que publie le BODACC</h3></header>
+          <header><span class="pill soft">Annonce</span><h3>Ce que publie l’annonce</h3></header>
           <div class="line"><span>Date</span><span>Parution</span></div>
           <div class="line"><span>Dénomination</span><span>Raison sociale</span></div>
           <div class="line"><span>Commune</span><span>Siège ou établissement</span></div>
           <div class="line"><span>Nature</span><span>Procédure ou cession de fonds</span></div>
         </article>
         <article class="card win">
-          <header><span class="pill">Fiche Filon</span><h3>Ce qu’ouvre le cockpit</h3></header>
+          <header><span class="pill">Fiche Filon</span><h3>Ce qu’ajoute la fiche</h3></header>
           <div class="line"><span>Score Pépite</span><span>Sur 100</span></div>
           <div class="line"><span>Quatre axes</span><span>Cession, décote, qualité, potentiel</span></div>
           <div class="line"><span>Dirigeant</span><span>Qualité et âge</span></div>
@@ -464,9 +452,13 @@ dialog.fiche .actions{flex:none;margin-top:24px;display:flex;flex-wrap:wrap;gap:
           <div class="line"><span>Valorisation</span><span>Fourchette indicative</span></div>
         </article>
       </div>
+      <div class="actions center" style="margin-top:32px">
+        <a class="btn" href="cockpit/">Ouvrir le cockpit</a>
+        <a class="btn" href="#societes">Revoir les sociétés</a>
+      </div>
     </section>
 
-    <section class="block fam" id="familles" aria-labelledby="familles-title">
+    <section class="block fam reveal" id="familles" aria-labelledby="familles-title">
       <div class="block-head">
         <span class="pill">Familles</span>
         <h2 id="familles-title">Six familles suivies.</h2>
@@ -482,56 +474,41 @@ dialog.fiche .actions{flex:none;margin-top:24px;display:flex;flex-wrap:wrap;gap:
       </div>
     </section>
 
-    <section class="block feed" id="societes" aria-labelledby="societes-title">
-      <div class="feed-head">
-        <div>
-          <span class="pill">Sociétés</span>
-          <h2 id="societes-title" style="margin-top:14px">Huit premières sociétés.</h2>
-          <p class="lead" style="margin-top:10px">Un clic ouvre la fiche. La liste complète est dans le cockpit.</p>
-        </div>
-        <span class="tag" id="feed-meta">Chargement…</span>
-      </div>
-      <div class="card">
-        <div id="feed-rows"><p class="note" style="padding:16px 0">Chargement des annonces publiées au BODACC.</p></div>
-      </div>
-      <p class="note" style="margin-top:16px;text-align:center"><a href="cockpit/">Liste complète dans le cockpit</a></p>
-    </section>
-
-    <section class="block" id="questions" aria-labelledby="questions-title">
+    <section class="block reveal" id="questions" aria-labelledby="questions-title">
       <div class="block-head">
         <span class="pill">Questions</span>
         <h2 id="questions-title">Sources, score, pipeline.</h2>
       </div>
       <div class="faq">
-        <details>
+        <details name="faq">
           <summary>D’où viennent les sociétés ?</summary>
           <p>Procédures collectives et cessions de fonds publiées au BODACC sur 90 jours, en Île-de-France, plus un échantillon Sirene de dirigeants de 60 ans et plus. Les clôtures sont écartées.</p>
         </details>
-        <details>
+        <details name="faq">
           <summary>Comment le Score Pépite est-il calculé ?</summary>
           <p>Quatre axes de 0 à 100. Poids : probabilité de cession 30, décote 25, qualité 25, potentiel 20. Le barème est celui du cockpit, appliqué aux données publiées.</p>
         </details>
-        <details>
+        <details name="faq">
           <summary>La valorisation est-elle un prix de cession ?</summary>
           <p>La valorisation est indicative. Elle reprend les comptes publiés. Elle ne constitue pas un prix de cession ni un conseil en investissement.</p>
         </details>
-        <details>
+        <details name="faq">
           <summary>Quelles familles sont suivies ?</summary>
           <p>IT et numérique, services B2B, industrie et maintenance, négoce B2B, transport et logistique, BTP. Le commerce, la CHR et les autres activités restent accessibles dans le cockpit.</p>
         </details>
-        <details>
+        <details name="faq">
           <summary>Où est enregistré le pipeline ?</summary>
           <p>Sur cet appareil. Quand le connecteur Supabase est actif, les dossiers sont enregistrés dans la base.</p>
         </details>
       </div>
     </section>
 
-    <section class="block" aria-labelledby="close-title">
+    <section class="block reveal" aria-labelledby="close-title">
       <div class="close">
         <span class="pill soft">Cockpit</span>
         <h2 id="close-title">Trouver le filon.</h2>
         <p class="lead">Île-de-France. Score Pépite sur 100. Valorisation indicative.</p>
-        <a class="btn outline" id="close-cta" href="cockpit/">Ouvrir le cockpit</a>
+        <a class="btn primary" id="close-cta" href="cockpit/">Ouvrir le cockpit</a>
       </div>
     </section>
 
@@ -597,13 +574,37 @@ stage.addEventListener("pointerleave", () => {
   scene.style.transform = "";
 });
 const heroCta = document.getElementById("hero-cta");
-const closeCta = document.getElementById("close-cta");
-if (heroCta && closeCta && "IntersectionObserver" in window) {
+const navCta = document.getElementById("nav-cta");
+if (heroCta && navCta && "IntersectionObserver" in window) {
   new IntersectionObserver(function (entries) {
     const away = !entries[0].isIntersecting;
-    closeCta.classList.toggle("primary", away);
-    closeCta.classList.toggle("outline", !away);
+    navCta.classList.toggle("primary", away);
+    navCta.classList.toggle("outline", !away);
   }, { threshold: 0.4 }).observe(heroCta);
+}
+const navLinks = Array.from(document.querySelectorAll(".nav-links a[href^='#']"));
+if (navLinks.length && "IntersectionObserver" in window) {
+  const spy = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (!e.isIntersecting) return;
+      navLinks.forEach(function (a) { a.classList.toggle("on", a.getAttribute("href") === "#" + e.target.id); });
+    });
+  }, { rootMargin: "-40% 0px -55% 0px" });
+  navLinks.forEach(function (a) {
+    const sec = document.getElementById(a.getAttribute("href").slice(1));
+    if (sec) spy.observe(sec);
+  });
+}
+const revealed = document.querySelectorAll(".reveal");
+if (reduce || !("IntersectionObserver" in window)) {
+  revealed.forEach(function (el) { el.classList.add("in"); });
+} else {
+  const show = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) { e.target.classList.add("in"); show.unobserve(e.target); }
+    });
+  }, { rootMargin: "0px 0px -8% 0px", threshold: 0.05 });
+  revealed.forEach(function (el) { show.observe(el); });
 }
 
 const ANGLES = {93:0, 92:45, 75:90, 94:135, 91:180, 77:225, 78:270, 95:315};
@@ -824,8 +825,8 @@ function showRows(rows, phase){
     if (kpi) kpi.textContent = String(n);
     document.getElementById("loaded").textContent = n + " sociétés détectées en Île-de-France, mises à jour chaque jour.";
     document.getElementById("feed-meta").textContent = phase === "done"
-      ? shown + " affichées · " + n + " au radar"
-      : n + " · chargement";
+      ? shown + " sur " + n + " au radar"
+      : n + " détectées · chargement";
     if (!n) document.getElementById("feed-rows").textContent = "Chargement des sociétés.";
   };
   if (phase === "done" || Date.now() - lastFeed > 800) { clearTimeout(feedTimer); run(); }
